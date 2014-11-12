@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<ScrollView
+        xmlns:android="http://schemas.android.com/apk/res/android"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1">
+
+        <LinearLayout
+            android:id="@+id/fragmentCardInfo_mainLinearLayout"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:gravity="center"
+            android:fontFamily="sans-serif" >
+    
+            <ProgressBar
+                android:id="@+id/fragmentCardInfo_progressBar1"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content" />
+
+            <ImageView
+                android:id="@+id/imageView_detail_card"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:contentDescription="Card image" />
+            
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="#33691E"
+                android:gravity="center"
+                android:text="Information"
+                android:textColor="#FFFFFF" />
+            
+            <ProgressBar
+                android:id="@+id/fragmentCardInfo_progressBar2"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content" />
+    
+            <TableLayout
+                android:id="@+id/infoTable"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:shrinkColumns="1" >
+    
+                <TableRow
+                    android:id="@+id/tableRow5"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content" >
+                </TableRow>
+            </TableLayout>
+            
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="#33691E"
+                android:gravity="center"
+                android:text="Card description"
+                android:textColor="#FFFFFF" />
+            
+            <TextView
+                android:id="@+id/textViewCardEffect"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="left"
+                android:text="\n" />
+    
+        </LinearLayout>
+</ScrollView>
