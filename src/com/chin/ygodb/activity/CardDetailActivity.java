@@ -3,17 +3,16 @@ package com.chin.ygodb.activity;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
-
 import com.chin.ygodb.CardStore;
 import com.chin.ygodb.PagerSlidingTabStrip;
 import com.chin.ygodb2.R;
 import com.chin.common.MyTagHandler;
 import com.chin.ygodb.AddCardInfoTask;
-
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.annotation.SuppressLint;
 import android.content.Intent;
+import android.util.Log;
 import android.util.TypedValue;
 import android.view.Gravity;
 import android.view.LayoutInflater;
@@ -72,11 +71,6 @@ public class CardDetailActivity extends BaseFragmentActivity {
         bundle.putString("CARDNAME", cardName);
     }
 
-    @Override
-    protected void onRestoreInstanceState(Bundle savedInstanceState) {
-        super.onRestoreInstanceState(savedInstanceState);
-    }
-
     /**
      * Fragment for the card info view
      */
@@ -110,30 +104,44 @@ public class CardDetailActivity extends BaseFragmentActivity {
         }
     }
 
-    public static class CardRulingFragment extends Fragment {
-        PopulateCommentAsyncTask myTask;
+    public static class CardGenericDetailFragment extends Fragment {
+        PopulateRulingAsyncTask myTask;
 
-        static String cardName;
+        private static final String CARD_NAME = "CARD_NAME";
+        private static final String BASE_URL = "BASE_URL";
 
-        public CardRulingFragment(String cardName) {
-            CardRulingFragment.cardName = cardName;
+        String cardName;
+        String baseUrl;
+
+        public static CardGenericDetailFragment newInstance(String cardName, String baseUrl) {
+            CardGenericDetailFragment f = new CardGenericDetailFragment();
+            Bundle b = new Bundle();
+            b.putString(CARD_NAME, cardName);
+            b.putString(BASE_URL, baseUrl);
+            f.setArguments(b);
+            return f;
         }
 
-        public CardRulingFragment() {
+        @Override
+        public void onCreate(Bundle savedInstanceState) {
+            super.onCreate(savedInstanceState);
+            Log.i("foo", "onCreate called for " + this);
+            cardName = getArguments().getString(CARD_NAME);
+            baseUrl = getArguments().getString(BASE_URL);
+            setRetainInstance(true);
         }
 
         @SuppressLint("RtlHardcoded")
         @Override
         public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-            // Inflate the layout for this fragment
             View view = inflater.inflate(R.layout.fragment_general_linear, container, false);
             LinearLayout layout = (LinearLayout) view.findViewById(R.id.fragment_layout);
             layout.setGravity(Gravity.RIGHT);
 
-            String commentUrl = "http://yugioh.wikia.com/wiki/Card_Rulings:"
-                    + CardStore.cardLinkTable.get(cardName)[0].substring(6);
-            myTask = (PopulateCommentAsyncTask) new PopulateCommentAsyncTask(layout, (CardDetailActivity) getActivity(), 1)
-                            .execute(commentUrl);
+            String resourceUrl = baseUrl + CardStore.cardLinkTable.get(cardName)[0].substring(6);
+            myTask = (PopulateRulingAsyncTask) new PopulateRulingAsyncTask(layout, (CardDetailActivity) getActivity())
+                            .execute(resourceUrl);
+
             return view;
         }
 
@@ -147,19 +155,16 @@ public class CardDetailActivity extends BaseFragmentActivity {
         }
     }
 
-    public static class PopulateCommentAsyncTask extends AsyncTask<String, Void, Void> {
-
+    public static class PopulateRulingAsyncTask extends AsyncTask<String, Void, Void> {
         LinearLayout layout;
         CardDetailActivity activity;
         Document dom;
-        int page;
         String baseUrl;
         boolean exceptionOccurred = false;
 
-        public PopulateCommentAsyncTask(LinearLayout layout, CardDetailActivity activity, int page) {
+        public PopulateRulingAsyncTask(LinearLayout layout, CardDetailActivity activity) {
             this.layout = layout;
             this.activity = activity;
-            this.page = page;
         }
 
         @Override
@@ -191,6 +196,9 @@ public class CardDetailActivity extends BaseFragmentActivity {
                 // remove the spinner
                 ProgressBar pgrBar = (ProgressBar) activity.findViewById(R.id.progressBar_fragment_general);
                 layout.removeView(pgrBar);
+                TextView tv = new TextView(activity);
+                layout.addView(tv);
+                tv.setText("Not available");
                 return;
             }
 
@@ -216,12 +224,11 @@ public class CardDetailActivity extends BaseFragmentActivity {
                 e.printStackTrace();
             }
         }
-
     }
 
     public class MyPagerAdapter extends FragmentPagerAdapter {
 
-        private final String[] TITLES = { "Detail", "Ruling"};
+        private final String[] TITLES = { "Detail", "Ruling", "Tips", "Trivia"};
 
         public MyPagerAdapter(FragmentManager fm) {
             super(fm);
@@ -242,8 +249,14 @@ public class CardDetailActivity extends BaseFragmentActivity {
             if (position == 0) {
                 return new CardInfoFragment(cardName);
             }
-            else {//if (position == 1){
-                return new CardRulingFragment(cardName);
+            else if (position == 1){
+                return CardGenericDetailFragment.newInstance(cardName, "http://yugioh.wikia.com/wiki/Card_Rulings:");
+            }
+            else if (position == 2) {
+                return CardGenericDetailFragment.newInstance(cardName, "http://yugioh.wikia.com/wiki/Card_Tips:");
+            }
+            else {
+                return CardGenericDetailFragment.newInstance(cardName, "http://yugioh.wikia.com/wiki/Card_Trivia:");
             }
         }
     }

@@ -11,7 +11,6 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentTransaction;
-import android.support.v4.widget.DrawerLayout;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.util.Log;
@@ -28,7 +27,6 @@ import android.widget.ListView;
  */
 public class MainActivity extends BaseFragmentActivity {
 
-    static boolean hasJustBeenStarted = true; // flag to determine if the app has just been started
     public final static String CARD_LINK = "com.chin.ygodb.LINK";
     public final static String CARD_NAME = "com.chin.ygodb.NAME";
 
@@ -38,14 +36,7 @@ public class MainActivity extends BaseFragmentActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        // if the app has just been started, show the drawer. Otherwise close it
-        DrawerLayout mDrawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
-        ListView mDrawerList = (ListView) findViewById(R.id.left_drawer);
-        if (hasJustBeenStarted) {
-            mDrawerLayout.openDrawer(mDrawerList);
-        }
-
-        // get the cardiliar list and their wiki url
+        // get the card list and their wiki url
         if (CardStore.cardList == null) {
             try {
                 CardStore.getInstance(this).initializeCardList();
@@ -63,18 +54,10 @@ public class MainActivity extends BaseFragmentActivity {
             FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
             ft.add(R.id.tab_viewgroup, newFragment).commit();
         }
-
-        // for our purposes, consider the app already opened at this point
-        hasJustBeenStarted = false;
-    }
-
-    @Override
-    protected void onSaveInstanceState(Bundle bundle) {
-      super.onSaveInstanceState(bundle);
     }
 
     /**
-     * Fragment for the search cardiliar view
+     * Fragment for the search card view
      */
     public static class SearchCardFragment extends Fragment {
         @Override
