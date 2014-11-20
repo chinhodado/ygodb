@@ -14,6 +14,7 @@ import com.nostra13.universalimageloader.core.ImageLoader;
 import android.graphics.Point;
 import android.os.AsyncTask;
 import android.text.Html;
+import android.util.Log;
 import android.view.Display;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
@@ -51,6 +52,7 @@ public class AddCardInfoTask extends AsyncTask<String, Void, Void> {
         try { addCardImage();               } catch (Exception e) {e.printStackTrace();}
         try { addCardEffect();              } catch (Exception e) {e.printStackTrace();}
         try { addCardInfo();                } catch (Exception e) {e.printStackTrace();}
+        try { addCardStatus();              } catch (Exception e) {e.printStackTrace();}
     }
 
     public void addCardImage() {
@@ -104,7 +106,7 @@ public class AddCardInfoTask extends AsyncTask<String, Void, Void> {
             else {
                 foundFirstRow = true;
                 String data = row.getElementsByClass("cardtablerowdata").first().text();
-                Util.addRowWithTwoTextView(activity, infoTable, headerText + " ", data, true);
+                Util.addRowWithTwoTextView(activity, infoTable, headerText + "  ", data, true);
                 if (headerText.equals("Card effect types") || headerText.equals("Limitation Text")) {
                     break;
                 }
@@ -117,5 +119,30 @@ public class AddCardInfoTask extends AsyncTask<String, Void, Void> {
     public void addCardEffect() {
         TextView effectTv = (TextView) activity.findViewById(R.id.textViewCardEffect);
         effectTv.setText(Html.fromHtml(cardStore.getCardEffect(cardName), null, new MyTagHandler()));
+    }
+
+    public void addCardStatus() {
+        TableLayout statusTable = (TableLayout) activity.findViewById(R.id.banlistTable);
+        Document cardDom = cardStore.getCardDom(cardName);
+        Elements statusRows = cardDom.getElementsByClass("cardtablestatuses").first().getElementsByTag("tr");
+        Element statusRow = null;
+        for (int i = 0; i < statusRows.size(); i++) {
+            if (statusRows.get(i).text().equals("TCG/OCG statuses")) {
+                statusRow = statusRows.get(i + 1);
+                break;
+            }
+        }
+
+        if (statusRow == null) {
+            Log.i("YGODB", "Card banlist status not found");
+            return;
+        }
+
+        Elements th = statusRow.getElementsByTag("th");
+        Elements td = statusRow.getElementsByTag("td");
+
+        for (int i = 0; i < 3; i++) {
+            Util.addRowWithTwoTextView(activity, statusTable, th.get(i).text() + "  ", td.get(i).text(), true);
+        }
     }
 }

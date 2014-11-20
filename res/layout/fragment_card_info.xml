@@ -25,7 +25,8 @@
                 android:layout_height="wrap_content"
                 android:contentDescription="Card image" />
             
-            <TextView
+            <!-- separator row -->
+            <TextView 
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content" />
             
@@ -48,8 +49,8 @@
                 android:layout_height="wrap_content"
                 android:shrinkColumns="1" >
     
+                <!-- separator row -->
                 <TableRow
-                    android:id="@+id/tableRow5"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content" >
                 </TableRow>
@@ -69,6 +70,25 @@
                 android:layout_height="wrap_content"
                 android:gravity="left"
                 android:text="\n" />
+            
+            <!-- separator row -->
+            <TextView 
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content" />
+            
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="#33691E"
+                android:gravity="center"
+                android:text="TCG/OCG Statuses"
+                android:textColor="#FFFFFF" />
     
+            <TableLayout
+                android:id="@+id/banlistTable"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:shrinkColumns="1" >
+            </TableLayout>
         </LinearLayout>
 </ScrollView>
