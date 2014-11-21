@@ -3,11 +3,13 @@ package com.chin.ygodb.activity;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
+
 import com.chin.ygodb.CardStore;
 import com.chin.ygodb.PagerSlidingTabStrip;
+import com.chin.ygodb.asyncTask.AddCardInfoTask;
 import com.chin.ygodb2.R;
 import com.chin.common.MyTagHandler;
-import com.chin.ygodb.AddCardInfoTask;
+
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.annotation.SuppressLint;

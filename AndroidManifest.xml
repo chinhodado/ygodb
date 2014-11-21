@@ -39,6 +39,10 @@
                 android:value="com.chin.ygodb.activity.MainActivity" />
         </activity>
         <activity
+            android:name="com.chin.ygodb.activity.BoosterActivity"
+            android:label="Boosters" >
+        </activity>
+        <activity
             android:name="com.chin.ygodb.activity.HelpAboutActivity"
             android:label="Help" >
         </activity>
