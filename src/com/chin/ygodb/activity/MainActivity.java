@@ -2,12 +2,13 @@ package com.chin.ygodb.activity;
 
 import com.chin.ygodb.activity.BaseFragmentActivity;
 import com.chin.ygodb.CardStore;
-import com.chin.common.NetworkDialogFragment;
 import com.chin.ygodb2.R;
+import com.chin.common.CustomDialogFragment;
 import com.chin.common.RegexFilterArrayAdapter;
 
-import android.app.DialogFragment;
+import android.content.Context;
 import android.content.Intent;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentTransaction;
@@ -39,12 +40,24 @@ public class MainActivity extends BaseFragmentActivity {
         // get the card list and their wiki url
         if (CardStore.cardList == null) {
             try {
-                CardStore.getInstance(this).initializeCardList();
+                new AsyncTask<Context, Void, Void>() {
+                    @Override
+                    protected Void doInBackground(Context... params) {
+                        try {
+                            CardStore.getInstance(params[0]).initializeCardList();
+                        }
+                        catch (Exception e) {
+                            e.printStackTrace();
+                        }
+                        return null;
+                    }
+                }.execute(this).get();
             } catch (Exception e) {
-                DialogFragment newFragment = new NetworkDialogFragment();
+                e.printStackTrace();
+                CustomDialogFragment newFragment = new CustomDialogFragment(
+                        "Something went horribly wrong. Please send me an email at chinho.dev@gmail.com if this persists.");
                 newFragment.setCancelable(false);
                 newFragment.show(getFragmentManager(), "no net");
-                e.printStackTrace();
                 return;
             }
         }
@@ -94,7 +107,6 @@ public class MainActivity extends BaseFragmentActivity {
                             String cardName = (String)arg0.getItemAtPosition(position);
                             Intent intent = new Intent(v.getContext(), CardDetailActivity.class);
                             intent.putExtra(CARD_NAME, cardName);
-                            intent.putExtra(CARD_LINK, CardStore.cardLinkTable.get(cardName));
                             startActivity(intent);
                     }
                 });

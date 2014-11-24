@@ -1,10 +1,7 @@
 package com.chin.ygodb.activity;
 
-import org.jsoup.Jsoup;
-import org.jsoup.nodes.Document;
-import org.jsoup.nodes.Element;
-
 import com.chin.ygodb.CardStore;
+import com.chin.ygodb.CardStore.CardAdditionalInfoType;
 import com.chin.ygodb.PagerSlidingTabStrip;
 import com.chin.ygodb.asyncTask.AddCardInfoTask;
 import com.chin.ygodb2.R;
@@ -14,7 +11,6 @@ import android.os.AsyncTask;
 import android.os.Bundle;
 import android.annotation.SuppressLint;
 import android.content.Intent;
-import android.util.Log;
 import android.util.TypedValue;
 import android.view.Gravity;
 import android.view.LayoutInflater;
@@ -65,6 +61,8 @@ public class CardDetailActivity extends BaseFragmentActivity {
         pager.setPageMargin(pageMargin);
         tabs.setViewPager(pager);
         tabs.setIndicatorColor(getResources().getColor(R.color.red));
+
+        getActionBar().setTitle(cardName);
     }
 
     @Override
@@ -109,17 +107,17 @@ public class CardDetailActivity extends BaseFragmentActivity {
     public static class CardGenericDetailFragment extends Fragment {
         PopulateRulingAsyncTask myTask;
 
+        private static final String TYPE = "TYPE";
         private static final String CARD_NAME = "CARD_NAME";
-        private static final String BASE_URL = "BASE_URL";
 
+        CardAdditionalInfoType type;
         String cardName;
-        String baseUrl;
 
-        public static CardGenericDetailFragment newInstance(String cardName, String baseUrl) {
+        public static CardGenericDetailFragment newInstance(CardAdditionalInfoType type, String cardName) {
             CardGenericDetailFragment f = new CardGenericDetailFragment();
             Bundle b = new Bundle();
+            b.putSerializable(TYPE, type);
             b.putString(CARD_NAME, cardName);
-            b.putString(BASE_URL, baseUrl);
             f.setArguments(b);
             return f;
         }
@@ -127,9 +125,8 @@ public class CardDetailActivity extends BaseFragmentActivity {
         @Override
         public void onCreate(Bundle savedInstanceState) {
             super.onCreate(savedInstanceState);
-            Log.i("foo", "onCreate called for " + this);
             cardName = getArguments().getString(CARD_NAME);
-            baseUrl = getArguments().getString(BASE_URL);
+            type = (CardAdditionalInfoType) getArguments().getSerializable(TYPE);
             setRetainInstance(true);
         }
 
@@ -140,9 +137,7 @@ public class CardDetailActivity extends BaseFragmentActivity {
             LinearLayout layout = (LinearLayout) view.findViewById(R.id.fragment_layout);
             layout.setGravity(Gravity.RIGHT);
 
-            String resourceUrl = baseUrl + CardStore.cardLinkTable.get(cardName)[0].substring(6);
-            myTask = (PopulateRulingAsyncTask) new PopulateRulingAsyncTask(layout, (CardDetailActivity) getActivity())
-                            .execute(resourceUrl);
+            myTask = (PopulateRulingAsyncTask) new PopulateRulingAsyncTask(layout, (CardDetailActivity) getActivity(), type, cardName).execute();
 
             return view;
         }
@@ -157,31 +152,25 @@ public class CardDetailActivity extends BaseFragmentActivity {
         }
     }
 
-    public static class PopulateRulingAsyncTask extends AsyncTask<String, Void, Void> {
+    public static class PopulateRulingAsyncTask extends AsyncTask<String, Void, String> {
         LinearLayout layout;
         CardDetailActivity activity;
-        Document dom;
-        String baseUrl;
+        CardAdditionalInfoType type;
+        String cardName;
         boolean exceptionOccurred = false;
 
-        public PopulateRulingAsyncTask(LinearLayout layout, CardDetailActivity activity) {
+        public PopulateRulingAsyncTask(LinearLayout layout, CardDetailActivity activity, CardAdditionalInfoType type, String cardName) {
             this.layout = layout;
             this.activity = activity;
+            this.type = type;
+            this.cardName = cardName;
         }
 
         @Override
-        protected Void doInBackground(String... params) {
-            String html;
+        protected String doInBackground(String... params) {
             try {
-                CardStore.getInstance(activity);
-                baseUrl = params[0];
-                html = Jsoup.connect(baseUrl).ignoreContentType(true).execute().body();
-
-                if (isCancelled()) {
-                    return null;
-                }
-
-                dom = Jsoup.parse(html);
+                String info = CardStore.getInstance(activity).getCardGenericInfo(type, cardName);
+                return info;
             } catch (Exception e) {
                 e.printStackTrace();
 
@@ -192,7 +181,7 @@ public class CardDetailActivity extends BaseFragmentActivity {
         }
 
         @Override
-        protected void onPostExecute(Void param) {
+        protected void onPostExecute(String param) {
 
             if (exceptionOccurred) {
                 // remove the spinner
@@ -204,27 +193,13 @@ public class CardDetailActivity extends BaseFragmentActivity {
                 return;
             }
 
-            try {
-                Element content = dom.getElementById("mw-content-text");
-                content.select("table.navbox").first().remove(); // remove the navigation box
-                content.select("script").remove();               // remove <script> tags
-                content.select("#toc").remove();                 // remove the table of content
-                content.select(".mbox-image").remove();          // remove the image in the "previously official ruling" box
-                String ruling = content.html();
+            TextView tv = new TextView(activity);
+            layout.addView(tv);
+            tv.setText(Html.fromHtml(param, null, new MyTagHandler()));
 
-                // hackish, turn <a> into <span> so we don't see blue underlined text
-                ruling = ruling.replace("<a", "<span").replace("a>", "span>");
-
-                TextView tv = new TextView(activity);
-                layout.addView(tv);
-                tv.setText(Html.fromHtml(ruling, null, new MyTagHandler()));
-
-                // remove the spinner
-                ProgressBar pgrBar = (ProgressBar) activity.findViewById(R.id.progressBar_fragment_general);
-                layout.removeView(pgrBar);
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
+            // remove the spinner
+            ProgressBar pgrBar = (ProgressBar) activity.findViewById(R.id.progressBar_fragment_general);
+            layout.removeView(pgrBar);
         }
     }
 
@@ -252,13 +227,13 @@ public class CardDetailActivity extends BaseFragmentActivity {
                 return new CardInfoFragment(cardName);
             }
             else if (position == 1){
-                return CardGenericDetailFragment.newInstance(cardName, "http://yugioh.wikia.com/wiki/Card_Rulings:");
+                return CardGenericDetailFragment.newInstance(CardAdditionalInfoType.Ruling, cardName);
             }
             else if (position == 2) {
-                return CardGenericDetailFragment.newInstance(cardName, "http://yugioh.wikia.com/wiki/Card_Tips:");
+                return CardGenericDetailFragment.newInstance(CardAdditionalInfoType.Tips, cardName);
             }
             else {
-                return CardGenericDetailFragment.newInstance(cardName, "http://yugioh.wikia.com/wiki/Card_Trivia:");
+                return CardGenericDetailFragment.newInstance(CardAdditionalInfoType.Trivia, cardName);
             }
         }
     }

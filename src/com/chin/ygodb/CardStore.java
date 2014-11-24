@@ -2,17 +2,20 @@ package com.chin.ygodb;
 
 import java.util.ArrayList;
 import java.util.Hashtable;
-import java.util.concurrent.ExecutionException;
 
 import org.json.JSONArray;
-import org.json.JSONException;
 import org.json.JSONObject;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
+import org.jsoup.select.Elements;
 
+import com.chin.common.Util;
 import com.chin.ygodb.CardStore;
+
 import android.content.Context;
+import android.database.Cursor;
+import android.database.sqlite.SQLiteDatabase;
 import android.util.Log;
 
 /**
@@ -26,13 +29,40 @@ import android.util.Log;
  */
 public final class CardStore {
 
-    public static class CardDetail {
-        String name = null;
-        Document cardDOM;
-
-        CardDetail(String name) {
-            this.name = name;
+    public static class Pair {
+        public String key;
+        public String value;
+        public Pair(String key, String value) {
+            this.key = key;
+            this.value = value;
         }
+    }
+
+    public enum CardAdditionalInfoType{
+        Ruling, Tips, Trivia
+    }
+
+    public static Hashtable<String, String> columnNameMap = new Hashtable<String, String>();
+    static {
+        // not all columns are in here, just those in the info section
+        columnNameMap.put("attribute"      , "Attribute");
+        columnNameMap.put("types"          , "Types");
+        columnNameMap.put("level"          , "Level");
+        columnNameMap.put("atkdef"         , "ATK/DEF");
+        columnNameMap.put("cardnum"        , "Card Number");
+        columnNameMap.put("passcode"       , "Passcode");
+        columnNameMap.put("effectTypes"    , "Card effect types");
+        columnNameMap.put("materials"      , "Materials");
+        columnNameMap.put("fusionMaterials", "Fusion Material");
+        columnNameMap.put("rank"           , "Rank");
+        columnNameMap.put("ritualSpell"    , "Ritual Spell Card required");
+        columnNameMap.put("pendulumScale"  , "Pendulum Scale");
+        columnNameMap.put("type"           , "Type");
+        columnNameMap.put("property"       , "Property");
+        columnNameMap.put("summonedBy"     , "Summoned by the effect of");
+        columnNameMap.put("limitText"      , "Limitation Text");
+        columnNameMap.put("synchroMaterial", "Synchro Material");
+        columnNameMap.put("ritualMonster"  , "Ritual Monster required");
     }
 
     // a list of all cards available, initialized in MainActivity's onCreate()
@@ -41,12 +71,16 @@ public final class CardStore {
     // map a card name to its wiki page url, initialized in MainActivity's onCreate()
     public static Hashtable<String, String[]> cardLinkTable = null;
 
-    // the heart of this class, a storage for cards' detail
-    private static Hashtable<String, CardDetail> cardStore = new Hashtable<String, CardDetail>();
+    // a storage for cards' detail after being fetched online
+    private static Hashtable<String, Document> cardDomCache = new Hashtable<String, Document>();
 
     private static CardStore CARDSTORE;
     private static Context context;
 
+    // flag: initialized the cardList, but not the cardLinkTable
+    static boolean initializedOffline = false;
+
+    static boolean initializedOnline = false;
     /**
      * Private constructor. For singleton.
      */
@@ -68,16 +102,42 @@ public final class CardStore {
         return CARDSTORE;
     }
 
-    public void initializeCardList() throws InterruptedException, ExecutionException, JSONException {
-        if (cardList != null) return;
-        CardStore.cardList = new ArrayList<String>(8192);
-        CardStore.cardLinkTable = new Hashtable<String, String[]>(8192);
-        initializeCardList(null, true);
-        initializeCardList(null, false);
-        Log.i("foo", cardList.size() + "");
+    public void initializeCardList() throws Exception {
+        if (initializedOnline) return;
+        if (Util.hasNetworkConnectivity(context)) {
+            Log.i("YGODB", "Initializing online...");
+            cardList = new ArrayList<String>(8192);
+            cardLinkTable = new Hashtable<String, String[]>(8192);
+            initializeCardListOnline(null, true);
+            initializeCardListOnline(null, false);
+            initializedOnline = true;
+            Log.i("YGODB", "Done initializing online.");
+        }
+        else if (!initializedOffline) {
+            Log.i("YGODB", "Initializing offline...");
+            CardStore.cardList = new ArrayList<String>(8192);
+            initializeCardListOffline();
+            initializedOffline = true;
+            Log.i("YGODB", "Done initializing offline.");
+        }
+        Log.i("YGODB", "Number of cards: " + cardList.size());
     }
 
-    private void initializeCardList(String offset, boolean isTcg) throws InterruptedException, ExecutionException, JSONException {
+    private void initializeCardListOffline() {
+        DatabaseQuerier dbq = new DatabaseQuerier(context);
+        SQLiteDatabase db = dbq.getDatabase();
+        Cursor cursor = db.rawQuery("select name from card", null);
+
+      if (cursor.moveToFirst()) {
+          while (cursor.isAfterLast() == false) {
+              String name = cursor.getString(cursor.getColumnIndex("name"));
+              cardList.add(name);
+              cursor.moveToNext();
+          }
+      }
+    }
+
+    private void initializeCardListOnline(String offset, boolean isTcg) throws Exception {
         // this will return up to 5000 articles in the TCG_cards/OCG_cards category. Note that this is not always up-to-date,
         // as newly added articles may take a day or two before showing up in here
         String url;
@@ -91,34 +151,30 @@ public final class CardStore {
         if (offset != null) {
             url = url + "&offset=" + offset;
         }
-        String jsonString = new NetworkTask().execute(url).get();
+        String jsonString = Jsoup.connect(url).ignoreContentType(true).execute().body();
 
         JSONObject myJSON = new JSONObject(jsonString);
         JSONArray myArray = myJSON.getJSONArray("items");
         for (int i = 0; i < myArray.length(); i++) {
             String cardName = myArray.getJSONObject(i).getString("title");
-            if (!CardStore.cardLinkTable.containsKey(cardName)) {
-                CardStore.cardList.add(cardName);
+            if (!cardLinkTable.containsKey(cardName)) {
+                cardList.add(cardName);
                 String[] tmp = {myArray.getJSONObject(i).getString("url"),
                                 myArray.getJSONObject(i).getString("id")};
-                CardStore.cardLinkTable.put(cardName, tmp);
+                cardLinkTable.put(cardName, tmp);
             }
         }
 
         if (myJSON.has("offset")) {
-            initializeCardList((String) myJSON.get("offset"), isTcg);
+            initializeCardListOnline((String) myJSON.get("offset"), isTcg);
         }
     }
 
-    public void getGeneralInfo(String cardName) {
-
-        CardDetail currentCard = cardStore.get(cardName);
-        if (currentCard != null) {
-            return; // already initialized, just return
+    public void getCardDomReady(String cardName) throws Exception {
+        initializeCardList();
+        if (cardDomCache.containsKey(cardName)) {
+            return; // already cached, just return
         }
-
-        currentCard = new CardDetail(cardName);
-        cardStore.put(cardName, currentCard);
 
         String cardURL = "http://yugioh.wikia.com" + CardStore.cardLinkTable.get(cardName)[0];
 
@@ -132,49 +188,219 @@ public final class CardStore {
         Document cardDOM = Jsoup.parse(cardHTML);
 
         // save the DOM for later use. Should look into this so that it doesn't cause huge mem usage
-        currentCard.cardDOM = cardDOM;
+        cardDomCache.put(cardName, cardDOM);
     }
 
-    public void getGeneralInfoReady(String cardName) {
-        CardDetail currentCard = cardStore.get(cardName);
-        if (currentCard == null) {
-            currentCard = new CardDetail(cardName);
-            cardStore.put(cardName, currentCard);
-        }
 
-        // if the cardDOM is not available yet, call getGeneralInfo(). Or maybe just fetch it directly?
-        if (currentCard.cardDOM == null) getGeneralInfo(cardName);
-    }
 
-    public String getImageLink(String cardName) {
-        getGeneralInfoReady(cardName);
-        CardDetail currentCard = cardStore.get(cardName);
+    public String getImageLink(String cardName) throws Exception {
+        getCardDomReady(cardName);
+        Document dom = cardDomCache.get(cardName);
 
-        Element td = currentCard.cardDOM.getElementsByClass("cardtable-cardimage").first();
+        Element td = dom.getElementsByClass("cardtable-cardimage").first();
 
         String imageUrl = td.getElementsByTag("a").first().attr("href");
         return imageUrl;
     }
 
-    public String getCardEffect(String cardName) {
-        getGeneralInfoReady(cardName);
-        CardDetail currentCard = cardStore.get(cardName);
 
-        Element effectBox = currentCard.cardDOM.getElementsByClass("cardtablespanrow").first().getElementsByClass("navbox-list").first();
-        String effect = effectBox.html();
+    //////////////////////////////////////////////////////////////////////
+    // CARD LORE
+    //////////////////////////////////////////////////////////////////////
 
-        // hackish, turn <a> into <span> so we don't see blue underlined text
-        effect = effect.replace("<a", "<span").replace("a>", "span>");
+    public String getCardLore(String cardName) throws Exception {
+        if (Util.hasNetworkConnectivity(context)) {
+            return getCardLoreOnline(cardName);
+        }
+        else {
+            return getCardLoreOffline(cardName);
+        }
+    }
+
+    private String getCardLoreOffline(String cardName) {
+        DatabaseQuerier dbq = new DatabaseQuerier(context);
+        SQLiteDatabase db = dbq.getDatabase();
+        Cursor cursor = db.rawQuery("select lore from card where name = ?", new String[] {cardName});
+
+        // assuming we always have 1 result...
+        cursor.moveToFirst();
+
+        String lore = cursor.getString(cursor.getColumnIndex("lore"));
+        return lore;
+    }
+
+    private String getCardLoreOnline(String cardName) throws Exception {
+        initializeCardList();
+        getCardDomReady(cardName);
+        Document dom = cardDomCache.get(cardName);
+
+        Element effectBox = dom.getElementsByClass("cardtablespanrow").first().getElementsByClass("navbox-list").first();
+        String effect = YgoWikiaHtmlCleaner.getCleanedHtml(effectBox);
 
         // turn <dl> into <p> and <dt> into <b>
         effect = effect.replace("<dl", "<p").replace("dl>", "p>").replace("<dt", "<b").replace("dt>", "b>");
         return effect;
     }
 
-    public Document getCardDom(String cardName) {
-        getGeneralInfoReady(cardName);
-        CardDetail currentCard = cardStore.get(cardName);
-        return currentCard.cardDOM;
+
+    //////////////////////////////////////////////////////////////////////
+    // CARD INFO
+    //////////////////////////////////////////////////////////////////////
+
+    public ArrayList<Pair> getCardInfo(String cardName) throws Exception {
+        if (Util.hasNetworkConnectivity(context)) {
+            return getCardInfoOnline(cardName);
+        }
+        else {
+            return getCardInfoOffline(cardName);
+        }
+    }
+
+    private ArrayList<Pair> getCardInfoOffline(String cardName) {
+        ArrayList<Pair> array = new ArrayList<Pair>();
+        DatabaseQuerier dbq = new DatabaseQuerier(context);
+        SQLiteDatabase db = dbq.getDatabase();
+        Cursor cursor = db.rawQuery("select * from card where name = ?", new String[] {cardName});
+
+        // assuming we always have 1 result...
+        cursor.moveToFirst();
+
+        // order of the columns here is important, to make it persistent between online vs offline
+        String[] columns = new String[] {"attribute", "types", "type", "property", "level", "rank", "pendulumScale",
+                "atkdef", "cardnum", "passcode", "limitText", "ritualSpell", "ritualMonster", "fusionMaterials",
+                "synchroMaterial", "materials", "summonedBy", "effectTypes"};
+
+        for (int i = 0; i < columns.length; i++) {
+            updateInfoPairArray(cursor, columns[i], array);
+        }
+        return array;
+    }
+
+    private void updateInfoPairArray(Cursor cursor, String column, ArrayList<Pair> array) {
+        String value = cursor.getString(cursor.getColumnIndex(column));
+        if (!value.equals("")) {
+            array.add(new Pair(columnNameMap.get(column), value));
+        }
+    }
+
+    private ArrayList<Pair> getCardInfoOnline(String cardName) throws Exception {
+        initializeCardList();
+        ArrayList<Pair> infos = new ArrayList<CardStore.Pair>();
+        getCardDomReady(cardName);
+        Document dom = cardDomCache.get(cardName);
+        Elements rows = dom.getElementsByClass("cardtable").first().getElementsByClass("cardtablerow");
+
+        // first row is "Attribute" for monster, "Type" for spell/trap and "Types" for token
+        boolean foundFirstRow = false;
+        for (Element row : rows) {
+            Element header = row.getElementsByClass("cardtablerowheader").first();
+            if (header == null) continue;
+            String headerText = header.text();
+            if (!foundFirstRow && !headerText.equals("Attribute") && !headerText.equals("Type") && !headerText.equals("Types")) {
+                continue;
+            }
+            if (headerText.equals("Other card information") || header.equals("External links")) {
+                // we have reached the end for some reasons, exit now
+                break;
+            }
+            else {
+                foundFirstRow = true;
+                String data = row.getElementsByClass("cardtablerowdata").first().text();
+                infos.add(new Pair(headerText, data));
+                if (headerText.equals("Card effect types") || headerText.equals("Limitation Text")) {
+                    break;
+                }
+            }
+        }
+
+        return infos;
+    }
+
+
+    //////////////////////////////////////////////////////////////////////
+    // CARD RULING, TIPS AND TRIVIA
+    //////////////////////////////////////////////////////////////////////
+
+    public String getCardRuling(String cardName) throws Exception {
+        return getCardGenericInfo(CardAdditionalInfoType.Ruling, cardName);
+    }
+
+    public String getCardTips(String cardName) throws Exception {
+        return getCardGenericInfo(CardAdditionalInfoType.Tips, cardName);
+    }
+
+    public String getCardTrivia(String cardName) throws Exception {
+        return getCardGenericInfo(CardAdditionalInfoType.Trivia, cardName);
+    }
+
+    public String getCardGenericInfo(CardAdditionalInfoType type, String cardName) throws Exception {
+        if (Util.hasNetworkConnectivity(context) && cardLinkTable != null) {
+            return getCardGenericInfoOnline(type, cardName);
+        }
+        else {
+            return getCardGenericInfoOffline(type, cardName);
+        }
+    }
+
+    private String getCardGenericInfoOffline(CardAdditionalInfoType type, String cardName) throws Exception {
+        DatabaseQuerier dbq = new DatabaseQuerier(context);
+        SQLiteDatabase db = dbq.getDatabase();
+        String columnName = "";
+        switch (type) {
+            case Ruling: columnName = "ruling"; break;
+            case Tips:   columnName = "tips";   break;
+            case Trivia: columnName = "trivia"; break;
+            default:
+                throw new Exception("Unknown type of additional info!");
+        }
+        Cursor cursor = db.rawQuery("select " + columnName + " from card where name = ?", new String[] {cardName});
+
+        // assuming we always have 1 result...
+        cursor.moveToFirst();
+
+        String value = cursor.getString(cursor.getColumnIndex(columnName));
+        if (value.equals("")) {
+            value = "Not available.";
+        }
+        return value;
+    }
+
+    private String getCardGenericInfoOnline(CardAdditionalInfoType type, String cardName) throws Exception {
+        initializeCardList();
+        String baseUrl = "";
+        switch (type) {
+            case Ruling:
+                baseUrl = "http://yugioh.wikia.com/wiki/Card_Rulings:";
+                break;
+            case Tips:
+                baseUrl = "http://yugioh.wikia.com/wiki/Card_Tips:";
+                break;
+            case Trivia:
+                baseUrl = "http://yugioh.wikia.com/wiki/Card_Trivia:";
+                break;
+            default:
+                throw new Exception("Unknown type of additional info!");
+        }
+        String url = baseUrl + CardStore.cardLinkTable.get(cardName)[0].substring(6);
+
+        Document dom = null;
+
+        try {
+            dom = Jsoup.parse(Jsoup.connect(url).ignoreContentType(true).execute().body());
+        } catch (Exception e) {
+            Log.i("YGODB", "Error fetching " + url);
+            return "Not available.";
+        }
+
+        Element content = dom.getElementById("mw-content-text");
+        String info = YgoWikiaHtmlCleaner.getCleanedHtml(content);
+        return info;
+    }
+
+    public Document getCardDom(String cardName) throws Exception {
+        initializeCardList();
+        getCardDomReady(cardName);
+        return cardDomCache.get(cardName);
     }
 }
 

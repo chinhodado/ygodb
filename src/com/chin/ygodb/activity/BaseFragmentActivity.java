@@ -50,7 +50,8 @@ public class BaseFragmentActivity extends FragmentActivity{
         }
 
         // create the navigation drawer
-        String[] mListTitles = {"Card", "TCG Boosters"};
+//        String[] mListTitles = {"Card", "TCG Boosters"};
+        String[] mListTitles = {"Card"};
         final DrawerLayout mDrawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
         ListView mDrawerList = (ListView) findViewById(R.id.left_drawer);
 
@@ -71,11 +72,11 @@ public class BaseFragmentActivity extends FragmentActivity{
                     intent.setFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT);
                     startActivity(intent);
                 }
-                else if (position == 1) { // booster
-                    intent = new Intent(v.getContext(), BoosterActivity.class);
-                    intent.setFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT);
-                    startActivity(intent);
-                }
+//                else if (position == 1) { // booster
+//                    intent = new Intent(v.getContext(), BoosterActivity.class);
+//                    intent.setFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT);
+//                    startActivity(intent);
+//                }
             }
         });
 

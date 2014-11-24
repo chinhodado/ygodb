@@ -1,10 +1,12 @@
 package com.chin.ygodb.asyncTask;
 
+import java.util.ArrayList;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 
 import com.chin.ygodb.CardStore;
+import com.chin.ygodb.CardStore.Pair;
 import com.chin.common.MyTagHandler;
 import com.chin.common.Util;
 import com.chin.ygodb2.R;
@@ -16,6 +18,8 @@ import android.os.AsyncTask;
 import android.text.Html;
 import android.util.Log;
 import android.view.Display;
+import android.view.Gravity;
+import android.view.View;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ProgressBar;
@@ -39,9 +43,9 @@ public class AddCardInfoTask extends AsyncTask<String, Void, Void> {
 
     @Override
     protected Void doInBackground(String... params) {
-        this.cardName = params[0];
+        cardName = params[0];
 
-        try { cardStore.getGeneralInfo(this.cardName);     } catch (Exception e) {e.printStackTrace();}
+        try { cardStore.getCardDomReady(cardName);     } catch (Exception e) {e.printStackTrace();}
         if (isCancelled()) {return null; }; // attempt to return early
         return null;
     }
@@ -50,16 +54,25 @@ public class AddCardInfoTask extends AsyncTask<String, Void, Void> {
     protected void onPostExecute(Void params) {
         // all of these should be fast
         try { addCardImage();               } catch (Exception e) {e.printStackTrace();}
-        try { addCardEffect();              } catch (Exception e) {e.printStackTrace();}
+        try { addCardLore();              } catch (Exception e) {e.printStackTrace();}
         try { addCardInfo();                } catch (Exception e) {e.printStackTrace();}
         try { addCardStatus();              } catch (Exception e) {e.printStackTrace();}
     }
 
-    public void addCardImage() {
+    public void addCardImage() throws Exception {
         // remove the spinner
         ProgressBar pgrBar = (ProgressBar) activity.findViewById(R.id.fragmentCardInfo_progressBar1);
         LinearLayout layout = (LinearLayout) activity.findViewById(R.id.fragmentCardInfo_mainLinearLayout);
         layout.removeView(pgrBar);
+
+        ImageView imgView = (ImageView) activity.findViewById(R.id.imageView_detail_card);
+        if (!Util.hasNetworkConnectivity(activity)) {
+            TextView tv = new TextView(activity);
+            tv.setGravity(Gravity.CENTER);
+            tv.setText("(image unavailable in offline mode)");
+            Util.replaceView(imgView, tv);
+            return;
+        }
 
         // calculate the width of the images to be displayed
         Display display = activity.getWindowManager().getDefaultDisplay();
@@ -69,7 +82,6 @@ public class AddCardInfoTask extends AsyncTask<String, Void, Void> {
         int scaleWidth = (int) (screenWidth * 0.8);
 
         // apply the width and height to the ImageView
-        ImageView imgView = (ImageView) activity.findViewById(R.id.imageView_detail_card);
         imgView.getLayoutParams().width = scaleWidth;
         imgView.getLayoutParams().height = (int) (scaleWidth * 1.4576); // 8.6 / 5.9
         imgView.requestLayout();
@@ -79,49 +91,32 @@ public class AddCardInfoTask extends AsyncTask<String, Void, Void> {
         ImageLoader.getInstance().displayImage(Util.getScaledWikiaImageLink(originalLink, scaleWidth), imgView);
     }
 
-    public void addCardInfo() {
-        Document cardDom = cardStore.getCardDom(cardName);
-        Elements rows = cardDom.getElementsByClass("cardtable").first().getElementsByClass("cardtablerow");
-
+    public void addCardInfo() throws Exception {
         // remove the spinner
         ProgressBar pgrBar = (ProgressBar) activity.findViewById(R.id.fragmentCardInfo_progressBar2);
         LinearLayout layout = (LinearLayout) activity.findViewById(R.id.fragmentCardInfo_mainLinearLayout);
         layout.removeView(pgrBar);
 
         TableLayout infoTable = (TableLayout) activity.findViewById(R.id.infoTable);
-
-        // first row is "Attribute" for monster, "Type" for spell/trap and "Types" for token
-        boolean foundFirstRow = false;
-        for (Element row : rows) {
-            Element header = row.getElementsByClass("cardtablerowheader").first();
-            if (header == null) continue;
-            String headerText = header.text();
-            if (!foundFirstRow && !headerText.equals("Attribute") && !headerText.equals("Type") && !headerText.equals("Types")) {
-                continue;
-            }
-            if (headerText.equals("Other card information") || header.equals("External links")) {
-                // we have reached the end for some reasons, exit now
-                break;
-            }
-            else {
-                foundFirstRow = true;
-                String data = row.getElementsByClass("cardtablerowdata").first().text();
-                Util.addRowWithTwoTextView(activity, infoTable, headerText + "  ", data, true);
-                if (headerText.equals("Card effect types") || headerText.equals("Limitation Text")) {
-                    break;
-                }
-            }
+        ArrayList<Pair> infos = cardStore.getCardInfo(cardName);
+        for (Pair pair : infos) {
+            Util.addRowWithTwoTextView(activity, infoTable, pair.key + "  ", pair.value, true);
         }
 
         Util.addBlankRow(activity, infoTable);
     }
 
-    public void addCardEffect() {
+    public void addCardLore() throws Exception {
         TextView effectTv = (TextView) activity.findViewById(R.id.textViewCardEffect);
-        effectTv.setText(Html.fromHtml(cardStore.getCardEffect(cardName), null, new MyTagHandler()));
+        effectTv.setText(Html.fromHtml(cardStore.getCardLore(cardName), null, new MyTagHandler()));
     }
 
-    public void addCardStatus() {
+    public void addCardStatus() throws Exception {
+        // temporary, for now
+        if (!Util.hasNetworkConnectivity(activity)) {
+            activity.findViewById(R.id.banlistHeader).setVisibility(View.GONE);
+            return;
+        }
         TableLayout statusTable = (TableLayout) activity.findViewById(R.id.banlistTable);
         Document cardDom = cardStore.getCardDom(cardName);
         Elements statusRows = cardDom.getElementsByClass("cardtablestatuses").first().getElementsByTag("tr");
