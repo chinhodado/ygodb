@@ -11,7 +11,7 @@ import com.readystatesoftware.sqliteasset.SQLiteAssetHelper;
  */
 public class YGOSqliteDatabase extends SQLiteAssetHelper {
     private static final String DATABASE_NAME = "ygo.db";
-    private static final int DATABASE_VERSION = 20141125;
+    public static final int DATABASE_VERSION = 20141125;
 
     public YGOSqliteDatabase(Context context) {
         super(context, DATABASE_NAME, null, DATABASE_VERSION);
