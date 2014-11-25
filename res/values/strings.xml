@@ -12,14 +12,15 @@
 <![CDATA[
         <h1> General </h1>
         <b>Q: How often is this app\'s data updated?</b> <br/>
-        A: This app pulls all data from the Yugioh Wikia in real time, so the data is always up-to-date. <br/><br/>
+        A: If you are connected to the internet, this app pulls all data from the Yugioh Wikia in real time, so the data is always up-to-date. <br/><br/>
+        If you are offline, this app uses an offline database, which is updated about once a month. <br/><br/>
         
         <b>Q: If the app\'s information is always up-to-date, why don\'t the latest changes in the Wikia show up in the app?</b> <br/>
         A: This app does some caching for performance reason, so you can force close and restart it to force it to load the latest data. <br/><br/>
         
         <b>Q: I like this app!</b> <br/>
         A: I\'m glad to hear it. Please rate it on the Play Store :) <br/><br/>
-        Also if you don\'t like the ads, you may consider getting the ads-free version on the Play store.<br/><br/>
+        Also if you don\'t like the ads, you may consider getting the ads-free version on the Play store when it is available.<br/><br/>
         
         <b>Q: This app sucks!/I found a bug/This is not useful/I have a suggestion...</b> <br/>
         A: Please drop me a line at chinho.dev@gmail.com and let me know how I can improve it. Thank you :)<br/><br/>
@@ -37,14 +38,16 @@
     </string>
     
     <string name="about_text_part2">
-        This app is not authorized or created by the authors or legal representatives of "Yugioh". 
+        This app is not authorized or created by the authors or legal representatives of "Yu-Gi-Oh!". 
         This application complies with US Copyright law guidelines of "fair use". If you feel there is a direct copyright 
         or trademark violation that doesn\'t follow within the "fair use" guidelines please contact us to discuss. 
-        All characters and their names, places, events and all other aspects concerning the "Yugioh" are the 
-        property of their respective owners. All trademark and copyright concerning the "Yugioh" series are the  
+        All characters and their names, places, events and all other aspects concerning the "Yu-Gi-Oh!" are the 
+        property of their respective owners. All trademark and copyright concerning the "Yu-Gi-Oh!" series are the  
         property of their respective owners. We make no claim to and do not have any rights to any of the foregoing. Image  
-        in this application icon is used only to convey what the application is about. 
-        
-        \n\nThis app uses the jsoup and Universal Image Loader open source libraries.
+        in this application icon is used only to convey what the application is about. \n\n
+
+        Information used by this app is taken from the Yu-Gi-Oh! Wikia. This information is freely available under the terms of the Creative Commons CC-BY-SA 3.0 License. \n\n
+
+        This app uses the jsoup and Universal Image Loader open source libraries.
     </string>
 </resources>

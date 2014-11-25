@@ -1,10 +1,6 @@
 package com.chin.ygodb.asyncTask;
 
 import java.util.ArrayList;
-import org.jsoup.nodes.Document;
-import org.jsoup.nodes.Element;
-import org.jsoup.select.Elements;
-
 import com.chin.ygodb.CardStore;
 import com.chin.ygodb.CardStore.Pair;
 import com.chin.common.MyTagHandler;
@@ -16,10 +12,8 @@ import com.nostra13.universalimageloader.core.ImageLoader;
 import android.graphics.Point;
 import android.os.AsyncTask;
 import android.text.Html;
-import android.util.Log;
 import android.view.Display;
 import android.view.Gravity;
-import android.view.View;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ProgressBar;
@@ -54,7 +48,7 @@ public class AddCardInfoTask extends AsyncTask<String, Void, Void> {
     protected void onPostExecute(Void params) {
         // all of these should be fast
         try { addCardImage();               } catch (Exception e) {e.printStackTrace();}
-        try { addCardLore();              } catch (Exception e) {e.printStackTrace();}
+        try { addCardLore();                } catch (Exception e) {e.printStackTrace();}
         try { addCardInfo();                } catch (Exception e) {e.printStackTrace();}
         try { addCardStatus();              } catch (Exception e) {e.printStackTrace();}
     }
@@ -112,32 +106,11 @@ public class AddCardInfoTask extends AsyncTask<String, Void, Void> {
     }
 
     public void addCardStatus() throws Exception {
-        // temporary, for now
-        if (!Util.hasNetworkConnectivity(activity)) {
-            activity.findViewById(R.id.banlistHeader).setVisibility(View.GONE);
-            return;
-        }
         TableLayout statusTable = (TableLayout) activity.findViewById(R.id.banlistTable);
-        Document cardDom = cardStore.getCardDom(cardName);
-        Elements statusRows = cardDom.getElementsByClass("cardtablestatuses").first().getElementsByTag("tr");
-        Element statusRow = null;
-        for (int i = 0; i < statusRows.size(); i++) {
-            if (statusRows.get(i).text().equals("TCG/OCG statuses")) {
-                statusRow = statusRows.get(i + 1);
-                break;
-            }
-        }
 
-        if (statusRow == null) {
-            Log.i("YGODB", "Card banlist status not found");
-            return;
-        }
-
-        Elements th = statusRow.getElementsByTag("th");
-        Elements td = statusRow.getElementsByTag("td");
-
-        for (int i = 0; i < 3; i++) {
-            Util.addRowWithTwoTextView(activity, statusTable, th.get(i).text() + "  ", td.get(i).text(), true);
+        ArrayList<Pair> statuses = cardStore.getCardStatus(cardName);
+        for (Pair pair : statuses) {
+            Util.addRowWithTwoTextView(activity, statusTable, pair.key + "  ", pair.value, true);
         }
     }
 }

@@ -63,6 +63,9 @@ public final class CardStore {
         columnNameMap.put("limitText"      , "Limitation Text");
         columnNameMap.put("synchroMaterial", "Synchro Material");
         columnNameMap.put("ritualMonster"  , "Ritual Monster required");
+        columnNameMap.put("ocgStatus"      , "OCG");
+        columnNameMap.put("tcgAdvStatus"   , "TCG Advanced");
+        columnNameMap.put("tcgTrnStatus"   , "TCG Traditional");
     }
 
     // a list of all cards available, initialized in MainActivity's onCreate()
@@ -172,6 +175,9 @@ public final class CardStore {
 
     public void getCardDomReady(String cardName) throws Exception {
         initializeCardList();
+        if (!Util.hasNetworkConnectivity(context)) {
+            return; // what else can we do? switch to offline db, meh
+        }
         if (cardDomCache.containsKey(cardName)) {
             return; // already cached, just return
         }
@@ -191,7 +197,11 @@ public final class CardStore {
         cardDomCache.put(cardName, cardDOM);
     }
 
-
+    public Document getCardDom(String cardName) throws Exception {
+        initializeCardList();
+        getCardDomReady(cardName);
+        return cardDomCache.get(cardName);
+    }
 
     public String getImageLink(String cardName) throws Exception {
         getCardDomReady(cardName);
@@ -271,16 +281,12 @@ public final class CardStore {
                 "synchroMaterial", "materials", "summonedBy", "effectTypes"};
 
         for (int i = 0; i < columns.length; i++) {
-            updateInfoPairArray(cursor, columns[i], array);
+            String value = cursor.getString(cursor.getColumnIndex(columns[i]));
+            if (!value.equals("")) {
+                array.add(new Pair(columnNameMap.get(columns[i]), value));
+            }
         }
         return array;
-    }
-
-    private void updateInfoPairArray(Cursor cursor, String column, ArrayList<Pair> array) {
-        String value = cursor.getString(cursor.getColumnIndex(column));
-        if (!value.equals("")) {
-            array.add(new Pair(columnNameMap.get(column), value));
-        }
     }
 
     private ArrayList<Pair> getCardInfoOnline(String cardName) throws Exception {
@@ -316,6 +322,75 @@ public final class CardStore {
         return infos;
     }
 
+    //////////////////////////////////////////////////////////////////////
+    // CARD STATUS
+    //////////////////////////////////////////////////////////////////////
+
+    public ArrayList<Pair> getCardStatus(String cardName) throws Exception {
+        if (Util.hasNetworkConnectivity(context)) {
+            return getCardStatusOnline(cardName);
+        }
+        else {
+            return getCardStatusOffline(cardName);
+        }
+    }
+
+    private ArrayList<Pair> getCardStatusOffline(String cardName) {
+        ArrayList<Pair> array = new ArrayList<Pair>();
+        DatabaseQuerier dbq = new DatabaseQuerier(context);
+        SQLiteDatabase db = dbq.getDatabase();
+        Cursor cursor = db.rawQuery("select ocgStatus, tcgAdvStatus, tcgTrnStatus from card where name = ?", new String[] {cardName});
+
+        // assuming we always have 1 result...
+        cursor.moveToFirst();
+
+        // order of the columns here is important, to make it persistent between online vs offline
+        String[] columns = new String[] {"ocgStatus", "tcgAdvStatus", "tcgTrnStatus"};
+
+        for (int i = 0; i < columns.length; i++) {
+            String value = cursor.getString(cursor.getColumnIndex(columns[i]));
+            if (value.equals("")) {
+                continue;
+            }
+
+            if (value.equals("U")) {
+                value = "Unlimited";
+            }
+
+            array.add(new Pair(columnNameMap.get(columns[i]), value));
+        }
+        return array;
+    }
+
+    private ArrayList<Pair> getCardStatusOnline(String cardName) throws Exception {
+        initializeCardList();
+        ArrayList<Pair> statuses = new ArrayList<CardStore.Pair>();
+        getCardDomReady(cardName);
+        Document dom = cardDomCache.get(cardName);
+
+        Elements statusRows = dom.getElementsByClass("cardtablestatuses").first().getElementsByTag("tr");
+        Element statusRow = null;
+        for (int i = 0; i < statusRows.size(); i++) {
+            if (statusRows.get(i).text().equals("TCG/OCG statuses")) {
+                statusRow = statusRows.get(i + 1);
+                break;
+            }
+        }
+
+        if (statusRow == null) {
+            Log.i("YGODB", "Card banlist status not found online");
+            return statuses;
+        }
+
+        Elements th = statusRow.getElementsByTag("th");
+        Elements td = statusRow.getElementsByTag("td");
+
+        for (int i = 0; i < th.size(); i++) {
+            statuses.add(new Pair(th.get(i).text(), td.get(i).text()));
+        }
+
+        return statuses;
+    }
 
     //////////////////////////////////////////////////////////////////////
     // CARD RULING, TIPS AND TRIVIA
@@ -395,12 +470,6 @@ public final class CardStore {
         Element content = dom.getElementById("mw-content-text");
         String info = YgoWikiaHtmlCleaner.getCleanedHtml(content);
         return info;
-    }
-
-    public Document getCardDom(String cardName) throws Exception {
-        initializeCardList();
-        getCardDomReady(cardName);
-        return cardDomCache.get(cardName);
     }
 }
 
