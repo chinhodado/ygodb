@@ -54,4 +54,4 @@ local.properties
 .texlipse
 
 proNote.txt
-database.db
+*.db

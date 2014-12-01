@@ -20,7 +20,7 @@
         
         <b>Q: I like this app!</b> <br/>
         A: I\'m glad to hear it. Please rate it on the Play Store :) <br/><br/>
-        Also if you don\'t like the ads, you may consider getting the ads-free version on the Play store when it is available.<br/><br/>
+        Also if you don\'t like the ads, you may consider getting the ads-free version on the Play store (its name is \"YGO Database Pro\").<br/><br/>
         
         <b>Q: This app sucks!/I found a bug/This is not useful/I have a suggestion...</b> <br/>
         A: Please drop me a line at chinho.dev@gmail.com and let me know how I can improve it. Thank you :)<br/><br/>
@@ -48,6 +48,8 @@
 
         Information used by this app is taken from the Yu-Gi-Oh! Wikia. This information is freely available under the terms of the Creative Commons CC-BY-SA 3.0 License. \n\n
 
+        This app is not affiliated with the Yu-Gi-Oh! Wikia. \n\n
+        
         This app uses the jsoup and Universal Image Loader open source libraries.
     </string>
 </resources>

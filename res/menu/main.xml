@@ -12,10 +12,10 @@
         android:showAsAction="never"
         android:title="@string/action_about"/>
     
-<!--     <item
+    <item
         android:id="@+id/action_getPro"
         android:orderInCategory="100"
         android:showAsAction="never"
-        android:title="Remove ads"/> -->
+        android:title="Remove ads"/>
 
 </menu>
