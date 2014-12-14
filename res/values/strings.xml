@@ -15,15 +15,11 @@
         A: If you are connected to the internet, this app pulls all data from the Yugioh Wikia in real time, so the data is always up-to-date. <br/><br/>
         If you are offline, this app uses an offline database, which is updated about once a month. <br/><br/>
         
-        <b>Q: If the app\'s information is always up-to-date, why don\'t the latest changes in the Wikia show up in the app?</b> <br/>
-        A: This app does some caching for performance reason, so you can force close and restart it to force it to load the latest data. <br/><br/>
-        
         <b>Q: I like this app!</b> <br/>
-        A: I\'m glad to hear it. Please rate it on the Play Store :) <br/><br/>
-        Also if you don\'t like the ads, you may consider getting the ads-free version on the Play store (its name is \"YGO Database Pro\").<br/><br/>
+        A: I\'m glad to hear it. Please star the project on Github :) <br/><br/>
         
         <b>Q: This app sucks!/I found a bug/This is not useful/I have a suggestion...</b> <br/>
-        A: Please drop me a line at chinho.dev@gmail.com and let me know how I can improve it. Thank you :)<br/><br/>
+        A: Please create an issue on Github, or drop me a line at chinho.dev@gmail.com and let me know how I can improve it. Thank you :)<br/><br/>
       ]]>
     </string>
     
