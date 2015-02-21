@@ -37,8 +37,7 @@ public class HelpAboutActivity extends BaseFragmentActivity {
                 String aboutText = "";
 
                 try {
-                    String appNameInfo = YGODBApplication.IS_PRO_VERSION?
-                            getString(R.string.about_text_pro) : getString(R.string.about_text);
+                    String appNameInfo = getString(R.string.about_text);
                     String version = getPackageManager().getPackageInfo(getPackageName(), 0).versionName;
                     aboutText = appNameInfo +
                             "\nVersion " + version +
