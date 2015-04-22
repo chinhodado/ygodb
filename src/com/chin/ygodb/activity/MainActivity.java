@@ -1,11 +1,5 @@
 package com.chin.ygodb.activity;
 
-import com.chin.ygodb.activity.BaseFragmentActivity;
-import com.chin.ygodb.CardStore;
-import com.chin.ygodb2.R;
-import com.chin.common.CustomDialogFragment;
-import com.chin.common.RegexFilterArrayAdapter;
-
 import android.content.Context;
 import android.content.Intent;
 import android.os.AsyncTask;
@@ -23,11 +17,17 @@ import android.widget.AdapterView.OnItemClickListener;
 import android.widget.EditText;
 import android.widget.ListView;
 
+import com.chin.common.CustomDialogFragment;
+import com.chin.common.RegexFilterArrayAdapter;
+import com.chin.common.Util;
+import com.chin.ygodb.CardStore;
+import com.chin.ygodb2.R;
+
 /**
  * The main activity, entry point of the app. It consists of the card search list.
  */
 public class MainActivity extends BaseFragmentActivity {
-
+    static boolean hasJustBeenStarted = true; // flag to determine if the app has just been started
     public final static String CARD_LINK = "com.chin.ygodb.LINK";
     public final static String CARD_NAME = "com.chin.ygodb.NAME";
 
@@ -36,6 +36,11 @@ public class MainActivity extends BaseFragmentActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        if (hasJustBeenStarted) {
+            Util.checkNewVersion(this, "https://api.github.com/repos/chinhodado/ygodb/releases/latest",
+                    "https://github.com/chinhodado/ygodb/releases", false);
+        }
 
         // get the card list and their wiki url
         if (CardStore.cardList == null) {
@@ -67,6 +72,9 @@ public class MainActivity extends BaseFragmentActivity {
             FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
             ft.add(R.id.tab_viewgroup, newFragment).commit();
         }
+
+        // for our purposes, consider the app already opened at this point
+        hasJustBeenStarted = false;
     }
 
     /**

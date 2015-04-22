@@ -4,6 +4,7 @@
     <string name="app_name">YGO Database</string>
     <string name="adUnitId">ca-app-pub-8564595162671342/8183570114</string>
     <string name="action_help">Help</string>
+    <string name="action_checkUpdate">Check for update</string>    
     <string name="action_about">About</string>
     <string name="drawer_open">Drawer open</string>
     <string name="drawer_close">Drawer close</string>

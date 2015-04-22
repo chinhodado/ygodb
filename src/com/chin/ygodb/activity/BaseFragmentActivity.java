@@ -1,25 +1,26 @@
 package com.chin.ygodb.activity;
 
+import android.content.Intent;
+import android.content.res.Configuration;
+import android.os.Bundle;
+import android.support.v4.app.FragmentActivity;
+import android.support.v4.app.NavUtils;
+import android.support.v4.widget.DrawerLayout;
+import android.support.v7.app.ActionBarDrawerToggle;
+import android.view.Menu;
+import android.view.MenuItem;
+import android.view.View;
+import android.widget.AdapterView;
+import android.widget.AdapterView.OnItemClickListener;
+import android.widget.ArrayAdapter;
+import android.widget.ListView;
+
+import com.chin.common.Util;
 import com.chin.ygodb.YGODBApplication;
 import com.chin.ygodb2.R;
 import com.google.analytics.tracking.android.EasyTracker;
 import com.google.android.gms.ads.AdRequest;
 import com.google.android.gms.ads.AdView;
-
-import android.content.Intent;
-import android.content.res.Configuration;
-import android.os.Bundle;
-import android.support.v7.app.ActionBarDrawerToggle;
-import android.support.v4.app.FragmentActivity;
-import android.support.v4.app.NavUtils;
-import android.support.v4.widget.DrawerLayout;
-import android.view.Menu;
-import android.view.MenuItem;
-import android.view.View;
-import android.widget.AdapterView;
-import android.widget.ArrayAdapter;
-import android.widget.ListView;
-import android.widget.AdapterView.OnItemClickListener;
 
 /**
  * A base class for a FragmentActivity with a navigation drawer, Google Analytics and ads
@@ -149,6 +150,12 @@ public class BaseFragmentActivity extends FragmentActivity{
                 Intent intent = new Intent(this, HelpAboutActivity.class);
                 intent.putExtra("INTENT", "help");
                 startActivity(intent);
+                break;
+            }
+            case R.id.action_checkUpdate:
+            {
+                Util.checkNewVersion(this, "https://api.github.com/repos/chinhodado/ygodb/releases/latest",
+                        "https://github.com/chinhodado/ygodb/releases", true);
                 break;
             }
             case R.id.action_about:
