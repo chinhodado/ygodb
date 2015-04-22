@@ -1,6 +1,7 @@
 package com.chin.ygodb;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Hashtable;
 
 import org.json.JSONArray;
@@ -10,13 +11,12 @@ import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 
-import com.chin.common.Util;
-import com.chin.ygodb.CardStore;
-
 import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.util.Log;
+
+import com.chin.common.Util;
 
 /**
  * A singleton class that acts as a storage for card information. Support lazy loading information.
@@ -131,13 +131,14 @@ public final class CardStore {
         SQLiteDatabase db = dbq.getDatabase();
         Cursor cursor = db.rawQuery("select name from card", null);
 
-      if (cursor.moveToFirst()) {
-          while (cursor.isAfterLast() == false) {
-              String name = cursor.getString(cursor.getColumnIndex("name"));
-              cardList.add(name);
-              cursor.moveToNext();
-          }
-      }
+        if (cursor.moveToFirst()) {
+            while (cursor.isAfterLast() == false) {
+                String name = cursor.getString(cursor.getColumnIndex("name"));
+                cardList.add(name);
+                cursor.moveToNext();
+            }
+        }
+        Collections.sort(cardList);
     }
 
     private void initializeCardListOnline(String offset, boolean isTcg) throws Exception {
