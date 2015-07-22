@@ -18,7 +18,6 @@ import android.widget.ListView;
 import com.chin.common.Util;
 import com.chin.ygodb.YGODBApplication;
 import com.chin.ygodb2.R;
-import com.google.analytics.tracking.android.EasyTracker;
 import com.google.android.gms.ads.AdRequest;
 import com.google.android.gms.ads.AdView;
 
@@ -180,19 +179,5 @@ public class BaseFragmentActivity extends FragmentActivity{
     public void onConfigurationChanged(Configuration newConfig) {
         super.onConfigurationChanged(newConfig);
         mDrawerToggle.onConfigurationChanged(newConfig);
-    }
-
-    @Override
-    public void onStart() {
-        super.onStart();
-        // Google Analytics
-        EasyTracker.getInstance(this).activityStart(this);
-    }
-
-    @Override
-    public void onStop() {
-        super.onStop();
-        // Google Analytics
-        EasyTracker.getInstance(this).activityStop(this);
     }
 }
