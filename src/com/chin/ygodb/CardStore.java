@@ -48,7 +48,8 @@ public final class CardStore {
         columnNameMap.put("attribute"      , "Attribute");
         columnNameMap.put("types"          , "Types");
         columnNameMap.put("level"          , "Level");
-        columnNameMap.put("atkdef"         , "ATK/DEF");
+        columnNameMap.put("atk"            , "ATK");
+        columnNameMap.put("def"            , "DEF");
         columnNameMap.put("cardnum"        , "Card Number");
         columnNameMap.put("passcode"       , "Passcode");
         columnNameMap.put("effectTypes"    , "Card effect types");
@@ -278,7 +279,7 @@ public final class CardStore {
 
         // order of the columns here is important, to make it persistent between online vs offline
         String[] columns = new String[] {"attribute", "types", "type", "property", "level", "rank", "pendulumScale",
-                "atkdef", "cardnum", "passcode", "limitText", "ritualSpell", "ritualMonster", "fusionMaterials",
+                "atk", "def", "cardnum", "passcode", "limitText", "ritualSpell", "ritualMonster", "fusionMaterials",
                 "synchroMaterial", "materials", "summonedBy", "effectTypes"};
 
         for (int i = 0; i < columns.length; i++) {
