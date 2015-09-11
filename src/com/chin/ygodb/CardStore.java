@@ -11,12 +11,12 @@ import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 
+import com.chin.common.Util;
+
 import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.util.Log;
-
-import com.chin.common.Util;
 
 /**
  * A singleton class that acts as a storage for card information. Support lazy loading information.
@@ -58,7 +58,6 @@ public final class CardStore {
         columnNameMap.put("rank"           , "Rank");
         columnNameMap.put("ritualSpell"    , "Ritual Spell Card required");
         columnNameMap.put("pendulumScale"  , "Pendulum Scale");
-        columnNameMap.put("type"           , "Type");
         columnNameMap.put("property"       , "Property");
         columnNameMap.put("summonedBy"     , "Summoned by the effect of");
         columnNameMap.put("limitText"      , "Limitation Text");
@@ -278,7 +277,7 @@ public final class CardStore {
         cursor.moveToFirst();
 
         // order of the columns here is important, to make it persistent between online vs offline
-        String[] columns = new String[] {"attribute", "types", "type", "property", "level", "rank", "pendulumScale",
+        String[] columns = new String[] {"attribute", "types", "property", "level", "rank", "pendulumScale",
                 "atk", "def", "cardnum", "passcode", "limitText", "ritualSpell", "ritualMonster", "fusionMaterials",
                 "synchroMaterial", "materials", "summonedBy", "effectTypes"};
 
