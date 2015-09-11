@@ -1,0 +1,196 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content" >
+
+    <LinearLayout
+        android:id="@+id/fragment_layout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center"
+        android:orientation="vertical" >
+
+        <TextView
+            android:id="@+id/textView1"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Please specify search criteria. For more information, see Help." />
+        
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:orientation="horizontal" >
+    
+            <TextView
+	            android:id="@+id/textViewCategory"
+	            android:layout_width="0dp"
+	            android:layout_height="wrap_content"
+	            android:text="Category" 
+	            android:layout_weight="0.3"/>
+            <Spinner
+                android:id="@+id/spinnerMainCategory"
+                android:layout_width="0px"
+                android:layout_height="wrap_content"
+                android:layout_weight="0.35" />
+            <Spinner
+                android:id="@+id/spinnerSubCategory"
+                android:layout_width="0px"
+                android:layout_height="wrap_content"
+                android:layout_weight="0.35" />
+
+        </LinearLayout>
+        
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:orientation="horizontal" >
+    
+            <TextView
+	            android:id="@+id/textViewAttribute"
+	            android:layout_width="0dp"
+	            android:layout_height="wrap_content"
+	            android:text="Attribute" 
+	            android:layout_weight="0.3"/>
+            <Spinner
+                android:id="@+id/spinnerAttribute"
+                android:layout_width="0px"
+                android:layout_height="wrap_content"
+                android:layout_weight="0.7" />
+        </LinearLayout>
+        
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:orientation="horizontal" >
+    
+            <TextView
+	            android:id="@+id/textViewType"
+	            android:layout_width="0dp"
+	            android:layout_height="wrap_content"
+	            android:text="Type" 
+	            android:layout_weight="0.3"/>
+            <Spinner
+                android:id="@+id/spinnerType"
+                android:layout_width="0px"
+                android:layout_height="wrap_content"
+                android:layout_weight="0.7" />
+        </LinearLayout>
+        
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:orientation="horizontal" >
+    
+            <TextView
+	            android:id="@+id/textViewLimit"
+	            android:layout_width="0dp"
+	            android:layout_height="wrap_content"
+	            android:text="Limit (TCG Adv.)" 
+	            android:layout_weight="0.3"/>
+            <Spinner
+                android:id="@+id/spinnerLimit"
+                android:layout_width="0px"
+                android:layout_height="wrap_content"
+                android:layout_weight="0.7" />
+        </LinearLayout>
+        
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:orientation="horizontal" >
+    
+            <TextView
+	            android:id="@+id/textViewLevelRank"
+	            android:layout_width="0dp"
+	            android:layout_height="wrap_content"
+	            android:text="Level/Rank" 
+	            android:layout_weight="0.3"/>
+            <Spinner
+                android:id="@+id/spinnerOperatorLevelRank"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="0.35" />
+
+            <EditText
+                android:id="@+id/criteriaLevelRank"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:ems="10"
+                android:inputType="number"
+                android:layout_weight="0.35" >
+
+            </EditText>
+        </LinearLayout>
+        
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:orientation="horizontal" >
+    
+            <TextView
+	            android:id="@+id/textViewAtk"
+	            android:layout_width="0dp"
+	            android:layout_height="wrap_content"
+	            android:text="ATK" 
+	            android:layout_weight="0.3"/>
+            <Spinner
+                android:id="@+id/spinnerOperatorAtk"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="0.35" />
+
+            <EditText
+                android:id="@+id/criteriaAtk"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:ems="10"
+                android:inputType="number"
+                android:layout_weight="0.35" >
+
+            </EditText>
+        </LinearLayout>
+        
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:orientation="horizontal" >
+    
+            <TextView
+	            android:id="@+id/textViewDef"
+	            android:layout_width="0dp"
+	            android:layout_height="wrap_content"
+	            android:text="DEF" 
+	            android:layout_weight="0.3"/>
+            <Spinner
+                android:id="@+id/spinnerOperatorDef"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="0.35" />
+
+            <EditText
+                android:id="@+id/criteriaDef"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:ems="10"
+                android:inputType="number"
+                android:layout_weight="0.35" >
+
+            </EditText>
+        </LinearLayout>        
+
+        <Button
+            android:id="@+id/searchButton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Search" />
+
+    </LinearLayout>
+</ScrollView>

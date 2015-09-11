@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.chin.ygodb2"
-    android:versionCode="13"
-    android:versionName="1.5" >
+    android:versionCode="14"
+    android:versionName="1.6" >
 
     <uses-sdk
         android:minSdkVersion="14"
@@ -30,6 +30,10 @@
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
+        </activity>
+        <activity
+            android:name="com.chin.ygodb.activity.AdvancedSearchActivity"
+            android:label="Advanced Search" >
         </activity>
         <activity
             android:name="com.chin.ygodb.activity.CardDetailActivity"

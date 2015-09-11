@@ -39,6 +39,9 @@ public class BaseFragmentActivity extends FragmentActivity{
         if (this instanceof MainActivity) {
             setContentView(R.layout.activity_main);
         }
+        else if (this instanceof AdvancedSearchActivity) {
+            setContentView(R.layout.activity_advanced_search);
+        }
         else if (this instanceof CardDetailActivity) {
             setContentView(R.layout.activity_card_detail);
         }
@@ -51,7 +54,7 @@ public class BaseFragmentActivity extends FragmentActivity{
 
         // create the navigation drawer
 //        String[] mListTitles = {"Card", "TCG Boosters"};
-        String[] mListTitles = {"Card"};
+        String[] mListTitles = {"Card", "Advanced search"};
         final DrawerLayout mDrawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
         ListView mDrawerList = (ListView) findViewById(R.id.left_drawer);
 
@@ -69,6 +72,11 @@ public class BaseFragmentActivity extends FragmentActivity{
 
                 if (position == 0) { // Card
                     intent = new Intent(v.getContext(), MainActivity.class);
+                    intent.setFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT);
+                    startActivity(intent);
+                }
+                else if (position == 1) { // Advanced search
+                    intent = new Intent(v.getContext(), AdvancedSearchActivity.class);
                     intent.setFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT);
                     startActivity(intent);
                 }
