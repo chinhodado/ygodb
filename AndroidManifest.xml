@@ -33,7 +33,8 @@
         </activity>
         <activity
             android:name="com.chin.ygodb.activity.AdvancedSearchActivity"
-            android:label="Advanced Search" >
+            android:label="Advanced Search"
+            android:windowSoftInputMode="stateHidden" >
         </activity>
         <activity
             android:name="com.chin.ygodb.activity.CardDetailActivity"
