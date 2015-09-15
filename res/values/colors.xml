@@ -5,4 +5,6 @@
     <color name="green">#FF96AA39</color>
     <color name="orange">#FFF4842D</color>
     <color name="blue">#FF3F9FE0</color>
+    <color name="white">#FFFFFF</color>
+    <color name="background_holo_light">#fff3f3f3</color>
 </resources>
