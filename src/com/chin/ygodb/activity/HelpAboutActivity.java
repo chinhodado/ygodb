@@ -1,7 +1,7 @@
 package com.chin.ygodb.activity;
 
-import com.chin.ygodb.YGODBApplication;
-import com.chin.ygodb.YGOSqliteDatabase;
+import com.chin.ygodb.YgoDbApplication;
+import com.chin.ygodb.YgoSqliteDatabase;
 import com.chin.ygodb2.R;
 
 import android.support.v4.app.NavUtils;
@@ -41,7 +41,7 @@ public class HelpAboutActivity extends BaseFragmentActivity {
                     String version = getPackageManager().getPackageInfo(getPackageName(), 0).versionName;
                     aboutText = appNameInfo +
                             "\nVersion " + version +
-                            "\nOffline database version: " + YGOSqliteDatabase.DATABASE_VERSION + "\n\n" +
+                            "\nOffline database version: " + YgoSqliteDatabase.DATABASE_VERSION + "\n\n" +
                             getString(R.string.about_text_part2);
                 } catch (NameNotFoundException e) {
                     e.printStackTrace();

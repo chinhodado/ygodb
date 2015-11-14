@@ -9,11 +9,11 @@ import android.content.Context;
  * @author Chin
  *
  */
-public class YGOSqliteDatabase extends SQLiteAssetHelper {
+public class YgoSqliteDatabase extends SQLiteAssetHelper {
     private static final String DATABASE_NAME = "ygo.db";
     public static final int DATABASE_VERSION = 20150915;
 
-    public YGOSqliteDatabase(Context context) {
+    public YgoSqliteDatabase(Context context) {
         super(context, DATABASE_NAME, null, DATABASE_VERSION);
         setForcedUpgrade();
     }

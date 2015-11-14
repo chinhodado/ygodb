@@ -22,7 +22,7 @@ public class DatabaseQuerier {
 
     public SQLiteDatabase getDatabase() {
         if (db == null) {
-            YGOSqliteDatabase dbHelper = new YGOSqliteDatabase(context);
+            YgoSqliteDatabase dbHelper = new YgoSqliteDatabase(context);
             db = dbHelper.getReadableDatabase();
         }
         return db;

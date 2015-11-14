@@ -16,7 +16,7 @@ import android.widget.ArrayAdapter;
 import android.widget.ListView;
 
 import com.chin.common.Util;
-import com.chin.ygodb.YGODBApplication;
+import com.chin.ygodb.YgoDbApplication;
 import com.chin.ygodb2.R;
 import com.google.android.gms.ads.AdRequest;
 import com.google.android.gms.ads.AdView;
@@ -117,7 +117,7 @@ public class BaseFragmentActivity extends FragmentActivity{
 
         // Look up the AdView as a resource and load a request.
         AdView adView = (AdView)this.findViewById(R.id.adView);
-        if (!YGODBApplication.IS_PRO_VERSION) {
+        if (!YgoDbApplication.IS_PRO_VERSION) {
             AdRequest adRequest = new AdRequest.Builder().build();
             adView.loadAd(adRequest);
         }
