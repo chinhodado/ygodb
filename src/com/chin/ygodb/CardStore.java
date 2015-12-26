@@ -77,6 +77,9 @@ public final class CardStore {
     // a storage for cards' detail after being fetched online
     private static Hashtable<String, Document> cardDomCache = new Hashtable<String, Document>();
 
+    public static ArrayList<Card> cards = new ArrayList<Card>(8192);
+    private static ArrayList<String> offlineCardList = new ArrayList<String>(8192);
+
     private static CardStore CARDSTORE;
     private static Context context;
 
@@ -108,37 +111,71 @@ public final class CardStore {
     public void initializeCardList() throws Exception {
         if (initializedOnline) return;
         if (Util.hasNetworkConnectivity(context)) {
-            Log.i("YGODB", "Initializing online...");
+            Log.i("ygodb", "Initializing online...");
             cardList = new ArrayList<String>(8192);
             cardLinkTable = new Hashtable<String, String[]>(8192);
             initializeCardListOnline(null, true);
             initializeCardListOnline(null, false);
+
+            addOfflineCardsToCardList(false);
+
+            // add those that are online but not offline
+            ArrayList<String> onlineOfflineDiff = new ArrayList<String>(CardStore.cardList);
+            onlineOfflineDiff.removeAll(offlineCardList);
+            Log.i("ygodb", "Diff between online and offline: " + onlineOfflineDiff.size());
+            for (int i = 0; i < onlineOfflineDiff.size(); i++) {
+                Card row = new Card();
+                row.name = onlineOfflineDiff.get(i);
+                CardStore.cards.add(row);
+            }
+
             initializedOnline = true;
-            Log.i("YGODB", "Done initializing online.");
+            Log.i("ygodb", "Done initializing online.");
         }
         else if (!initializedOffline) {
-            Log.i("YGODB", "Initializing offline...");
+            Log.i("ygodb", "Initializing offline...");
             CardStore.cardList = new ArrayList<String>(8192);
             initializeCardListOffline();
             initializedOffline = true;
-            Log.i("YGODB", "Done initializing offline.");
+            Log.i("ygodb", "Done initializing offline.");
         }
-        Log.i("YGODB", "Number of cards: " + cardList.size());
+        Log.i("ygodb", "Number of cards: " + cardList.size());
     }
 
-    private void initializeCardListOffline() {
+    private void addOfflineCardsToCardList(boolean isOffline) {
         DatabaseQuerier dbq = new DatabaseQuerier(context);
         SQLiteDatabase db = dbq.getDatabase();
-        Cursor cursor = db.rawQuery("select name from card", null);
+        Cursor cursor = db.rawQuery("select * from card order by name", null);
 
         if (cursor.moveToFirst()) {
             while (cursor.isAfterLast() == false) {
                 String name = cursor.getString(cursor.getColumnIndex("name"));
-                cardList.add(name);
+                Card card = new Card();
+                card.name = name;
+                // note that we don't need all card info here - just those needed for displaying in the ListView
+                card.attribute        = cursor.getString(cursor.getColumnIndex("attribute"));
+                card.types            = cursor.getString(cursor.getColumnIndex("types"));
+                card.level            = cursor.getString(cursor.getColumnIndex("level"));
+                card.atk              = cursor.getString(cursor.getColumnIndex("atk"));
+                card.def              = cursor.getString(cursor.getColumnIndex("def"));
+                card.rank             = cursor.getString(cursor.getColumnIndex("rank"));
+                card.pendulumScale    = cursor.getString(cursor.getColumnIndex("pendulumScale"));
+                card.property         = cursor.getString(cursor.getColumnIndex("property"));
+
+                CardStore.cards.add(card);
+                if (isOffline) {
+                    cardList.add(name);
+                }
+                offlineCardList.add(name);
                 cursor.moveToNext();
             }
         }
+
         Collections.sort(cardList);
+    }
+
+    private void initializeCardListOffline() {
+        addOfflineCardsToCardList(true);
     }
 
     private void initializeCardListOnline(String offset, boolean isTcg) throws Exception {

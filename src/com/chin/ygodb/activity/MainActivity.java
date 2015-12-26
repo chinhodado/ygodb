@@ -1,5 +1,12 @@
 package com.chin.ygodb.activity;
 
+import com.chin.common.CustomDialogFragment;
+import com.chin.common.Util;
+import com.chin.ygodb.Card;
+import com.chin.ygodb.CardStore;
+import com.chin.ygodb.YgoRegexFilterArrayAdapter;
+import com.chin.ygodb2.R;
+
 import android.content.Context;
 import android.content.Intent;
 import android.os.AsyncTask;
@@ -17,12 +24,6 @@ import android.widget.AdapterView.OnItemClickListener;
 import android.widget.EditText;
 import android.widget.ListView;
 
-import com.chin.common.CustomDialogFragment;
-import com.chin.common.RegexFilterArrayAdapter;
-import com.chin.common.Util;
-import com.chin.ygodb.CardStore;
-import com.chin.ygodb2.R;
-
 /**
  * The main activity, entry point of the app. It consists of the card search list.
  */
@@ -31,7 +32,7 @@ public class MainActivity extends BaseFragmentActivity {
     public final static String CARD_LINK = "com.chin.ygodb.LINK";
     public final static String CARD_NAME = "com.chin.ygodb.NAME";
 
-    public static RegexFilterArrayAdapter<String> adapter = null;
+    public static YgoRegexFilterArrayAdapter<Card> adapter = null;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -88,7 +89,7 @@ public class MainActivity extends BaseFragmentActivity {
 
             try {
                 if (adapter == null) {
-                    adapter = new RegexFilterArrayAdapter<String>(getActivity(), android.R.layout.simple_list_item_1, CardStore.cardList);
+                    adapter = new YgoRegexFilterArrayAdapter<Card>(getActivity(), android.R.layout.simple_list_item_1, CardStore.cards);
                 }
 
                 EditText cardEditText = (EditText) view.findViewById(R.id.cardEditText);
@@ -112,7 +113,7 @@ public class MainActivity extends BaseFragmentActivity {
                 cardListView.setOnItemClickListener(new OnItemClickListener(){
                     @Override
                     public void onItemClick(AdapterView<?> arg0, View v, int position, long arg3) {
-                            String cardName = (String)arg0.getItemAtPosition(position);
+                            String cardName = ((Card)arg0.getItemAtPosition(position)).name;
                             Intent intent = new Intent(v.getContext(), CardDetailActivity.class);
                             intent.putExtra(CARD_NAME, cardName);
                             startActivity(intent);
