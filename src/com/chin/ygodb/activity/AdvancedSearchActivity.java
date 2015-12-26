@@ -154,7 +154,19 @@ public class AdvancedSearchActivity extends BaseFragmentActivity {
                     String subCategorySql = null;
                     if (!subCategoryInput.equals("(All)")) {
                         if (mainCategoryInput.equals("Monster")) {
-                        	subCategorySql = "types like \"%" + subCategoryInput + "%\"";
+                            if (subCategoryInput.equals("Normal")) {
+                                // hopefully the performance is not too bad...
+                                subCategorySql = "types not like \"%Effect%\" "
+                                           + "and types not like \"%Fusion%\" "
+                                           + "and types not like \"%Ritual%\" "
+                                           + "and types not like \"%Synchro%\" "
+                                           + "and types not like \"%Xyz%\" "
+                                           + "and types not like \"%Token%\" "
+                                           + "and effectTypes = \"\"";
+                            }
+                            else {
+                                subCategorySql = "types like \"%" + subCategoryInput + "%\"";
+                            }
                         }
                         else if (mainCategoryInput.equals("Spell") || mainCategoryInput.equals("Trap")) {
                         	subCategorySql = "property = \"" + subCategoryInput + "\"";
