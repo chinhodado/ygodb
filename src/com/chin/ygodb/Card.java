@@ -24,6 +24,7 @@ public class Card {
     public String tcgAdvStatus    = "";
     public String tcgTrnStatus    = "";
     public String lore            = "";
+    public String img             = "";
 
     @Override
     public String toString() {

@@ -35,6 +35,7 @@ public class MainActivity extends BaseFragmentActivity {
     public final static String CARD_NAME = "com.chin.ygodb.NAME";
 
     public static YgoRegexFilterArrayAdapter<Card> adapter = null;
+    public static MainActivity instance;
 
     @Override
     protected void onCreate(final Bundle savedInstanceState) {
@@ -86,6 +87,7 @@ public class MainActivity extends BaseFragmentActivity {
 
         // for our purposes, consider the app already opened at this point
         hasJustBeenStarted = false;
+        instance = this;
     }
 
     /**
@@ -99,7 +101,7 @@ public class MainActivity extends BaseFragmentActivity {
 
             try {
                 if (adapter == null) {
-                    adapter = new YgoRegexFilterArrayAdapter<Card>(getActivity(), android.R.layout.simple_list_item_1, CardStore.cardList);
+                    adapter = new YgoRegexFilterArrayAdapter<Card>(getActivity(), R.layout.list_item, R.id.text1, CardStore.cardList);
                 }
 
                 EditText cardEditText = (EditText) view.findViewById(R.id.cardEditText);

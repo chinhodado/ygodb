@@ -12,11 +12,14 @@ import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 
 import com.chin.common.Util;
+import com.chin.ygodb.activity.MainActivity;
 
 import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
+import android.graphics.Point;
 import android.util.Log;
+import android.view.Display;
 
 /**
  * A singleton class that acts as a storage for card information. Support lazy loading information.
@@ -302,6 +305,36 @@ public final class CardStore {
         lore = lore.replace("<dl", "<p").replace("dl>", "p>").replace("<dt", "<b").replace("dt>", "b>");
         card.lore = lore;
         return lore;
+    }
+
+    public String getCardImgLink(String cardName) {
+        Card card = CardStore.cardSet.get(cardName);
+        if (!card.img.equals("")) {
+            return card.img;
+        }
+
+        DatabaseQuerier dbq = new DatabaseQuerier(context);
+        SQLiteDatabase db = dbq.getDatabase();
+        Cursor cursor = db.rawQuery("select img from card where name = ?", new String[] {cardName});
+
+        // assuming we always have 1 result...
+        cursor.moveToFirst();
+
+        String img = cursor.getString(cursor.getColumnIndex("img"));
+        String originalLink = "http://vignette" + img.charAt(0) + ".wikia.nocookie.net/yugioh/images/" + img.charAt(1)
+            + "/" + img.charAt(1) + img.charAt(2) + "/" + img.substring(3);
+
+        // calculate the width of the images to be displayed
+        Display display = MainActivity.instance.getWindowManager().getDefaultDisplay();
+        Point size = new Point();
+        display.getSize(size);
+        int screenWidth = size.x;
+        int scaleWidth = (int) (screenWidth * 0.25);
+
+        String finalLink = Util.getScaledWikiaImageLink(originalLink, scaleWidth);
+
+        card.img = finalLink;
+        return finalLink;
     }
 
 

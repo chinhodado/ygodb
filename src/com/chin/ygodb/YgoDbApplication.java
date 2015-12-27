@@ -12,7 +12,7 @@ public class YgoDbApplication extends Application {
     public static boolean IS_PRO_VERSION = true;
     public static GoogleAnalytics analytics;
     public static Tracker tracker;
-    
+
     @Override
     public void onCreate() {
         super.onCreate();
@@ -25,9 +25,10 @@ public class YgoDbApplication extends Application {
         // Create global configuration and initialize ImageLoader with this configuration
         ImageLoaderConfiguration config = new ImageLoaderConfiguration.Builder(getApplicationContext())
             .defaultDisplayImageOptions(defaultOptions)
+            .diskCacheSize(50 * 1024 * 1024)
             .build();
         ImageLoader.getInstance().init(config);
-        
+
         // analytics
         analytics = GoogleAnalytics.getInstance(this);
         analytics.setLocalDispatchPeriod(1800);

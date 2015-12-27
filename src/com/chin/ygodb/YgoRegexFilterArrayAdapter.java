@@ -9,6 +9,9 @@ import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import com.chin.ygodb2.R;
+import com.nostra13.universalimageloader.core.ImageLoader;
+
 /**
  * A modified version of ArrayAdapter that support regex filtering
  */
@@ -39,6 +42,7 @@ import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 import android.widget.Filter;
 import android.widget.Filterable;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 /**
@@ -410,6 +414,9 @@ public class YgoRegexFilterArrayAdapter<T> extends BaseAdapter implements Filter
         } else {
             text.setText(Html.fromHtml(item.toString()));
         }
+
+        ImageView imgView = (ImageView) view.findViewById(R.id.imageView1);
+        ImageLoader.getInstance().displayImage(CardStore.getInstance(mContext).getCardImgLink(((Card)item).name), imgView);
 
         return view;
     }
