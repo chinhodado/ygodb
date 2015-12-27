@@ -43,7 +43,7 @@ public class AdvancedSearchActivity extends BaseFragmentActivity {
     public static String[] typeList = {"(All)", "Warrior", "Spellcaster", "Fairy", "Fiend", "Zombie", "Machine", "Aqua",
     		"Pyro", "Rock", "Winged Beast", "Plant", "Insect", "Thunder", "Dragon", "Beast", "Beast-Warrior", "Dinosaur",
     		"Fish", "Sea Serpent", "Reptile", "Psychic", "Divine-Beast", "Creator God", "Wyrm"};
-    public static String[] limitList = {"(All)", "Banned", "Limited", "Semi-limited"};
+    public static String[] limitList = {"(All)", "Banned", "Limited", "Semi-limited", "Illegal"};
 
     static ArrayAdapter<String> subCategoryMonsterAdapter;
     static ArrayAdapter<String> subCategorySpellAdapter;
@@ -193,13 +193,16 @@ public class AdvancedSearchActivity extends BaseFragmentActivity {
                     String limitSql = null;
                     if (!limitInput.equals("(All)")) {
                     	if (limitInput.equals("Banned")) {
-                    		limitSql = "(tcgAdvStatus = \"Illegal\" or tcgAdvStatus = \"Forbidden\")";
+                    		limitSql = "tcgAdvStatus = \"Forbidden\"";
                         }
                         else if (limitInput.equals("Limited")) {
                         	limitSql = "tcgAdvStatus = \"Limited\"";
                         }
                         else if (limitInput.equals("Semi-limited")) {
                         	limitSql = "tcgAdvStatus = \"Semi-Limited\"";
+                        }
+                        else if (limitInput.equals("Illegal")) {
+                            limitSql = "tcgAdvStatus = \"Illegal\"";
                         }
                     }
 
