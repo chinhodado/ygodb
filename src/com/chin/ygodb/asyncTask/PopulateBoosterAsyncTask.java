@@ -174,7 +174,7 @@ public class PopulateBoosterAsyncTask extends AsyncTask<String, Void, Void> {
                                 imgSrcPrefEditor.commit();
                                 Log.i("foo", "Fetched " + boosterLink + " from scratch, saved to cache");
                             } catch (Exception e) {
-                                Log.w("YGODB", "Failed to fetch " + boosterLink + "'s img link");
+                                Log.w("ygodb", "Failed to fetch " + boosterLink + "'s img link");
                                 e.printStackTrace();
                                 // set the flag so we can do something about this in onPostExecute()
                                 exceptionOccurred2 = true;

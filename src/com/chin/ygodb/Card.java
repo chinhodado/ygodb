@@ -23,6 +23,7 @@ public class Card {
     public String ocgStatus       = "";
     public String tcgAdvStatus    = "";
     public String tcgTrnStatus    = "";
+    public String lore            = "";
 
     @Override
     public String toString() {

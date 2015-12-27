@@ -44,7 +44,7 @@ public class MainActivity extends BaseFragmentActivity {
         }
 
         // get the card list and their wiki url
-        if (CardStore.cardList == null) {
+        if (CardStore.cardNameList == null) {
             try {
                 new AsyncTask<Context, Void, Void>() {
                     @Override
@@ -89,7 +89,7 @@ public class MainActivity extends BaseFragmentActivity {
 
             try {
                 if (adapter == null) {
-                    adapter = new YgoRegexFilterArrayAdapter<Card>(getActivity(), android.R.layout.simple_list_item_1, CardStore.cards);
+                    adapter = new YgoRegexFilterArrayAdapter<Card>(getActivity(), android.R.layout.simple_list_item_1, CardStore.cardList);
                 }
 
                 EditText cardEditText = (EditText) view.findViewById(R.id.cardEditText);

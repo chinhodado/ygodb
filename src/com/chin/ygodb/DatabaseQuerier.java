@@ -45,7 +45,7 @@ public class DatabaseQuerier {
                     String name = cursor.getString(cursor.getColumnIndex("name"));
 
                     // verify that the card really exists in our database
-                    if (CardStore.cardList.contains(name)) {
+                    if (CardStore.cardNameList.contains(name)) {
                         Card card = new Card();
                         card.name = name;
                         // note that we don't need all card info here - just those needed for displaying in the ListView

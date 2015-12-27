@@ -69,7 +69,7 @@ public final class CardStore {
     }
 
     // a list of all cards available, initialized in MainActivity's onCreate()
-    public static ArrayList<String> cardList = null;
+    public static ArrayList<String> cardNameList = null;
 
     // map a card name to its wiki page url, initialized in MainActivity's onCreate()
     public static Hashtable<String, String[]> cardLinkTable = null;
@@ -78,7 +78,10 @@ public final class CardStore {
     private static Hashtable<String, Document> cardDomCache = new Hashtable<String, Document>();
 
     // list of Card objects, used for displaying in the ListView
-    public static ArrayList<Card> cards = new ArrayList<Card>(8192);
+    public static ArrayList<Card> cardList = new ArrayList<Card>(8192);
+
+    // basically a hashtable of cardList that maps a card's name to its Card object
+    private static Hashtable<String, Card> cardSet = new Hashtable<String, Card>(8192);
 
     // list of cards in the offline database
     private static ArrayList<String> offlineCardList = new ArrayList<String>(8192);
@@ -115,7 +118,7 @@ public final class CardStore {
         if (initializedOnline) return;
         if (Util.hasNetworkConnectivity(context)) {
             Log.i("ygodb", "Initializing online...");
-            cardList = new ArrayList<String>(8192);
+            cardNameList = new ArrayList<String>(8192);
             cardLinkTable = new Hashtable<String, String[]>(8192);
             initializeCardListOnline(null, true);
             initializeCardListOnline(null, false);
@@ -123,13 +126,14 @@ public final class CardStore {
             addOfflineCardsToCardList(false);
 
             // add those that are online but not offline
-            ArrayList<String> onlineOfflineDiff = new ArrayList<String>(CardStore.cardList);
+            ArrayList<String> onlineOfflineDiff = new ArrayList<String>(CardStore.cardNameList);
             onlineOfflineDiff.removeAll(offlineCardList);
             Log.i("ygodb", "Diff between online and offline: " + onlineOfflineDiff.size());
             for (int i = 0; i < onlineOfflineDiff.size(); i++) {
-                Card row = new Card();
-                row.name = onlineOfflineDiff.get(i);
-                CardStore.cards.add(row);
+                Card card = new Card();
+                card.name = onlineOfflineDiff.get(i);
+                CardStore.cardList.add(card);
+                CardStore.cardSet.put(card.name, card);
             }
 
             initializedOnline = true;
@@ -137,12 +141,12 @@ public final class CardStore {
         }
         else if (!initializedOffline) {
             Log.i("ygodb", "Initializing offline...");
-            CardStore.cardList = new ArrayList<String>(8192);
+            CardStore.cardNameList = new ArrayList<String>(8192);
             initializeCardListOffline();
             initializedOffline = true;
             Log.i("ygodb", "Done initializing offline.");
         }
-        Log.i("ygodb", "Number of cards: " + cardList.size());
+        Log.i("ygodb", "Number of cards: " + cardNameList.size());
     }
 
     private void addOfflineCardsToCardList(boolean isOffline) {
@@ -165,16 +169,17 @@ public final class CardStore {
                 card.pendulumScale    = cursor.getString(cursor.getColumnIndex("pendulumScale"));
                 card.property         = cursor.getString(cursor.getColumnIndex("property"));
 
-                CardStore.cards.add(card);
+                CardStore.cardList.add(card);
+                CardStore.cardSet.put(name, card);
                 if (isOffline) {
-                    cardList.add(name);
+                    cardNameList.add(name);
                 }
                 offlineCardList.add(name);
                 cursor.moveToNext();
             }
         }
 
-        Collections.sort(cardList);
+        Collections.sort(cardNameList);
     }
 
     private void initializeCardListOffline() {
@@ -202,7 +207,7 @@ public final class CardStore {
         for (int i = 0; i < myArray.length(); i++) {
             String cardName = myArray.getJSONObject(i).getString("title");
             if (!cardLinkTable.containsKey(cardName)) {
-                cardList.add(cardName);
+                cardNameList.add(cardName);
                 String[] tmp = {myArray.getJSONObject(i).getString("url"),
                                 myArray.getJSONObject(i).getString("id")};
                 cardLinkTable.put(cardName, tmp);
@@ -281,16 +286,22 @@ public final class CardStore {
     }
 
     private String getCardLoreOnline(String cardName) throws Exception {
+        Card card = CardStore.cardSet.get(cardName);
+        if (!card.lore.equals("")) {
+            return card.lore;
+        }
+
         initializeCardList();
         getCardDomReady(cardName);
         Document dom = cardDomCache.get(cardName);
 
         Element effectBox = dom.getElementsByClass("cardtablespanrow").first().getElementsByClass("navbox-list").first();
-        String effect = YgoWikiaHtmlCleaner.getCleanedHtml(effectBox);
+        String lore = YgoWikiaHtmlCleaner.getCleanedHtml(effectBox);
 
         // turn <dl> into <p> and <dt> into <b>
-        effect = effect.replace("<dl", "<p").replace("dl>", "p>").replace("<dt", "<b").replace("dt>", "b>");
-        return effect;
+        lore = lore.replace("<dl", "<p").replace("dl>", "p>").replace("<dt", "<b").replace("dt>", "b>");
+        card.lore = lore;
+        return lore;
     }
 
 
@@ -419,7 +430,7 @@ public final class CardStore {
         }
 
         if (statusRow == null) {
-            Log.i("YGODB", "Card banlist status not found online");
+            Log.i("ygodb", "Card banlist status not found online");
             return statuses;
         }
 
@@ -504,7 +515,7 @@ public final class CardStore {
         try {
             dom = Jsoup.parse(Jsoup.connect(url).ignoreContentType(true).execute().body());
         } catch (Exception e) {
-            Log.i("YGODB", "Error fetching " + url);
+            Log.i("ygodb", "Error fetching " + url);
             return "Not available.";
         }
 
