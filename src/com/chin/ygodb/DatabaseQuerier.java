@@ -33,20 +33,31 @@ public class DatabaseQuerier {
      * @param whereClause The where clause that represents the criteria of the search
      * @return List of familiars that satisfy the criteria
      */
-    public ArrayList<String> executeQuery(String criteria) {
+    public ArrayList<Card> executeQuery(String criteria) {
     	Log.i("Search", "Criteria: " + criteria);
-        ArrayList<String> resultSet = new ArrayList<String>();
+        ArrayList<Card> resultSet = new ArrayList<Card>();
         try {
             SQLiteDatabase db = getDatabase();
 
-            Cursor cursor = db.rawQuery("Select name from card where " + criteria, null);
+            Cursor cursor = db.rawQuery("Select * from card where " + criteria + " order by name", null);
             if (cursor.moveToFirst()) {
                 while (cursor.isAfterLast() == false) {
                     String name = cursor.getString(cursor.getColumnIndex("name"));
 
-                    // verify that the card really exists in out database
+                    // verify that the card really exists in our database
                     if (CardStore.cardList.contains(name)) {
-                        resultSet.add(name);
+                        Card card = new Card();
+                        card.name = name;
+                        // note that we don't need all card info here - just those needed for displaying in the ListView
+                        card.attribute        = cursor.getString(cursor.getColumnIndex("attribute"));
+                        card.types            = cursor.getString(cursor.getColumnIndex("types"));
+                        card.level            = cursor.getString(cursor.getColumnIndex("level"));
+                        card.atk              = cursor.getString(cursor.getColumnIndex("atk"));
+                        card.def              = cursor.getString(cursor.getColumnIndex("def"));
+                        card.rank             = cursor.getString(cursor.getColumnIndex("rank"));
+                        card.pendulumScale    = cursor.getString(cursor.getColumnIndex("pendulumScale"));
+                        card.property         = cursor.getString(cursor.getColumnIndex("property"));
+                        resultSet.add(card);
                     }
                     else {
                         Log.i("Search", "Not found: " + name);

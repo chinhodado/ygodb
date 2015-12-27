@@ -1,11 +1,12 @@
 package com.chin.ygodb.activity;
 
 import java.util.ArrayList;
-import java.util.Collections;
 
 import com.chin.common.TabListener;
+import com.chin.ygodb.Card;
 import com.chin.ygodb.DatabaseQuerier;
 import com.chin.ygodb.SearchCriterion;
+import com.chin.ygodb.YgoRegexFilterArrayAdapter;
 import com.chin.ygodb2.R;
 
 import android.app.ActionBar;
@@ -51,7 +52,7 @@ public class AdvancedSearchActivity extends BaseFragmentActivity {
     static String lastSelectedMainCategory = "(All)";
 
     // store the result set after each search
-    static ArrayList<String> resultSet = new ArrayList<String>();
+    static ArrayList<Card> resultSet = new ArrayList<Card>();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -237,7 +238,6 @@ public class AdvancedSearchActivity extends BaseFragmentActivity {
                     // then execute the query and get the result
                     DatabaseQuerier querier = new DatabaseQuerier(v.getContext());
                     resultSet = querier.executeQuery(criteria);
-                    Collections.sort(resultSet);
 
                     // now display the results
                     if (!resultSet.isEmpty()) {
@@ -394,13 +394,13 @@ public class AdvancedSearchActivity extends BaseFragmentActivity {
             ListView famListView = (ListView) view.findViewById(R.id.resultListView);
 
             // set the result set of the previous search as the adapter for the list
-            famListView.setAdapter(new ArrayAdapter<String>(getActivity(), android.R.layout.simple_list_item_1, resultSet));
+            famListView.setAdapter(new YgoRegexFilterArrayAdapter<Card>(getActivity(), android.R.layout.simple_list_item_1, resultSet));
 
             // go to a card's detail page when click on its name on the list
             famListView.setOnItemClickListener(new OnItemClickListener(){
                 @Override
                 public void onItemClick(AdapterView<?> arg0, View v, int position, long arg3) {
-                        String cardName = (String)arg0.getItemAtPosition(position);
+                        String cardName = ((Card)arg0.getItemAtPosition(position)).name;
                         Intent intent = new Intent(v.getContext(), CardDetailActivity.class);
                         intent.putExtra(MainActivity.CARD_NAME, cardName);
                         startActivity(intent);

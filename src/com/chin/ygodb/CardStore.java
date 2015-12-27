@@ -77,7 +77,10 @@ public final class CardStore {
     // a storage for cards' detail after being fetched online
     private static Hashtable<String, Document> cardDomCache = new Hashtable<String, Document>();
 
+    // list of Card objects, used for displaying in the ListView
     public static ArrayList<Card> cards = new ArrayList<Card>(8192);
+
+    // list of cards in the offline database
     private static ArrayList<String> offlineCardList = new ArrayList<String>(8192);
 
     private static CardStore CARDSTORE;
