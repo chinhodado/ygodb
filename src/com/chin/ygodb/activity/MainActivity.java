@@ -101,7 +101,7 @@ public class MainActivity extends BaseFragmentActivity {
 
             try {
                 if (adapter == null) {
-                    adapter = new YgoRegexFilterArrayAdapter<Card>(getActivity(), R.layout.list_item, R.id.text1, CardStore.cardList);
+                    adapter = new YgoRegexFilterArrayAdapter<Card>(getActivity(), R.layout.list_item, R.id.itemRowText, CardStore.cardList);
                 }
 
                 EditText cardEditText = (EditText) view.findViewById(R.id.cardEditText);

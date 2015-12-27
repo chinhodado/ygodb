@@ -415,7 +415,7 @@ public class YgoRegexFilterArrayAdapter<T> extends BaseAdapter implements Filter
             text.setText(Html.fromHtml(item.toString()));
         }
 
-        ImageView imgView = (ImageView) view.findViewById(R.id.imageView1);
+        ImageView imgView = (ImageView) view.findViewById(R.id.itemRowImage);
         ImageLoader.getInstance().displayImage(CardStore.getInstance(mContext).getCardImgLink(((Card)item).name), imgView);
 
         return view;
