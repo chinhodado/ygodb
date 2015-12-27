@@ -81,7 +81,7 @@ public class AddCardInfoTask extends AsyncTask<String, Void, Void> {
         imgView.requestLayout();
 
         // set the image
-        String originalLink = cardStore.getImageLink(cardName);
+        String originalLink = cardStore.getImageLinkOnline(cardName);
         ImageLoader.getInstance().displayImage(Util.getScaledWikiaImageLink(originalLink, scaleWidth), imgView);
     }
 

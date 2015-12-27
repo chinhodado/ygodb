@@ -252,7 +252,7 @@ public final class CardStore {
         return cardDomCache.get(cardName);
     }
 
-    public String getImageLink(String cardName) throws Exception {
+    public String getImageLinkOnline(String cardName) throws Exception {
         getCardDomReady(cardName);
         Document dom = cardDomCache.get(cardName);
 
@@ -260,6 +260,36 @@ public final class CardStore {
 
         String imageUrl = td.getElementsByTag("a").first().attr("href");
         return imageUrl;
+    }
+
+    public String getImageLinkOffline(String cardName) {
+        Card card = CardStore.cardSet.get(cardName);
+        if (!card.img.equals("")) {
+            return card.img;
+        }
+
+        DatabaseQuerier dbq = new DatabaseQuerier(context);
+        SQLiteDatabase db = dbq.getDatabase();
+        Cursor cursor = db.rawQuery("select img from card where name = ?", new String[] {cardName});
+
+        // assuming we always have 1 result...
+        cursor.moveToFirst();
+
+        String img = cursor.getString(cursor.getColumnIndex("img"));
+        String originalLink = "http://vignette" + img.charAt(0) + ".wikia.nocookie.net/yugioh/images/" + img.charAt(1)
+            + "/" + img.charAt(1) + img.charAt(2) + "/" + img.substring(3);
+
+        // calculate the width of the images to be displayed
+        Display display = MainActivity.instance.getWindowManager().getDefaultDisplay();
+        Point size = new Point();
+        display.getSize(size);
+        int screenWidth = size.x;
+        int scaleWidth = (int) (screenWidth * 0.25);
+
+        String finalLink = Util.getScaledWikiaImageLink(originalLink, scaleWidth);
+
+        card.img = finalLink;
+        return finalLink;
     }
 
 
@@ -306,37 +336,6 @@ public final class CardStore {
         card.lore = lore;
         return lore;
     }
-
-    public String getCardImgLink(String cardName) {
-        Card card = CardStore.cardSet.get(cardName);
-        if (!card.img.equals("")) {
-            return card.img;
-        }
-
-        DatabaseQuerier dbq = new DatabaseQuerier(context);
-        SQLiteDatabase db = dbq.getDatabase();
-        Cursor cursor = db.rawQuery("select img from card where name = ?", new String[] {cardName});
-
-        // assuming we always have 1 result...
-        cursor.moveToFirst();
-
-        String img = cursor.getString(cursor.getColumnIndex("img"));
-        String originalLink = "http://vignette" + img.charAt(0) + ".wikia.nocookie.net/yugioh/images/" + img.charAt(1)
-            + "/" + img.charAt(1) + img.charAt(2) + "/" + img.substring(3);
-
-        // calculate the width of the images to be displayed
-        Display display = MainActivity.instance.getWindowManager().getDefaultDisplay();
-        Point size = new Point();
-        display.getSize(size);
-        int screenWidth = size.x;
-        int scaleWidth = (int) (screenWidth * 0.25);
-
-        String finalLink = Util.getScaledWikiaImageLink(originalLink, scaleWidth);
-
-        card.img = finalLink;
-        return finalLink;
-    }
-
 
     //////////////////////////////////////////////////////////////////////
     // CARD INFO
