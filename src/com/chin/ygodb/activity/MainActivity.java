@@ -23,6 +23,8 @@ import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
 import android.widget.EditText;
 import android.widget.ListView;
+import android.widget.ProgressBar;
+import android.widget.TextView;
 
 /**
  * The main activity, entry point of the app. It consists of the card search list.
@@ -35,13 +37,16 @@ public class MainActivity extends BaseFragmentActivity {
     public static YgoRegexFilterArrayAdapter<Card> adapter = null;
 
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
+    protected void onCreate(final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
         if (hasJustBeenStarted) {
             Util.checkNewVersion(this, "https://api.github.com/repos/chinhodado/ygodb/releases/latest",
                     "https://github.com/chinhodado/ygodb/releases", false);
         }
+
+        final ProgressBar initializingSpin = (ProgressBar)findViewById(R.id.progressBarInitializaing);
+        final TextView initializingTv = (TextView)findViewById(R.id.textViewInitializing);
 
         // get the card list and their wiki url
         if (CardStore.cardNameList == null) {
@@ -57,7 +62,18 @@ public class MainActivity extends BaseFragmentActivity {
                         }
                         return null;
                     }
-                }.execute(this).get();
+
+                    @Override
+                    protected void onPostExecute(Void foo) {
+                        initializingSpin.setVisibility(View.GONE);
+                        initializingTv.setVisibility(View.GONE);
+                        if (savedInstanceState == null) {
+                            SearchCardFragment newFragment = new SearchCardFragment();
+                            FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
+                            ft.add(R.id.tab_viewgroup, newFragment).commit();
+                        }
+                    }
+                }.execute(this);
             } catch (Exception e) {
                 e.printStackTrace();
                 CustomDialogFragment newFragment = new CustomDialogFragment(
@@ -66,12 +82,6 @@ public class MainActivity extends BaseFragmentActivity {
                 newFragment.show(getFragmentManager(), "no net");
                 return;
             }
-        }
-
-        if (savedInstanceState == null) {
-            SearchCardFragment newFragment = new SearchCardFragment();
-            FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
-            ft.add(R.id.tab_viewgroup, newFragment).commit();
         }
 
         // for our purposes, consider the app already opened at this point
