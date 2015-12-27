@@ -105,7 +105,7 @@ public class CardDetailActivity extends BaseFragmentActivity {
     }
 
     public static class CardGenericDetailFragment extends Fragment {
-        PopulateRulingAsyncTask myTask;
+        PopulateAdditionalInfoAsyncTask myTask;
 
         private static final String TYPE = "TYPE";
         private static final String CARD_NAME = "CARD_NAME";
@@ -137,7 +137,7 @@ public class CardDetailActivity extends BaseFragmentActivity {
             LinearLayout layout = (LinearLayout) view.findViewById(R.id.fragment_layout);
             layout.setGravity(Gravity.RIGHT);
 
-            myTask = (PopulateRulingAsyncTask) new PopulateRulingAsyncTask(layout, (CardDetailActivity) getActivity(), type, cardName).execute();
+            myTask = (PopulateAdditionalInfoAsyncTask) new PopulateAdditionalInfoAsyncTask(layout, (CardDetailActivity) getActivity(), type, cardName).execute();
 
             return view;
         }
@@ -152,14 +152,14 @@ public class CardDetailActivity extends BaseFragmentActivity {
         }
     }
 
-    public static class PopulateRulingAsyncTask extends AsyncTask<String, Void, String> {
+    public static class PopulateAdditionalInfoAsyncTask extends AsyncTask<String, Void, String> {
         LinearLayout layout;
         CardDetailActivity activity;
         CardAdditionalInfoType type;
         String cardName;
         boolean exceptionOccurred = false;
 
-        public PopulateRulingAsyncTask(LinearLayout layout, CardDetailActivity activity, CardAdditionalInfoType type, String cardName) {
+        public PopulateAdditionalInfoAsyncTask(LinearLayout layout, CardDetailActivity activity, CardAdditionalInfoType type, String cardName) {
             this.layout = layout;
             this.activity = activity;
             this.type = type;
