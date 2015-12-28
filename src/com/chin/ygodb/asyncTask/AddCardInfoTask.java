@@ -1,19 +1,23 @@
 package com.chin.ygodb.asyncTask;
 
 import java.util.ArrayList;
-import com.chin.ygodb.CardStore;
-import com.chin.ygodb.CardStore.Pair;
+
 import com.chin.common.MyTagHandler;
 import com.chin.common.Util;
-import com.chin.ygodb2.R;
+import com.chin.ygodb.CardStore;
+import com.chin.ygodb.CardStore.Pair;
 import com.chin.ygodb.activity.CardDetailActivity;
+import com.chin.ygodb2.R;
 import com.nostra13.universalimageloader.core.ImageLoader;
+import com.nostra13.universalimageloader.core.listener.SimpleImageLoadingListener;
 
+import android.graphics.Bitmap;
 import android.graphics.Point;
 import android.os.AsyncTask;
 import android.text.Html;
 import android.view.Display;
 import android.view.Gravity;
+import android.view.View;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ProgressBar;
@@ -54,12 +58,10 @@ public class AddCardInfoTask extends AsyncTask<String, Void, Void> {
     }
 
     public void addCardImage() throws Exception {
-        // remove the spinner
-        ProgressBar pgrBar = (ProgressBar) activity.findViewById(R.id.fragmentCardInfo_progressBar1);
-        LinearLayout layout = (LinearLayout) activity.findViewById(R.id.fragmentCardInfo_mainLinearLayout);
-        layout.removeView(pgrBar);
+        final LinearLayout pgrbarWrapper = (LinearLayout) activity.findViewById(R.id.progressbar_wrapper);
+        final LinearLayout layout = (LinearLayout) activity.findViewById(R.id.fragmentCardInfo_mainLinearLayout);
 
-        ImageView imgView = (ImageView) activity.findViewById(R.id.imageView_detail_card);
+        final ImageView imgView = (ImageView) activity.findViewById(R.id.imageView_detail_card);
         if (!Util.hasNetworkConnectivity(activity)) {
             TextView tv = new TextView(activity);
             tv.setGravity(Gravity.CENTER);
@@ -73,16 +75,29 @@ public class AddCardInfoTask extends AsyncTask<String, Void, Void> {
         Point size = new Point();
         display.getSize(size);
         int screenWidth = size.x;
-        int scaleWidth = (int) (screenWidth * 0.8);
+        final int scaleWidth = (int) (screenWidth * 0.8);
 
-        // apply the width and height to the ImageView
-        imgView.getLayoutParams().width = scaleWidth;
-        imgView.getLayoutParams().height = (int) (scaleWidth * 1.4576); // 8.6 / 5.9
-        imgView.requestLayout();
+        // apply the width and height to the progress bar wrapper. We do this so that the placeholder
+        // for the image is expanded initially, with the progress bar at the center. We don't want the
+        // card info text to jump down while the user is reading it.
+        pgrbarWrapper.getLayoutParams().width = scaleWidth;
+        pgrbarWrapper.getLayoutParams().height = (int) (scaleWidth * 1.4576); // 8.6 / 5.9
+        pgrbarWrapper.requestLayout();
 
         // set the image
         String originalLink = cardStore.getImageLinkOnline(cardName);
-        ImageLoader.getInstance().displayImage(Util.getScaledWikiaImageLink(originalLink, scaleWidth), imgView);
+        ImageLoader.getInstance().displayImage(Util.getScaledWikiaImageLink(originalLink, scaleWidth), imgView, new SimpleImageLoadingListener() {
+            @Override
+            public void onLoadingComplete(String imageUri, View view, Bitmap loadedImage) {
+                // remove the spinner
+                layout.removeView(pgrbarWrapper);
+
+                // apply the width and height to the ImageView
+                imgView.getLayoutParams().width = scaleWidth;
+                imgView.getLayoutParams().height = (int) (scaleWidth * 1.4576); // 8.6 / 5.9
+                imgView.requestLayout();
+            }
+        });
     }
 
     public void addCardInfo() throws Exception {
