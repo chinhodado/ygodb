@@ -54,6 +54,7 @@ public class AdvancedSearchActivity extends BaseFragmentActivity {
     // store the result set after each search
     static ArrayList<Card> resultSet = new ArrayList<Card>();
 
+    @SuppressWarnings("deprecation")
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -75,6 +76,7 @@ public class AdvancedSearchActivity extends BaseFragmentActivity {
         }
     }
 
+    @SuppressWarnings("deprecation")
     @Override
     protected void onSaveInstanceState(Bundle bundle) {
       super.onSaveInstanceState(bundle);
@@ -95,6 +97,7 @@ public class AdvancedSearchActivity extends BaseFragmentActivity {
 
             Button searchButton = (Button) layout.findViewById(R.id.searchButton);
             searchButton.setOnClickListener(new OnClickListener() {
+                @SuppressWarnings("deprecation")
                 @Override
                 public void onClick(View v) {
                     // make the list of criteria
