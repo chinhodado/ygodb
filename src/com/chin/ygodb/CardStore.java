@@ -155,7 +155,8 @@ public final class CardStore {
     private void addOfflineCardsToCardList(boolean isOffline) {
         DatabaseQuerier dbq = new DatabaseQuerier(context);
         SQLiteDatabase db = dbq.getDatabase();
-        Cursor cursor = db.rawQuery("select * from card order by name", null);
+        Cursor cursor = db.rawQuery("select name, attribute, types, level, atk, def, rank, pendulumScale, property "
+                                  + "from card order by name", null);
 
         if (cursor.moveToFirst()) {
             while (cursor.isAfterLast() == false) {
