@@ -263,6 +263,7 @@ public final class CardStore {
     }
 
     public String getImageLinkOffline(String cardName) {
+        // try get from cache
         Card card = CardStore.cardSet.get(cardName);
         if (!card.img.equals("")) {
             return card.img;
@@ -272,24 +273,36 @@ public final class CardStore {
         SQLiteDatabase db = dbq.getDatabase();
         Cursor cursor = db.rawQuery("select img from card where name = ?", new String[] {cardName});
 
-        // assuming we always have 1 result...
+        if (cursor.getCount() == 0) {
+            return null;
+        }
+
         cursor.moveToFirst();
-
         String img = cursor.getString(cursor.getColumnIndex("img"));
-        String originalLink = "http://vignette" + img.charAt(0) + ".wikia.nocookie.net/yugioh/images/" + img.charAt(1)
-            + "/" + img.charAt(1) + img.charAt(2) + "/" + img.substring(3);
+        if (img.equals("")) {
+            return null;
+        }
 
-        // calculate the width of the images to be displayed
-        Display display = MainActivity.instance.getWindowManager().getDefaultDisplay();
-        Point size = new Point();
-        display.getSize(size);
-        int screenWidth = size.x;
-        int scaleWidth = (int) (screenWidth * 0.25);
+        try {
+            String originalLink = "http://vignette" + img.charAt(0) + ".wikia.nocookie.net/yugioh/images/" + img.charAt(1)
+                + "/" + img.charAt(1) + img.charAt(2) + "/" + img.substring(3);
 
-        String finalLink = Util.getScaledWikiaImageLink(originalLink, scaleWidth);
+            // calculate the width of the images to be displayed
+            Display display = MainActivity.instance.getWindowManager().getDefaultDisplay();
+            Point size = new Point();
+            display.getSize(size);
+            int screenWidth = size.x;
+            int scaleWidth = (int) (screenWidth * 0.25);
 
-        card.img = finalLink;
-        return finalLink;
+            String finalLink = Util.getScaledWikiaImageLink(originalLink, scaleWidth);
+
+            card.img = finalLink;
+            return finalLink;
+        }
+        catch (Exception e) {
+            Log.w("ygodb", "Error parsing image link from offline database: " + cardName);
+            return null;
+        }
     }
 
 
