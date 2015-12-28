@@ -62,7 +62,7 @@ public class CardRegexFilterArrayAdapter extends RegexFilterArrayAdapter<Card> {
 
         ImageView imgView = (ImageView) view.findViewById(R.id.itemRowImage);
         imgView.setImageResource(android.R.color.transparent);
-        ImageLoader.getInstance().displayImage(CardStore.getInstance(mContext).getImageLinkOffline(card.name), imgView);
+        ImageLoader.getInstance().displayImage(CardStore.getInstance(mContext).getImageLink(card.name), imgView);
 
         return view;
     }

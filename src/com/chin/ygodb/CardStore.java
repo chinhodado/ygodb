@@ -253,6 +253,22 @@ public final class CardStore {
         return cardDomCache.get(cardName);
     }
 
+    public String getImageLink(String cardName) {
+        // try get from cache
+        Card card = CardStore.cardSet.get(cardName);
+        if (!card.img.equals("")) {
+            return card.img;
+        }
+
+        String link = getImageLinkOffline(cardName);
+        if (link != null) {
+            card.img = link;
+            return link;
+        }
+
+        return null;
+    }
+
     public String getImageLinkOnline(String cardName) throws Exception {
         getCardDomReady(cardName);
         Document dom = cardDomCache.get(cardName);
@@ -260,16 +276,12 @@ public final class CardStore {
         Element td = dom.getElementsByClass("cardtable-cardimage").first();
 
         String imageUrl = td.getElementsByTag("a").first().attr("href");
+        Card card = CardStore.cardSet.get(cardName);
+        card.img = imageUrl;
         return imageUrl;
     }
 
     public String getImageLinkOffline(String cardName) {
-        // try get from cache
-        Card card = CardStore.cardSet.get(cardName);
-        if (!card.img.equals("")) {
-            return card.img;
-        }
-
         DatabaseQuerier dbq = new DatabaseQuerier(context);
         SQLiteDatabase db = dbq.getDatabase();
         Cursor cursor = db.rawQuery("select img from card where name = ?", new String[] {cardName});
@@ -296,8 +308,6 @@ public final class CardStore {
             int scaleWidth = (int) (screenWidth * 0.25);
 
             String finalLink = Util.getScaledWikiaImageLink(originalLink, scaleWidth);
-
-            card.img = finalLink;
             return finalLink;
         }
         catch (Exception e) {
