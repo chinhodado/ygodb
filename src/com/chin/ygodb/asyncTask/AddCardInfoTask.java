@@ -9,6 +9,7 @@ import com.chin.ygodb.CardStore.Pair;
 import com.chin.ygodb.activity.CardDetailActivity;
 import com.chin.ygodb2.R;
 import com.nostra13.universalimageloader.core.ImageLoader;
+import com.nostra13.universalimageloader.core.assist.FailReason;
 import com.nostra13.universalimageloader.core.listener.SimpleImageLoadingListener;
 
 import android.graphics.Bitmap;
@@ -96,6 +97,12 @@ public class AddCardInfoTask extends AsyncTask<String, Void, Void> {
                 imgView.getLayoutParams().width = scaleWidth;
                 imgView.getLayoutParams().height = (int) (scaleWidth * 1.4576); // 8.6 / 5.9
                 imgView.requestLayout();
+            }
+
+            @Override
+            public void onLoadingFailed(String imageUri, View view, FailReason failReason) {
+                // remove the spinner
+                layout.removeView(pgrbarWrapper);
             }
         });
     }
