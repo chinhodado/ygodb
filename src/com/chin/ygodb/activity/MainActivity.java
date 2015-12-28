@@ -4,7 +4,7 @@ import com.chin.common.CustomDialogFragment;
 import com.chin.common.Util;
 import com.chin.ygodb.Card;
 import com.chin.ygodb.CardStore;
-import com.chin.ygodb.YgoRegexFilterArrayAdapter;
+import com.chin.ygodb.CardRegexFilterArrayAdapter;
 import com.chin.ygodb2.R;
 
 import android.content.Context;
@@ -34,7 +34,7 @@ public class MainActivity extends BaseFragmentActivity {
     public final static String CARD_LINK = "com.chin.ygodb.LINK";
     public final static String CARD_NAME = "com.chin.ygodb.NAME";
 
-    public static YgoRegexFilterArrayAdapter<Card> adapter = null;
+    public static CardRegexFilterArrayAdapter adapter = null;
     public static MainActivity instance;
 
     @Override
@@ -101,7 +101,7 @@ public class MainActivity extends BaseFragmentActivity {
 
             try {
                 if (adapter == null) {
-                    adapter = new YgoRegexFilterArrayAdapter<Card>(getActivity(), R.layout.list_item, R.id.itemRowText, CardStore.cardList);
+                    adapter = new CardRegexFilterArrayAdapter(getActivity(), R.layout.list_item, R.id.itemRowText, CardStore.cardList);
                 }
 
                 EditText cardEditText = (EditText) view.findViewById(R.id.cardEditText);
