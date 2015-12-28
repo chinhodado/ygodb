@@ -39,7 +39,8 @@ public class DatabaseQuerier {
         try {
             SQLiteDatabase db = getDatabase();
 
-            Cursor cursor = db.rawQuery("Select * from card where " + criteria + " order by name", null);
+            Cursor cursor = db.rawQuery("Select name, attribute, types, level, atk, def, rank, pendulumScale, property "
+                                      + "from card where " + criteria + " order by name", null);
             if (cursor.moveToFirst()) {
                 while (cursor.isAfterLast() == false) {
                     String name = cursor.getString(cursor.getColumnIndex("name"));
