@@ -4,9 +4,9 @@ import java.util.ArrayList;
 
 import com.chin.common.TabListener;
 import com.chin.ygodb.Card;
+import com.chin.ygodb.CardRegexFilterArrayAdapter;
 import com.chin.ygodb.DatabaseQuerier;
 import com.chin.ygodb.SearchCriterion;
-import com.chin.ygodb.CardRegexFilterArrayAdapter;
 import com.chin.ygodb2.R;
 
 import android.app.ActionBar;
@@ -99,6 +99,8 @@ public class AdvancedSearchActivity extends BaseFragmentActivity {
                 public void onClick(View v) {
                     // make the list of criteria
                     ArrayList<SearchCriterion> criteriaList = new ArrayList<SearchCriterion>();
+
+                    // level/rank
                     EditText levelRankEdit = (EditText) view.findViewById(R.id.criteriaLevelRank);
                     String levelRankInput = levelRankEdit.getText().toString().trim();
                     String levelRankSql = null;
@@ -107,6 +109,15 @@ public class AdvancedSearchActivity extends BaseFragmentActivity {
                     	String levelRankOperator = ((Spinner) view.findViewById(R.id.spinnerOperatorLevelRank)).getSelectedItem().toString();
                     	levelRankSql = "((level <> \"\" and level " + levelRankOperator + " " + levelRankInput +
                     			") or (rank <> \"\" and rank " + levelRankOperator + " " + levelRankInput + "))";
+                    }
+
+                    // pendulum scale
+                    EditText pendulumScaleEdit = (EditText) view.findViewById(R.id.criteriaPendulumScale);
+                    String pendulumScaleInput = pendulumScaleEdit.getText().toString().trim();
+                    String pendulumScaleOperator = ((Spinner) view.findViewById(R.id.spinnerOperatorPendulumScale)).getSelectedItem().toString();
+                    if (!pendulumScaleInput.equals("")) {
+                        criteriaList.add(new SearchCriterion("pendulumScale", pendulumScaleOperator, pendulumScaleInput));
+                        criteriaList.add(new SearchCriterion("pendulumScale", "<>", "\"\""));
                     }
 
                     // atk
@@ -261,7 +272,7 @@ public class AdvancedSearchActivity extends BaseFragmentActivity {
 
         private void initializeSkillSearchUI(View view) {
             int[] spinnerOperatorIdList = new int[] {
-                R.id.spinnerOperatorAtk, R.id.spinnerOperatorDef, R.id.spinnerOperatorLevelRank,
+                R.id.spinnerOperatorAtk, R.id.spinnerOperatorDef, R.id.spinnerOperatorLevelRank, R.id.spinnerOperatorPendulumScale
             };
 
             ArrayAdapter<String> operatorAdapter = new ArrayAdapter<String>(getActivity(),
