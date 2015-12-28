@@ -64,6 +64,8 @@ public class AddCardInfoTask extends AsyncTask<String, Void, Void> {
 
         final ImageView imgView = (ImageView) activity.findViewById(R.id.imageView_detail_card);
         if (!Util.hasNetworkConnectivity(activity)) {
+            // remove the spinner
+            layout.removeView(pgrbarWrapper);
             TextView tv = new TextView(activity);
             tv.setGravity(Gravity.CENTER);
             tv.setText("(image unavailable in offline mode)");
