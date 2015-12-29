@@ -10,6 +10,7 @@ import com.chin.ygodb.SearchCriterion;
 import com.chin.ygodb2.R;
 
 import android.app.ActionBar;
+import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
@@ -17,6 +18,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.ViewGroup;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
 import android.widget.AdapterView.OnItemSelectedListener;
@@ -262,6 +264,13 @@ public class AdvancedSearchActivity extends BaseFragmentActivity {
                         getActivity().getActionBar().setSelectedNavigationItem(1);
                         Toast toast = Toast.makeText(getActivity(), "Found " + resultSet.size() + " results.", Toast.LENGTH_SHORT);
                         toast.show();
+
+                        // hide keyboard
+                        View view = getActivity().getCurrentFocus();
+                        if (view != null) {
+                            InputMethodManager imm = (InputMethodManager)getActivity().getSystemService(Context.INPUT_METHOD_SERVICE);
+                            imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
+                        }
                     }
                     else {
                         Toast toast = Toast.makeText(getActivity(), "No results found.", Toast.LENGTH_SHORT);
