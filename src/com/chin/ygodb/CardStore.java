@@ -141,6 +141,7 @@ public final class CardStore {
 
             initializedOnline = true;
             Log.i("ygodb", "Done initializing online.");
+            Log.i("ygodb", "Number of cards: " + cardNameList.size());
         }
         else if (!initializedOffline) {
             Log.i("ygodb", "Initializing offline...");
@@ -148,8 +149,8 @@ public final class CardStore {
             initializeCardListOffline();
             initializedOffline = true;
             Log.i("ygodb", "Done initializing offline.");
+            Log.i("ygodb", "Number of cards: " + cardNameList.size());
         }
-        Log.i("ygodb", "Number of cards: " + cardNameList.size());
     }
 
     private void addOfflineCardsToCardList(boolean isOffline) {
