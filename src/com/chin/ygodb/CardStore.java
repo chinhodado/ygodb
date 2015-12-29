@@ -256,13 +256,13 @@ public final class CardStore {
     public String getImageLink(String cardName) {
         // try get from cache
         Card card = CardStore.cardSet.get(cardName);
-        if (!card.img.equals("")) {
-            return card.img;
+        if (!card.thumbnailImgUrl.equals("")) {
+            return card.thumbnailImgUrl;
         }
 
         String link = getImageLinkOffline(cardName);
         if (link != null) {
-            card.img = link;
+            card.thumbnailImgUrl = link;
             return link;
         }
 
@@ -283,7 +283,10 @@ public final class CardStore {
         }
 
         Card card = CardStore.cardSet.get(cardName);
-        card.img = imageUrl;
+        if (card.thumbnailImgUrl.equals("")) {
+            card.thumbnailImgUrl = imageUrl;
+        }
+
         return imageUrl;
     }
 

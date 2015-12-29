@@ -2,7 +2,7 @@ package com.chin.ygodb;
 
 public class Card {
     public String name            = "";
-    public String attribute      = "";
+    public String attribute       = "";
     public String types           = "";
     public String level           = "";
     public String atk             = "";
@@ -24,7 +24,7 @@ public class Card {
     public String tcgAdvStatus    = "";
     public String tcgTrnStatus    = "";
     public String lore            = "";
-    public String img             = "";
+    public String thumbnailImgUrl = "";
 
     @Override
     public String toString() {
