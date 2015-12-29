@@ -420,7 +420,7 @@ public class AdvancedSearchActivity extends BaseFragmentActivity {
             ListView famListView = (ListView) view.findViewById(R.id.resultListView);
 
             // set the result set of the previous search as the adapter for the list
-            famListView.setAdapter(new CardRegexFilterArrayAdapter(getActivity(), R.layout.list_item, R.id.itemRowText, resultSet));
+            famListView.setAdapter(new CardRegexFilterArrayAdapter(getActivity(), R.layout.list_item_card, R.id.itemRowText, resultSet));
 
             // go to a card's detail page when click on its name on the list
             famListView.setOnItemClickListener(new OnItemClickListener(){
