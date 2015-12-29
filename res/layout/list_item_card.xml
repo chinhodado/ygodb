@@ -11,15 +11,14 @@
         android:layout_marginTop="4dp"
         android:layout_marginBottom="4dp"
         android:layout_marginLeft="8dp"
-        android:layout_marginRight="8dp"
-        android:background="#F1F1F1">
+        android:layout_marginRight="8dp">
 
         <LinearLayout            
             android:orientation="horizontal"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:paddingLeft="@dimen/activity_horizontal_margin"
-            android:paddingRight="12dp" >
+            android:paddingRight="12dp">
 
                 <TextView
                     android:id="@+id/itemRowText"

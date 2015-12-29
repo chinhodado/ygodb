@@ -15,6 +15,8 @@
     <!-- Application theme. -->
     <style name="AppTheme" parent="AppBaseTheme">
         <!-- All customizations that are NOT specific to a particular API-level can go here. -->
+        <item name="android:background">#ECECEC</item>
+        <item name="android:colorBackground">#ECECEC</item>
     </style>
     
     <!-- the theme applied to the application or activity -->
