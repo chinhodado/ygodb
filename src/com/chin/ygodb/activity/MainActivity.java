@@ -3,8 +3,8 @@ package com.chin.ygodb.activity;
 import com.chin.common.CustomDialogFragment;
 import com.chin.common.Util;
 import com.chin.ygodb.Card;
-import com.chin.ygodb.CardStore;
 import com.chin.ygodb.CardRegexFilterArrayAdapter;
+import com.chin.ygodb.CardStore;
 import com.chin.ygodb2.R;
 
 import android.content.Context;
@@ -139,5 +139,10 @@ public class MainActivity extends BaseFragmentActivity {
 
             return view;
         }
+    }
+
+    @Override
+    public void onBackPressed() {
+        moveTaskToBack(false);
     }
 }
