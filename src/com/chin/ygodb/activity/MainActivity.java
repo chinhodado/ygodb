@@ -101,7 +101,7 @@ public class MainActivity extends BaseFragmentActivity {
 
             try {
                 if (adapter == null) {
-                    adapter = new CardRegexFilterArrayAdapter(getActivity(), R.layout.list_item, R.id.itemRowText, CardStore.cardList);
+                    adapter = new CardRegexFilterArrayAdapter(getActivity(), R.layout.list_item_card, R.id.itemRowText, CardStore.cardList);
                 }
 
                 EditText cardEditText = (EditText) view.findViewById(R.id.cardEditText);
@@ -131,8 +131,8 @@ public class MainActivity extends BaseFragmentActivity {
                             startActivity(intent);
                     }
                 });
-
-            } catch (Exception e) {
+            }
+            catch (Exception e) {
                 Log.e("MainActivity", "Error setting up the card list");
                 e.printStackTrace();
             }
