@@ -276,6 +276,12 @@ public final class CardStore {
         Element td = dom.getElementsByClass("cardtable-cardimage").first();
 
         String imageUrl = td.getElementsByTag("a").first().attr("href");
+
+        // Strip out the unnecessary stuffs in the image url
+        if (imageUrl.contains("/revision/")) {
+            imageUrl = imageUrl.substring(0, imageUrl.indexOf("/revision/"));
+        }
+
         Card card = CardStore.cardSet.get(cardName);
         card.img = imageUrl;
         return imageUrl;
