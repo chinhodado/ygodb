@@ -1,5 +1,11 @@
 package com.chin.ygodb.activity;
 
+import com.chin.common.Util;
+import com.chin.ygodb.YgoDbApplication;
+import com.chin.ygodb2.R;
+import com.google.android.gms.ads.AdRequest;
+import com.google.android.gms.ads.AdView;
+
 import android.content.Intent;
 import android.content.res.Configuration;
 import android.os.Bundle;
@@ -14,12 +20,6 @@ import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
-
-import com.chin.common.Util;
-import com.chin.ygodb.YgoDbApplication;
-import com.chin.ygodb2.R;
-import com.google.android.gms.ads.AdRequest;
-import com.google.android.gms.ads.AdView;
 
 /**
  * A base class for a FragmentActivity with a navigation drawer, Google Analytics and ads
@@ -72,7 +72,8 @@ public class BaseFragmentActivity extends FragmentActivity{
 
                 if (position == 0) { // Card
                     intent = new Intent(v.getContext(), MainActivity.class);
-                    intent.setFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT);
+                    // note that we don't need the FLAG_ACTIVITY_REORDER_TO_FRONT here
+                    // since this is the "root" activity and it has launchMode="singleTask"
                     startActivity(intent);
                 }
                 else if (position == 1) { // Advanced search
