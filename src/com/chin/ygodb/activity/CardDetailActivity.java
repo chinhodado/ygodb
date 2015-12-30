@@ -60,6 +60,7 @@ public class CardDetailActivity extends BaseFragmentActivity {
 
         final int pageMargin = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 4, getResources().getDisplayMetrics());
         pager.setPageMargin(pageMargin);
+        tabs.setShouldExpand(true); // note: has to be before setViewPager()
         tabs.setViewPager(pager);
         tabs.setIndicatorColor(ContextCompat.getColor(this, R.color.red));
 
