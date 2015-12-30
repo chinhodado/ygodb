@@ -59,6 +59,16 @@ public class YgoWikiaHtmlCleaner {
             }
         }
 
+        if (type == CardAdditionalInfoType.Ruling) {
+            Elements children = content.select("#mw-content-text").first().children();
+            for (Element child : children) {
+                if (child.text().equals("Notes") && (child.tagName().equals("h2") || child.tagName().equals("h3"))) {
+                    child.remove();
+                    break;
+                }
+            }
+        }
+
         removeComments(content);                         // remove comments
         removeAttributes(content);                       // remove all attributes. Has to be at the end, otherwise can't grab id, etc.
         removeEmptyTags(content);                        // remove all empty tags
