@@ -351,7 +351,7 @@ public class AdvancedSearchActivity extends BaseFragmentActivity {
 				@Override
 				public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
 					String selected = (String) parent.getItemAtPosition(position);
-					if (selected == "(All)") {
+					if (selected.equals("(All)")) {
 						subCategorySpinner.setEnabled(false);
 						subCategorySpinner.setAdapter(new ArrayAdapter<String>(getActivity(),
 								android.R.layout.simple_spinner_item, new String[] { "(All)" }));
@@ -359,7 +359,7 @@ public class AdvancedSearchActivity extends BaseFragmentActivity {
 							lastSelectedSubCategoryPosition = -1;
 						}
 						lastSelectedMainCategory = "(All)";
-					} else if (selected == "Monster") {
+					} else if (selected.equals("Monster")) {
 						subCategorySpinner.setEnabled(true);
 						subCategorySpinner.setAdapter(subCategoryMonsterAdapter);
 						// if we have just come from another main category, allow the subcategory spinner to reset
@@ -368,14 +368,14 @@ public class AdvancedSearchActivity extends BaseFragmentActivity {
 							lastSelectedSubCategoryPosition = -1;
 						}
 						lastSelectedMainCategory = "Monster";
-					} else if (selected == "Spell") {
+					} else if (selected.equals("Spell")) {
 						subCategorySpinner.setEnabled(true);
 						subCategorySpinner.setAdapter(subCategorySpellAdapter);
 						if (!lastSelectedMainCategory.equals("Spell")) {
 							lastSelectedSubCategoryPosition = -1;
 						}
 						lastSelectedMainCategory = "Spell";
-					} else if (selected == "Trap") {
+					} else if (selected.equals("Trap")) {
 						subCategorySpinner.setEnabled(true);
 						subCategorySpinner.setAdapter(subCategoryTrapAdapter);
 						if (!lastSelectedMainCategory.equals("Trap")) {
