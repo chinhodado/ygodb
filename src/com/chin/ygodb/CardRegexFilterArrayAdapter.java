@@ -11,9 +11,12 @@ import com.nostra13.universalimageloader.core.ImageLoader;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
+import android.graphics.Point;
 import android.text.Html;
+import android.view.Display;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.WindowManager;
 import android.widget.Filter;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -25,6 +28,8 @@ import android.widget.TextView;
 public class CardRegexFilterArrayAdapter extends RegexFilterArrayAdapter<Card> {
 
     protected CardArrayFilter mFilter;
+    private int imgviewWidth;
+    private int imgviewHeight;
 
     /**
      * Constructor
@@ -37,6 +42,15 @@ public class CardRegexFilterArrayAdapter extends RegexFilterArrayAdapter<Card> {
      */
     public CardRegexFilterArrayAdapter(Context context, int resource, int textViewResourceId, List<Card> objects) {
         super(context, resource, textViewResourceId, objects);
+
+        // calculate the width and height of the imageview for the card thumbnail
+        WindowManager windowManager = (WindowManager)context.getSystemService(Context.WINDOW_SERVICE);
+        Display display = windowManager.getDefaultDisplay();
+        Point size = new Point();
+        display.getSize(size);
+        int screenWidth = size.x;
+        imgviewWidth = (int) (screenWidth * 0.2);
+        imgviewHeight = (int) (imgviewWidth * 1.4576);
     }
 
     /**
@@ -62,6 +76,8 @@ public class CardRegexFilterArrayAdapter extends RegexFilterArrayAdapter<Card> {
 
         ImageView imgView = (ImageView) view.findViewById(R.id.itemRowImage);
         imgView.setImageResource(android.R.color.transparent);
+        imgView.getLayoutParams().width  = imgviewWidth;
+        imgView.getLayoutParams().height = imgviewHeight;
         ImageLoader.getInstance().displayImage(CardStore.getInstance(mContext).getImageLink(card.name), imgView);
 
         return view;

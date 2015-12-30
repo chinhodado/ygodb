@@ -315,7 +315,7 @@ public final class CardStore {
             Point size = new Point();
             display.getSize(size);
             int screenWidth = size.x;
-            int scaleWidth = (int) (screenWidth * 0.25);
+            int scaleWidth = (int) (screenWidth * 0.2);
 
             String finalLink = Util.getScaledWikiaImageLink(originalLink, scaleWidth);
             return finalLink;
