@@ -6,8 +6,10 @@ import org.jsoup.nodes.Element;
 import org.jsoup.nodes.Node;
 import org.jsoup.select.Elements;
 
+import com.chin.ygodb.CardStore.CardAdditionalInfoType;
+
 public class YgoWikiaHtmlCleaner {
-    static String getCleanedHtml(Element content, boolean isTipPage) {
+    static String getCleanedHtml(Element content, CardAdditionalInfoType type) {
         Elements navboxes = content.select("table.navbox");
         if (!navboxes.isEmpty()) {navboxes.first().remove();} // remove the navigation box
 
@@ -28,7 +30,7 @@ public class YgoWikiaHtmlCleaner {
             }
         }
 
-        if (isTipPage) {
+        if (type == CardAdditionalInfoType.Tips) {
             // remove the "lists" tables
             boolean foundListsHeader = false;
             Elements children = content.select("#mw-content-text").first().children();
@@ -43,6 +45,16 @@ public class YgoWikiaHtmlCleaner {
                 }
                 else if (foundListsHeader) {
                     child.remove();
+                }
+            }
+        }
+
+        if (type == CardAdditionalInfoType.Trivia) {
+            Elements children = content.select("#mw-content-text").first().children();
+            for (Element child : children) {
+                if (child.text().contains("For trivia pertaining to this monster's Number")) {
+                    child.remove();
+                    break;
                 }
             }
         }

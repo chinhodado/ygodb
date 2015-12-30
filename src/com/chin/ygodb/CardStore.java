@@ -363,7 +363,7 @@ public final class CardStore {
         Document dom = cardDomCache.get(cardName);
 
         Element effectBox = dom.getElementsByClass("cardtablespanrow").first().getElementsByClass("navbox-list").first();
-        String lore = YgoWikiaHtmlCleaner.getCleanedHtml(effectBox, false);
+        String lore = YgoWikiaHtmlCleaner.getCleanedHtml(effectBox, null);
 
         // turn <dl> into <p> and <dt> into <b>
         lore = lore.replace("<dl", "<p").replace("dl>", "p>").replace("<dt", "<b").replace("dt>", "b>");
@@ -586,7 +586,7 @@ public final class CardStore {
         }
 
         Element content = dom.getElementById("mw-content-text");
-        String info = YgoWikiaHtmlCleaner.getCleanedHtml(content, type == CardAdditionalInfoType.Tips);
+        String info = YgoWikiaHtmlCleaner.getCleanedHtml(content, type);
         return info;
     }
 }
