@@ -262,7 +262,7 @@ public class AdvancedSearchActivity extends BaseFragmentActivity {
                     if (!resultSet.isEmpty()) {
                         // switch to the result tab (with index 1)
                         getActivity().getActionBar().setSelectedNavigationItem(1);
-                        Toast toast = Toast.makeText(getActivity(), "Found " + resultSet.size() + " results.", Toast.LENGTH_SHORT);
+                        Toast toast = Toast.makeText(getActivity(), "Found " + resultSet.size() + " results.", Toast.LENGTH_LONG);
                         toast.show();
 
                         // hide keyboard
