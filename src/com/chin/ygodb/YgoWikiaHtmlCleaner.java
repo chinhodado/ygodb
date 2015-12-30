@@ -7,7 +7,7 @@ import org.jsoup.nodes.Node;
 import org.jsoup.select.Elements;
 
 public class YgoWikiaHtmlCleaner {
-    static String getCleanedHtml(Element content) {
+    static String getCleanedHtml(Element content, boolean isTipPage) {
         Elements navboxes = content.select("table.navbox");
         if (!navboxes.isEmpty()) {navboxes.first().remove();} // remove the navigation box
 
@@ -25,6 +25,25 @@ public class YgoWikiaHtmlCleaner {
             if (table.text().startsWith("These TCG rulings were issued by Upper Deck Entertainment")) {
                 // TODO: may want to put a placeholder here so we know to put it back in later
                 table.remove();
+            }
+        }
+
+        if (isTipPage) {
+            // remove the "lists" tables
+            boolean foundListsHeader = false;
+            Elements children = content.select("#mw-content-text").first().children();
+            for (Element child : children) {
+                if ((child.tagName().equals("h2") || child.tagName().equals("h3")) && child.text().contains("List")) {
+                    foundListsHeader = true;
+                    child.remove();
+                    continue;
+                }
+                else if (foundListsHeader && (child.tagName().equals("h2") || child.tagName().equals("h3"))) {
+                    break;
+                }
+                else if (foundListsHeader) {
+                    child.remove();
+                }
             }
         }
 
