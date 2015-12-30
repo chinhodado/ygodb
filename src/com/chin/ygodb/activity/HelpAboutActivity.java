@@ -1,14 +1,13 @@
 package com.chin.ygodb.activity;
 
-import com.chin.ygodb.YgoDbApplication;
 import com.chin.ygodb.YgoSqliteDatabase;
 import com.chin.ygodb2.R;
 
-import android.support.v4.app.NavUtils;
-import android.text.Html;
 import android.content.Intent;
 import android.content.pm.PackageManager.NameNotFoundException;
 import android.os.Bundle;
+import android.support.v4.app.NavUtils;
+import android.text.Html;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.TextView;
@@ -69,6 +68,8 @@ public class HelpAboutActivity extends BaseFragmentActivity {
             case android.R.id.home:
                 NavUtils.navigateUpFromSameTask(this);
                 return true;
+            default:
+                break;
         }
         return super.onOptionsItemSelected(item);
     }

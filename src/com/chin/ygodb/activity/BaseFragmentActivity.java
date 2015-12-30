@@ -173,6 +173,8 @@ public class BaseFragmentActivity extends FragmentActivity{
                 startActivity(intent);
                 break;
             }
+            default:
+                break;
         }
         return super.onOptionsItemSelected(item);
     }

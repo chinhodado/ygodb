@@ -1,16 +1,22 @@
 package com.chin.ygodb.activity;
 
+import com.chin.common.MyTagHandler;
 import com.chin.ygodb.CardStore;
 import com.chin.ygodb.CardStore.CardAdditionalInfoType;
 import com.chin.ygodb.PagerSlidingTabStrip;
 import com.chin.ygodb.asyncTask.AddCardInfoTask;
 import com.chin.ygodb2.R;
-import com.chin.common.MyTagHandler;
 
-import android.os.AsyncTask;
-import android.os.Bundle;
 import android.annotation.SuppressLint;
 import android.content.Intent;
+import android.os.AsyncTask;
+import android.os.Bundle;
+import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentManager;
+import android.support.v4.app.FragmentPagerAdapter;
+import android.support.v4.content.ContextCompat;
+import android.support.v4.view.ViewPager;
+import android.text.Html;
 import android.util.TypedValue;
 import android.view.Gravity;
 import android.view.LayoutInflater;
@@ -19,11 +25,6 @@ import android.view.ViewGroup;
 import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.TextView;
-import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentManager;
-import android.support.v4.app.FragmentPagerAdapter;
-import android.support.v4.view.ViewPager;
-import android.text.Html;
 
 /**
  * Activity to show all details about a card
@@ -60,7 +61,7 @@ public class CardDetailActivity extends BaseFragmentActivity {
         final int pageMargin = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 4, getResources().getDisplayMetrics());
         pager.setPageMargin(pageMargin);
         tabs.setViewPager(pager);
-        tabs.setIndicatorColor(getResources().getColor(R.color.red));
+        tabs.setIndicatorColor(ContextCompat.getColor(this, R.color.red));
 
         getActionBar().setTitle(cardName);
     }
