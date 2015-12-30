@@ -84,6 +84,10 @@ public class MainActivity extends BaseFragmentActivity {
                 return;
             }
         }
+        else {
+            initializingSpin.setVisibility(View.GONE);
+            initializingTv.setVisibility(View.GONE);
+        }
 
         // for our purposes, consider the app already opened at this point
         hasJustBeenStarted = false;
