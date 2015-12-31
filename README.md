@@ -1,7 +1,7 @@
 ygodb
 =====
 
-![screenshots](https://cloud.githubusercontent.com/assets/1388219/5427793/adb6056c-837a-11e4-90a9-1ada8e1545ce.png)
+![screenshot](https://cloud.githubusercontent.com/assets/1388219/12061104/d209b730-af4b-11e5-830b-e70abc3ed13e.png)
 
 This is a Yugioh database app for Android. It has an offline database of all OCG/TCG cards with their rulings, tips and trivia. 
 
