@@ -31,7 +31,6 @@ import android.widget.TextView;
  */
 public class MainActivity extends BaseFragmentActivity {
     static boolean hasJustBeenStarted = true; // flag to determine if the app has just been started
-    public final static String CARD_LINK = "com.chin.ygodb.LINK";
     public final static String CARD_NAME = "com.chin.ygodb.NAME";
 
     public static CardRegexFilterArrayAdapter adapter = null;

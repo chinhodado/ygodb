@@ -160,7 +160,7 @@ public final class CardStore {
                                   + "from card order by name", null);
 
         if (cursor.moveToFirst()) {
-            while (cursor.isAfterLast() == false) {
+            while (!cursor.isAfterLast()) {
                 String name = cursor.getString(cursor.getColumnIndex("name"));
                 Card card = new Card();
                 card.name = name;
@@ -567,7 +567,7 @@ public final class CardStore {
 
     private String getCardGenericInfoOnline(CardAdditionalInfoType type, String cardName) throws Exception {
         initializeCardList();
-        String baseUrl = "";
+        String baseUrl;
         switch (type) {
             case Ruling:
                 baseUrl = "http://yugioh.wikia.com/wiki/Card_Rulings:";
@@ -583,7 +583,7 @@ public final class CardStore {
         }
         String url = baseUrl + CardStore.cardLinkTable.get(cardName)[0].substring(6);
 
-        Document dom = null;
+        Document dom;
 
         try {
             dom = Jsoup.parse(Jsoup.connect(url).ignoreContentType(true).execute().body());

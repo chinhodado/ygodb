@@ -30,8 +30,8 @@ public class DatabaseQuerier {
 
     /**
      * Execute a search query and return the result
-     * @param whereClause The where clause that represents the criteria of the search
-     * @return List of familiars that satisfy the criteria
+     * @param criteria The where clause that represents the criteria of the search
+     * @return List of cards that satisfy the criteria
      */
     public ArrayList<Card> executeQuery(String criteria) {
     	Log.i("Search", "Criteria: " + criteria);
@@ -42,7 +42,7 @@ public class DatabaseQuerier {
             Cursor cursor = db.rawQuery("Select name, attribute, types, level, atk, def, rank, pendulumScale, property "
                                       + "from card where " + criteria + " order by name", null);
             if (cursor.moveToFirst()) {
-                while (cursor.isAfterLast() == false) {
+                while (!cursor.isAfterLast()) {
                     String name = cursor.getString(cursor.getColumnIndex("name"));
 
                     // verify that the card really exists in our database
