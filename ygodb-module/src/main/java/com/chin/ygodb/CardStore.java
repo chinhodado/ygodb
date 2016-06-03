@@ -184,6 +184,7 @@ public final class CardStore {
             }
         }
 
+        cursor.close();
         Collections.sort(cardNameList);
     }
 
@@ -306,6 +307,8 @@ public final class CardStore {
             return null;
         }
 
+        cursor.close();
+
         try {
             String originalLink = "http://vignette" + img.charAt(0) + ".wikia.nocookie.net/yugioh/images/" + img.charAt(1)
                 + "/" + img.charAt(1) + img.charAt(2) + "/" + img.substring(3);
@@ -349,6 +352,7 @@ public final class CardStore {
         cursor.moveToFirst();
 
         String lore = cursor.getString(cursor.getColumnIndex("lore"));
+        cursor.close();
         return lore;
     }
 
@@ -404,6 +408,7 @@ public final class CardStore {
                 array.add(new Pair(columnNameMap.get(columns[i]), value));
             }
         }
+        cursor.close();
         return array;
     }
 
@@ -477,6 +482,7 @@ public final class CardStore {
 
             array.add(new Pair(columnNameMap.get(columns[i]), value));
         }
+        cursor.close();
         return array;
     }
 
@@ -555,6 +561,7 @@ public final class CardStore {
         if (value.equals("")) {
             value = "Not available.";
         }
+        cursor.close();
         return value;
     }
 

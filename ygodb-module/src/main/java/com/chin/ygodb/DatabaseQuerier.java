@@ -67,6 +67,7 @@ public class DatabaseQuerier {
                     cursor.moveToNext();
                 }
             }
+            cursor.close();
         } catch (Exception e) {
             e.printStackTrace();
             Toast toast = Toast.makeText(context, "An error occurred while searching.", Toast.LENGTH_SHORT);
