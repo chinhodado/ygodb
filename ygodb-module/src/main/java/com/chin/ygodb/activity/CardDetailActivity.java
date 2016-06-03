@@ -81,11 +81,10 @@ public class CardDetailActivity extends BaseFragmentActivity {
         AsyncTask<?, ?, ?> myTask = null;
         static String cardName;
 
-        public CardInfoFragment(String cardName) {
+        public static CardInfoFragment newInstance(String cardName) {
+            CardInfoFragment f = new CardInfoFragment();
             CardInfoFragment.cardName = cardName;
-        }
-
-        public CardInfoFragment() {
+            return f;
         }
 
         @Override
@@ -226,7 +225,7 @@ public class CardDetailActivity extends BaseFragmentActivity {
         @Override
         public Fragment getItem(int position) {
             if (position == 0) {
-                return new CardInfoFragment(cardName);
+                return CardInfoFragment.newInstance(cardName);
             }
             else if (position == 1){
                 return CardGenericDetailFragment.newInstance(CardAdditionalInfoType.Ruling, cardName);
