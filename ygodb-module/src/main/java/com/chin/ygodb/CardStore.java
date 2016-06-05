@@ -80,7 +80,7 @@ public final class CardStore {
     // a storage for cards' detail after being fetched online
     private static Hashtable<String, Document> cardDomCache = new Hashtable<String, Document>();
 
-    // list of Card objects, used for displaying in the ListView
+    // list of Card objects, used for displaying in the ListView (the backing list for the adapter)
     public static ArrayList<Card> cardList = new ArrayList<Card>(8192);
 
     // basically a hashtable of cardList that maps a card's name to its Card object
@@ -126,7 +126,9 @@ public final class CardStore {
             initializeCardListOnline(null, true);
             initializeCardListOnline(null, false);
 
-            addOfflineCardsToCardList(false);
+            if (!initializedOffline) {
+                addOfflineCardsToCardList(false);
+            }
 
             // add those that are online but not offline
             ArrayList<String> onlineOfflineDiff = new ArrayList<String>(CardStore.cardNameList);
