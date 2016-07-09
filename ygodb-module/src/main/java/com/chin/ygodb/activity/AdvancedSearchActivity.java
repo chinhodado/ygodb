@@ -46,6 +46,7 @@ public class AdvancedSearchActivity extends BaseFragmentActivity {
     		"Pyro", "Rock", "Winged Beast", "Plant", "Insect", "Thunder", "Dragon", "Beast", "Beast-Warrior", "Dinosaur",
     		"Fish", "Sea Serpent", "Reptile", "Psychic", "Divine-Beast", "Creator God", "Wyrm"};
     public static String[] limitList = {"(All)", "Banned", "Limited", "Semi-limited", "Illegal"};
+    public static String[] tcgOcgList = {"(All)", "TCG", "TCG Exclusive", "OCG", "OCG Exclusive"};
 
     static ArrayAdapter<String> subCategoryMonsterAdapter;
     static ArrayAdapter<String> subCategorySpellAdapter;
@@ -222,6 +223,24 @@ public class AdvancedSearchActivity extends BaseFragmentActivity {
                         }
                     }
 
+                    // tcg/ocg
+                    String tcgOcgInput = ((Spinner) view.findViewById(R.id.spinnerTcgOcg)).getSelectedItem().toString();
+                    String tcgOcgSql = null;
+                    if (!tcgOcgInput.equals("(All)")) {
+                        if (tcgOcgInput.equals("TCG Exclusive")) {
+                            tcgOcgSql = "tcgOnly = 1";
+                        }
+                        else if (tcgOcgInput.equals("OCG Exclusive")) {
+                            tcgOcgSql = "ocgOnly = 1";
+                        }
+                        else if (tcgOcgInput.equals("TCG")) {
+                            tcgOcgSql = "ocgOnly <> 1";
+                        }
+                        else if (tcgOcgInput.equals("OCG")) {
+                            tcgOcgSql = "tcgOnly <> 1";
+                        }
+                    }
+
                     // get the SQL where clause
                     String criteria = SearchCriterion.getCriteria(criteriaList);
                     if (levelRankSql != null) {
@@ -252,6 +271,11 @@ public class AdvancedSearchActivity extends BaseFragmentActivity {
                     if (limitSql != null) {
                     	if (!criteria.equals("")) criteria += " AND ";
                     	criteria += limitSql;
+                    }
+
+                    if (tcgOcgSql != null) {
+                        if (!criteria.equals("")) criteria += " AND ";
+                        criteria += tcgOcgSql;
                     }
 
                     // then execute the query and get the result
@@ -327,6 +351,13 @@ public class AdvancedSearchActivity extends BaseFragmentActivity {
             		android.R.layout.simple_spinner_item, limitList);
             limitAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
             limitSpinner.setAdapter(limitAdapter);
+
+            // tcg/ocg
+            Spinner tcgOcgSpinner = (Spinner) view.findViewById(R.id.spinnerTcgOcg);
+            ArrayAdapter<String> tcgOcgAdapter = new ArrayAdapter<String>(getActivity(),
+                    android.R.layout.simple_spinner_item, tcgOcgList);
+            tcgOcgAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+            tcgOcgSpinner.setAdapter(tcgOcgAdapter);
 
             // sub-categories
             final Spinner subCategorySpinner = (Spinner) view.findViewById(R.id.spinnerSubCategory);
