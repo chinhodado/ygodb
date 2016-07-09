@@ -106,6 +106,25 @@
             android:orientation="horizontal" >
 
             <TextView
+                android:id="@+id/textViewStatusOcg"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:text="Status (OCG)"
+                android:layout_weight="0.3"/>
+            <Spinner
+                android:id="@+id/spinnerStatusOcg"
+                android:layout_width="0px"
+                android:layout_height="wrap_content"
+                android:layout_weight="0.7" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:orientation="horizontal" >
+
+            <TextView
                 android:id="@+id/textViewTcgOcg"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"

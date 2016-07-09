@@ -218,6 +218,18 @@ public class AdvancedSearchActivity extends BaseFragmentActivity {
                         }
                     }
 
+                    // status ocg
+                    String statusOcgInput = ((Spinner) view.findViewById(R.id.spinnerStatusOcg)).getSelectedItem().toString();
+                    String statusOcgSql = null;
+                    if (!statusOcgInput.equals("(All)")) {
+                        if (statusOcgInput.equals("Unlimited")) {
+                            statusOcgSql = "ocgStatus = \"U\"";
+                        }
+                        else {
+                            statusOcgSql = "ocgStatus = \"" + statusOcgInput + "\"";
+                        }
+                    }
+
                     // tcg/ocg
                     String tcgOcgInput = ((Spinner) view.findViewById(R.id.spinnerTcgOcg)).getSelectedItem().toString();
                     String tcgOcgSql = null;
@@ -266,6 +278,11 @@ public class AdvancedSearchActivity extends BaseFragmentActivity {
                     if (statusTcgAdvSql != null) {
                     	if (!criteria.equals("")) criteria += " AND ";
                     	criteria += statusTcgAdvSql;
+                    }
+
+                    if (statusOcgSql != null) {
+                        if (!criteria.equals("")) criteria += " AND ";
+                        criteria += statusOcgSql;
                     }
 
                     if (tcgOcgSql != null) {
@@ -346,6 +363,13 @@ public class AdvancedSearchActivity extends BaseFragmentActivity {
             		android.R.layout.simple_spinner_item, statusList);
             statusTcgAdvAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
             statusTcgAdvSpinner.setAdapter(statusTcgAdvAdapter);
+
+            // status ocg
+            Spinner statusOcgSpinner = (Spinner) view.findViewById(R.id.spinnerStatusOcg);
+            ArrayAdapter<String> statusOcgAdapter = new ArrayAdapter<String>(getActivity(),
+                    android.R.layout.simple_spinner_item, statusList);
+            statusOcgAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+            statusOcgSpinner.setAdapter(statusOcgAdapter);
 
             // tcg/ocg
             Spinner tcgOcgSpinner = (Spinner) view.findViewById(R.id.spinnerTcgOcg);
