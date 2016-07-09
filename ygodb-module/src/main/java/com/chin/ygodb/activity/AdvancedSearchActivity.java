@@ -45,7 +45,8 @@ public class AdvancedSearchActivity extends BaseFragmentActivity {
     public static String[] typeList = {"(All)", "Warrior", "Spellcaster", "Fairy", "Fiend", "Zombie", "Machine", "Aqua",
     		"Pyro", "Rock", "Winged Beast", "Plant", "Insect", "Thunder", "Dragon", "Beast", "Beast-Warrior", "Dinosaur",
     		"Fish", "Sea Serpent", "Reptile", "Psychic", "Divine-Beast", "Creator God", "Wyrm"};
-    public static String[] limitList = {"(All)", "Banned", "Limited", "Semi-limited", "Illegal"};
+    public static String[] statusList = {"(All)", "Forbidden", "Limited", "Semi-Limited", "Unlimited",
+            "Illegal", "Legal", "Not yet released"};
     public static String[] tcgOcgList = {"(All)", "TCG", "TCG Exclusive", "OCG", "OCG Exclusive"};
 
     static ArrayAdapter<String> subCategoryMonsterAdapter;
@@ -205,21 +206,15 @@ public class AdvancedSearchActivity extends BaseFragmentActivity {
                     	typeSql = "types like \"%" + typeInput + "%\"";
                     }
 
-                    // limit
-                    String limitInput = ((Spinner) view.findViewById(R.id.spinnerLimit)).getSelectedItem().toString();
-                    String limitSql = null;
-                    if (!limitInput.equals("(All)")) {
-                    	if (limitInput.equals("Banned")) {
-                    		limitSql = "tcgAdvStatus = \"Forbidden\"";
+                    // status tcg adv
+                    String statusTcgAdvInput = ((Spinner) view.findViewById(R.id.spinnerStatusTcgAdv)).getSelectedItem().toString();
+                    String statusTcgAdvSql = null;
+                    if (!statusTcgAdvInput.equals("(All)")) {
+                    	if (statusTcgAdvInput.equals("Unlimited")) {
+                            statusTcgAdvSql = "tcgAdvStatus = \"U\"";
                         }
-                        else if (limitInput.equals("Limited")) {
-                        	limitSql = "tcgAdvStatus = \"Limited\"";
-                        }
-                        else if (limitInput.equals("Semi-limited")) {
-                        	limitSql = "tcgAdvStatus = \"Semi-Limited\"";
-                        }
-                        else if (limitInput.equals("Illegal")) {
-                            limitSql = "tcgAdvStatus = \"Illegal\"";
+                        else {
+                            statusTcgAdvSql = "tcgAdvStatus = \"" + statusTcgAdvInput + "\"";
                         }
                     }
 
@@ -268,9 +263,9 @@ public class AdvancedSearchActivity extends BaseFragmentActivity {
                     	criteria += typeSql;
                     }
 
-                    if (limitSql != null) {
+                    if (statusTcgAdvSql != null) {
                     	if (!criteria.equals("")) criteria += " AND ";
-                    	criteria += limitSql;
+                    	criteria += statusTcgAdvSql;
                     }
 
                     if (tcgOcgSql != null) {
@@ -345,12 +340,12 @@ public class AdvancedSearchActivity extends BaseFragmentActivity {
             typeAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
             typeSpinner.setAdapter(typeAdapter);
 
-            // limit
-            Spinner limitSpinner = (Spinner) view.findViewById(R.id.spinnerLimit);
-            ArrayAdapter<String> limitAdapter = new ArrayAdapter<String>(getActivity(),
-            		android.R.layout.simple_spinner_item, limitList);
-            limitAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-            limitSpinner.setAdapter(limitAdapter);
+            // status tcg adv
+            Spinner statusTcgAdvSpinner = (Spinner) view.findViewById(R.id.spinnerStatusTcgAdv);
+            ArrayAdapter<String> statusTcgAdvAdapter = new ArrayAdapter<String>(getActivity(),
+            		android.R.layout.simple_spinner_item, statusList);
+            statusTcgAdvAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+            statusTcgAdvSpinner.setAdapter(statusTcgAdvAdapter);
 
             // tcg/ocg
             Spinner tcgOcgSpinner = (Spinner) view.findViewById(R.id.spinnerTcgOcg);

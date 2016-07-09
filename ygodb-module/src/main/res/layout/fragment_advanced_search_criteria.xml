@@ -87,13 +87,13 @@
             android:orientation="horizontal" >
     
             <TextView
-	            android:id="@+id/textViewLimit"
+	            android:id="@+id/textViewStatusTcgAdv"
 	            android:layout_width="0dp"
 	            android:layout_height="wrap_content"
-	            android:text="Limit (TCG Adv.)" 
+	            android:text="Status (TCG Adv.)"
 	            android:layout_weight="0.3"/>
             <Spinner
-                android:id="@+id/spinnerLimit"
+                android:id="@+id/spinnerStatusTcgAdv"
                 android:layout_width="0px"
                 android:layout_height="wrap_content"
                 android:layout_weight="0.7" />
