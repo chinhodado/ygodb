@@ -1,13 +1,13 @@
 apply plugin: 'com.android.application'
 
 android {
-    compileSdkVersion 23
-    buildToolsVersion "23.0.3"
+    compileSdkVersion 24
+    buildToolsVersion "24.0.3"
 
     defaultConfig {
         applicationId "com.chin.ygodb2"
         minSdkVersion 14
-        targetSdkVersion 23
+        targetSdkVersion 24
     }
 
     buildTypes {
@@ -23,10 +23,10 @@ android {
 }
 
 dependencies {
-    compile 'com.android.support:appcompat-v7:23.4.0'
-    compile 'com.android.support:cardview-v7:23.4.0'
-    compile 'com.google.android.gms:play-services-ads:9.0.1'
-    compile 'com.google.android.gms:play-services-analytics:9.0.1'
+    compile 'com.android.support:appcompat-v7:24.2.1'
+    compile 'com.android.support:cardview-v7:24.2.1'
+    compile 'com.google.android.gms:play-services-ads:9.6.1'
+    compile 'com.google.android.gms:play-services-analytics:9.6.1'
     compile files('libs/sqliteassethelper-2.0.1.jar')
     compile files('libs/universal-image-loader-1.9.4.jar')
     compile project(':common')
