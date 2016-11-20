@@ -494,25 +494,37 @@ public final class CardStore {
         getCardDomReady(cardName);
         Document dom = cardDomCache.get(cardName);
 
-        Elements statusRows = dom.getElementsByClass("cardtablestatuses").first().getElementsByTag("tr");
-        Element statusRow = null;
-        for (int i = 0; i < statusRows.size(); i++) {
-            if (statusRows.get(i).text().equals("TCG/OCG statuses")) {
-                statusRow = statusRows.get(i + 1);
+        Elements tableRows = dom.getElementsByClass("cardtable").first().getElementsByClass("cardtablerow");
+        boolean foundStatusRow = false;
+        for (int i = 0; i < tableRows.size(); i++) {
+            Element row = tableRows.get(i);
+            if (row.getElementsByClass("cardtablespanrow").size() > 0) {
+                // we reached the end of the status rows (past the banlist status rows and
+                // now is the Card descriptions row with nested table)
                 break;
+            }
+
+            Element rowHeader = row.getElementsByClass("cardtablerowheader").first();
+            if (rowHeader != null && rowHeader.text().equals("Statuses")) {
+                foundStatusRow = true;
+            }
+
+            if (foundStatusRow) {
+                String rowData = row.getElementsByClass("cardtablerowdata").first().text();
+                String[] tokens = rowData.split(" \\(");
+                if (tokens.length == 1) {
+                    statuses.add(new Pair("All formats", tokens[0]));
+                }
+                else {
+                    String status = tokens[0];
+                    String format = tokens[1].replace("(", "").replace(")", "");
+                    statuses.add(new Pair(format, status));
+                }
             }
         }
 
-        if (statusRow == null) {
+        if (statuses.isEmpty()) {
             Log.i("ygodb", "Card banlist status not found online");
-            return statuses;
-        }
-
-        Elements th = statusRow.getElementsByTag("th");
-        Elements td = statusRow.getElementsByTag("td");
-
-        for (int i = 0; i < th.size(); i++) {
-            statuses.add(new Pair(th.get(i).text(), td.get(i).text()));
         }
 
         return statuses;
