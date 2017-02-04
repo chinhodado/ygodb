@@ -50,9 +50,6 @@
             android:name="com.chin.ygodb.activity.HelpAboutActivity"
             android:label="Help" >
         </activity>
-        <activity
-            android:name="com.google.android.gms.ads.AdActivity"
-            android:configChanges="keyboard|keyboardHidden|orientation|screenLayout|uiMode|screenSize|smallestScreenSize" />
     </application>
 
 </manifest>
