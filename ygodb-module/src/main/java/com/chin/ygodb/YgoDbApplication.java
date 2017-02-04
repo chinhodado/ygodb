@@ -9,7 +9,6 @@ import com.nostra13.universalimageloader.core.ImageLoaderConfiguration;
 import android.app.Application;
 
 public class YgoDbApplication extends Application {
-    public static boolean IS_PRO_VERSION = true;
     public static GoogleAnalytics analytics;
     public static Tracker tracker;
 

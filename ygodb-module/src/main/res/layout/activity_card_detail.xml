@@ -36,13 +36,7 @@
                 android:layout_marginTop="@dimen/activity_vertical_margin"
                 tools:context=".CardDetailActivity" />
         </LinearLayout>
-    
-        <com.google.android.gms.ads.AdView
-            android:id="@+id/adView"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            ads:adSize="BANNER"
-            ads:adUnitId="@string/adUnitId" />
+
     </LinearLayout>
     
     <!-- The navigation drawer -->

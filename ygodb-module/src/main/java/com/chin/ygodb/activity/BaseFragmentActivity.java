@@ -3,8 +3,6 @@ package com.chin.ygodb.activity;
 import com.chin.common.Util;
 import com.chin.ygodb.YgoDbApplication;
 import com.chin.ygodb2.R;
-import com.google.android.gms.ads.AdRequest;
-import com.google.android.gms.ads.AdView;
 
 import android.content.Intent;
 import android.content.res.Configuration;
@@ -115,16 +113,6 @@ public class BaseFragmentActivity extends FragmentActivity{
         mDrawerLayout.setDrawerListener(mDrawerToggle);
 
         getActionBar().setDisplayHomeAsUpEnabled(true);
-
-        // Look up the AdView as a resource and load a request.
-        AdView adView = (AdView)this.findViewById(R.id.adView);
-        if (!YgoDbApplication.IS_PRO_VERSION) {
-            AdRequest adRequest = new AdRequest.Builder().build();
-            adView.loadAd(adRequest);
-        }
-        else {
-            adView.setVisibility(View.GONE);
-        }
     }
 
     @Override
