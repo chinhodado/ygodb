@@ -76,7 +76,7 @@ public class MainActivity extends BaseFragmentActivity {
                 }.execute(this);
             } catch (Exception e) {
                 e.printStackTrace();
-                CustomDialogFragment newFragment = new CustomDialogFragment(
+                CustomDialogFragment newFragment = CustomDialogFragment.newInstance(
                         "Something went horribly wrong. Please send me an email at chinho.dev@gmail.com if this persists.");
                 newFragment.setCancelable(false);
                 newFragment.show(getFragmentManager(), "no net");
