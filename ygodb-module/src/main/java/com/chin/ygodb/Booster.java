@@ -17,6 +17,8 @@ import java.util.Locale;
  */
 public class Booster {
     private static DateFormat DATE_FORMAT = new SimpleDateFormat("MMMM d, yyyy", Locale.ENGLISH);
+    private static DateFormat DATE_FORMAT_2 = new SimpleDateFormat("MMMM, yyyy", Locale.ENGLISH);
+    private static DateFormat DATE_FORMAT_3 = new SimpleDateFormat("MMMM yyyy", Locale.ENGLISH);
 
     private ImageView imgView;
     private TextView txtView;
@@ -60,10 +62,29 @@ public class Booster {
     }
 
     public void setReleaseDate(String releaseDate) {
+        boolean parsed = false;
         try {
             this.releaseDate = DATE_FORMAT.parse(releaseDate);
+            parsed = true;
         } catch (ParseException e) {
-            Log.i("ygodb", "Unable to parse date: " + releaseDate + " for " + name);
+            // do nothing
+        }
+
+        if (!parsed) {
+            try {
+                this.releaseDate = DATE_FORMAT_2.parse(releaseDate);
+                parsed = true;
+            } catch (ParseException e) {
+                // do nothing
+            }
+        }
+
+        if (!parsed) {
+            try {
+                this.releaseDate = DATE_FORMAT_3.parse(releaseDate);
+            } catch (ParseException e) {
+                Log.i("ygodb", "Unable to parse date: " + releaseDate + " for " + name);
+            }
         }
     }
 }
