@@ -59,7 +59,10 @@ public class BoosterCardListAsyncTask extends AsyncTask<String, Void, List<Card>
                     List<Card> res = querier.executeQuery(criteria);
 
                     if (res.size() > 0) {
-                        cards.add(res.get(0));
+                        Card card = res.get(0);
+                        card.setNumber = setNumber;
+                        card.rarity = rarity;
+                        cards.add(card);
                     }
                     else {
                         // TODO: card not in offline db, do something

@@ -26,11 +26,14 @@ public class Card {
     public String lore            = "";
     public String thumbnailImgUrl = "";
 
+    public String setNumber = "";
+    public String rarity = "";
+
     @Override
     public String toString() {
         String tmp = "<b>" + name + "</b><br>";
         if (types.equals("Spell Card") || types.equals("Trap Card")) {
-            tmp += ("<small>" + property + " " + types + "</small>");
+            tmp += small(property + " " + types);
         }
         else {
             tmp += "<small>";
@@ -46,6 +49,22 @@ public class Card {
             }
             tmp += (attribute + " " + types + "<br>" + atk + "/" + def + "</small>");
         }
-        return tmp;
+
+        if (!setNumber.equals("")) {
+            tmp += "<br>" + small(setNumber);
+            if (!rarity.equals("")) {
+                tmp += small(" (" + rarity + ")");
+            }
+        }
+
+        return small(tmp);
+    }
+
+    private String small(String text) {
+        return "<small>" + text + "</small>";
+    }
+
+    private String smaller(String text) {
+        return "<small>" + small(text) + "</small>";
     }
 }
