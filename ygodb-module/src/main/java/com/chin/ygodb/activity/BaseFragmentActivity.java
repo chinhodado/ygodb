@@ -46,6 +46,9 @@ public class BaseFragmentActivity extends FragmentActivity{
         else if (this instanceof BoosterActivity) {
             setContentView(R.layout.activity_card_detail);
         }
+        else if (this instanceof BoosterDetailActivity) {
+            setContentView(R.layout.activity_card_detail);
+        }
         else if (this instanceof HelpAboutActivity) {
             setContentView(R.layout.activity_help);
         }

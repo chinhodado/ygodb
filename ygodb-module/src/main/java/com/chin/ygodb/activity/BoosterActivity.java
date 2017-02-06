@@ -17,19 +17,16 @@ import com.chin.ygodb.asyncTask.PopulateBoosterAsyncTask;
 import com.chin.ygodb2.R;
 
 public class BoosterActivity extends BaseFragmentActivity {
-    public String cardName = null;
-
-    private PagerSlidingTabStrip tabs;
-    private ViewPager pager;
-    private MyPagerAdapter adapter;
+    public static final String BOOSTER_NAME = "BOOSTER_NAME";
+    public static final String BOOSTER_URL = "BOOSTER_URL";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        tabs = (PagerSlidingTabStrip) findViewById(R.id.tabs);
-        pager = (ViewPager) findViewById(R.id.pager);
-        adapter = new MyPagerAdapter(getSupportFragmentManager());
+        PagerSlidingTabStrip tabs = (PagerSlidingTabStrip) findViewById(R.id.tabs);
+        ViewPager pager = (ViewPager) findViewById(R.id.pager);
+        MyPagerAdapter adapter = new MyPagerAdapter(getSupportFragmentManager());
 
         pager.setAdapter(adapter);
 
@@ -39,17 +36,11 @@ public class BoosterActivity extends BaseFragmentActivity {
         tabs.setIndicatorColor(getResources().getColor(R.color.red));
     }
 
-    @Override
-    public void onSaveInstanceState(Bundle bundle) {
-        super.onSaveInstanceState(bundle);
-        bundle.putString("CARDNAME", cardName);
-    }
-
-    public static class CardBoosterFragment extends Fragment {
+    public static class BoosterListFragment extends Fragment {
         PopulateBoosterAsyncTask myTask;
 
-        public static CardBoosterFragment newInstance() {
-            CardBoosterFragment f = new CardBoosterFragment();
+        public static BoosterListFragment newInstance() {
+            BoosterListFragment f = new BoosterListFragment();
             Bundle b = new Bundle();
             f.setArguments(b);
             return f;
@@ -84,11 +75,10 @@ public class BoosterActivity extends BaseFragmentActivity {
         }
     }
 
-    public class MyPagerAdapter extends FragmentPagerAdapter {
+    private class MyPagerAdapter extends FragmentPagerAdapter {
+        private final String[] TITLES = { "Boosters" };
 
-        private final String[] TITLES = { "Booster"};
-
-        public MyPagerAdapter(FragmentManager fm) {
+        private MyPagerAdapter(FragmentManager fm) {
             super(fm);
         }
 
@@ -104,7 +94,7 @@ public class BoosterActivity extends BaseFragmentActivity {
 
         @Override
         public Fragment getItem(int position) {
-            return CardBoosterFragment.newInstance();
+            return BoosterListFragment.newInstance();
         }
     }
 }

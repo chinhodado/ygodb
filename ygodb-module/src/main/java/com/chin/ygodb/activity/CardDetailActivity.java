@@ -33,10 +33,6 @@ public class CardDetailActivity extends BaseFragmentActivity {
 
     public String cardName = null;
 
-    private PagerSlidingTabStrip tabs;
-    private ViewPager pager;
-    private MyPagerAdapter adapter;
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -52,9 +48,9 @@ public class CardDetailActivity extends BaseFragmentActivity {
             }
         }
 
-        tabs = (PagerSlidingTabStrip) findViewById(R.id.tabs);
-        pager = (ViewPager) findViewById(R.id.pager);
-        adapter = new MyPagerAdapter(getSupportFragmentManager());
+        PagerSlidingTabStrip tabs = (PagerSlidingTabStrip) findViewById(R.id.tabs);
+        ViewPager pager = (ViewPager) findViewById(R.id.pager);
+        MyPagerAdapter adapter = new MyPagerAdapter(getSupportFragmentManager());
 
         pager.setAdapter(adapter);
 
@@ -153,14 +149,14 @@ public class CardDetailActivity extends BaseFragmentActivity {
         }
     }
 
-    public static class PopulateAdditionalInfoAsyncTask extends AsyncTask<String, Void, String> {
+    private static class PopulateAdditionalInfoAsyncTask extends AsyncTask<String, Void, String> {
         LinearLayout layout;
         CardDetailActivity activity;
         CardAdditionalInfoType type;
         String cardName;
         boolean exceptionOccurred = false;
 
-        public PopulateAdditionalInfoAsyncTask(LinearLayout layout, CardDetailActivity activity, CardAdditionalInfoType type, String cardName) {
+        PopulateAdditionalInfoAsyncTask(LinearLayout layout, CardDetailActivity activity, CardAdditionalInfoType type, String cardName) {
             this.layout = layout;
             this.activity = activity;
             this.type = type;
@@ -204,11 +200,11 @@ public class CardDetailActivity extends BaseFragmentActivity {
         }
     }
 
-    public class MyPagerAdapter extends FragmentPagerAdapter {
+    private class MyPagerAdapter extends FragmentPagerAdapter {
 
         private final String[] TITLES = { "Detail", "Ruling", "Tips", "Trivia"};
 
-        public MyPagerAdapter(FragmentManager fm) {
+        MyPagerAdapter(FragmentManager fm) {
             super(fm);
         }
 

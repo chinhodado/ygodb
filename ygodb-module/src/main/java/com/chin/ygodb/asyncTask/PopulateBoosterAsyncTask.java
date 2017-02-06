@@ -15,6 +15,7 @@ import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 
 import android.content.Context;
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.SharedPreferences.Editor;
 import android.os.AsyncTask;
@@ -22,6 +23,7 @@ import android.util.DisplayMetrics;
 import android.util.Log;
 import android.util.TypedValue;
 import android.view.Gravity;
+import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewParent;
 import android.widget.ImageView;
@@ -34,6 +36,7 @@ import android.widget.TableLayout.LayoutParams;
 import com.chin.common.Util;
 import com.chin.ygodb.Booster;
 import com.chin.ygodb.activity.BoosterActivity;
+import com.chin.ygodb.activity.BoosterDetailActivity;
 import com.chin.ygodb2.R;
 import com.nostra13.universalimageloader.core.ImageLoader;
 
@@ -122,7 +125,7 @@ public class PopulateBoosterAsyncTask extends AsyncTask<String, Void, Void> {
             for (int i = 0; i < boosterUrls.size(); i++) {
                 final Booster booster = new Booster();
                 addToBoosterList(boosters, booster);
-                String boosterLink = boosterUrls.get(i);
+                final String boosterLink = boosterUrls.get(i);
                 String imgSrc;
 
                 // create a new image view and set its dimensions
@@ -147,12 +150,16 @@ public class PopulateBoosterAsyncTask extends AsyncTask<String, Void, Void> {
                     ImageLoader.getInstance().displayImage(newScaledLink, imgView);
 
                     // change the name textview
-                    nameTv.setText(nameMap.get(boosterLink));
-                    booster.setName(nameMap.get(boosterLink));
+                    final String boosterName = nameMap.get(boosterLink);
+                    nameTv.setText(boosterName);
+                    booster.setName(boosterName);
 
                     // set the booster release date and sort the booster list
                     booster.setReleaseDate(dateMap.get(boosterLink));
                     sortBoosterList(boosters);
+
+                    // set listener for imgView
+                    setImgViewListener(imgView, boosterName, boosterLink);
 
                     displayBoosterPage(boosters);
                 }
@@ -217,13 +224,17 @@ public class PopulateBoosterAsyncTask extends AsyncTask<String, Void, Void> {
                             ImageLoader.getInstance().displayImage(newScaledLink, imgView);
 
                             // add the name to the name row
-                            nameTv.setText(params[0]);
-                            booster.setName(params[0]);
+                            final String boosterName = params[0];
+                            nameTv.setText(boosterName);
+                            booster.setName(boosterName);
 
                             // set the booster release date and sort the booster list
                             booster.setReleaseDate(params[2]);
                             sortBoosterList(boosters);
-                            
+
+                            // set listener for imgView
+                            setImgViewListener(imgView, boosterName, boosterLink);
+
                             displayBoosterPage(boosters);
                         }
                     }.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, boosterLink);
@@ -236,6 +247,18 @@ public class PopulateBoosterAsyncTask extends AsyncTask<String, Void, Void> {
         } catch (Exception e) {
             e.printStackTrace();
         }
+    }
+
+    private void setImgViewListener(ImageView imgView, final String boosterName, final String boosterUrl) {
+        imgView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(v.getContext(), BoosterDetailActivity.class);
+                intent.putExtra(BoosterActivity.BOOSTER_NAME, boosterName);
+                intent.putExtra(BoosterActivity.BOOSTER_URL, boosterUrl);
+                activity.startActivity(intent);
+            }
+        });
     }
 
     private synchronized void addToBoosterList(List<Booster> boosters, Booster booster) {

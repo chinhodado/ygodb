@@ -47,6 +47,10 @@
             android:label="Boosters" >
         </activity>
         <activity
+            android:name="com.chin.ygodb.activity.BoosterDetailActivity"
+            android:label="Booster Detail" >
+        </activity>
+        <activity
             android:name="com.chin.ygodb.activity.HelpAboutActivity"
             android:label="Help" >
         </activity>
