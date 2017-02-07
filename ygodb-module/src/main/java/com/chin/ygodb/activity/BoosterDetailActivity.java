@@ -2,6 +2,7 @@ package com.chin.ygodb.activity;
 
 import android.annotation.SuppressLint;
 import android.content.Intent;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
@@ -18,6 +19,7 @@ import android.widget.ListView;
 import com.chin.ygodb.Card;
 import com.chin.ygodb.PagerSlidingTabStrip;
 import com.chin.ygodb.asyncTask.BoosterCardListAsyncTask;
+import com.chin.ygodb.asyncTask.BoosterInfoAsyncTask;
 import com.chin.ygodb2.R;
 
 /**
@@ -101,7 +103,7 @@ public class BoosterDetailActivity extends BaseFragmentActivity {
             String boosterUrl = getArguments().getString(BoosterActivity.BOOSTER_URL);
             myTask = (BoosterCardListAsyncTask) new BoosterCardListAsyncTask(boosterName, boosterUrl,
                     famListView, (BoosterDetailActivity) getActivity())
-                    .execute();
+                    .executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
 
             // go to a card's detail page when click on its name on the list
             famListView.setOnItemClickListener(new AdapterView.OnItemClickListener(){
@@ -127,8 +129,50 @@ public class BoosterDetailActivity extends BaseFragmentActivity {
         }
     }
 
+    public static class BoosterInfoFragment extends Fragment {
+        BoosterInfoAsyncTask myTask;
+
+        public static BoosterInfoFragment newInstance(String boosterName, String boosterUrl) {
+            BoosterInfoFragment f = new BoosterInfoFragment();
+            Bundle b = new Bundle();
+            b.putString(BoosterActivity.BOOSTER_NAME, boosterName);
+            b.putString(BoosterActivity.BOOSTER_URL, boosterUrl);
+            f.setArguments(b);
+            return f;
+        }
+
+        @Override
+        public void onCreate(Bundle savedInstanceState) {
+            super.onCreate(savedInstanceState);
+            setRetainInstance(true);
+        }
+
+        @SuppressLint("RtlHardcoded")
+        @Override
+        public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+            View view = inflater.inflate(R.layout.fragment_booster_info, container, false);
+
+            String boosterName = getArguments().getString(BoosterActivity.BOOSTER_NAME);
+            String boosterUrl = getArguments().getString(BoosterActivity.BOOSTER_URL);
+            myTask = (BoosterInfoAsyncTask) new BoosterInfoAsyncTask(boosterName, boosterUrl,
+                    view, (BoosterDetailActivity) getActivity())
+                    .executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
+
+            return view;
+        }
+
+        @Override
+        public void onPause() {
+            super.onPause();
+            if (myTask != null) {
+                myTask.cancel(true);
+                myTask = null;
+            }
+        }
+    }
+
     private class MyPagerAdapter extends FragmentPagerAdapter {
-        private final String[] TITLES = { "Card list" };
+        private final String[] TITLES = { "Info", "Card list" };
 
         private MyPagerAdapter(FragmentManager fm) {
             super(fm);
@@ -146,7 +190,12 @@ public class BoosterDetailActivity extends BaseFragmentActivity {
 
         @Override
         public Fragment getItem(int position) {
-            return CardListFragment.newInstance(boosterName, boosterUrl);
+            if (position == 0) {
+                return BoosterInfoFragment.newInstance(boosterName, boosterUrl);
+            }
+            else {
+                return CardListFragment.newInstance(boosterName, boosterUrl);
+            }
         }
     }
 }
