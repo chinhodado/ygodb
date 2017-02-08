@@ -30,6 +30,21 @@ public class BoosterParser {
         this.dom = getDocument(boosterName, boosterUrl);
     }
 
+    /**
+     * Use this constructor when you don't want to use the cache (to avoid waiting for the
+     * synchronized cache access, or because of memory issue)
+     * @param context A context
+     * @param boosterName The booster name
+     * @param dom The dom of the booster page
+     */
+    public BoosterParser(Context context, String boosterName, Document dom) {
+        this.context = context;
+        this.boosterName = boosterName;
+        Element elem = dom.getElementById("mw-content-text");
+        removeSupTag(elem);
+        this.dom = elem;
+    }
+
     private static Element getDocument(String boosterName, String boosterUrl) throws IOException {
         synchronized (cache) {
             Element elem = cache.get(boosterName);

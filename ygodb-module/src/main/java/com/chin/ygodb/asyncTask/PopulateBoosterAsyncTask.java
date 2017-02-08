@@ -22,6 +22,7 @@ import android.widget.Toast;
 
 import com.chin.common.Util;
 import com.chin.ygodb.Booster;
+import com.chin.ygodb.BoosterParser;
 import com.chin.ygodb.activity.BoosterActivity;
 import com.chin.ygodb.activity.BoosterDetailActivity;
 import com.chin.ygodb2.R;
@@ -170,24 +171,18 @@ public class PopulateBoosterAsyncTask extends AsyncTask<String, Void, Void> {
                                 String html = Jsoup.connect("http://yugioh.wikia.com" + boosterLink)
                                         .ignoreContentType(true).execute().body();
                                 Document dom = Jsoup.parse(html);
-                                imgSrc = dom.getElementsByClass("image-thumbnail").first().attr("href");
-
-                                try {
-                                    Element infobox = dom.getElementsByClass("infobox").first();
-                                    Elements rows = infobox.getElementsByTag("tr");
-
-                                    for (int i = 0; i < rows.size(); i++) {
-                                        Element row = rows.get(i);
-                                        if (row.text().equals("Release dates")) {
-                                            // right now we're only getting the first date, which can be JP, US, etc.
-                                            // maybe try to parse and get the US (or JP) date if possible?
-                                            date = rows.get(i+1).getElementsByTag("td").first().text();
-                                            break;
-                                        }
-                                    }
+                                // note: we deliberately don't use the cached version of BoosterParser
+                                // here so that multiple threads don't have to wait for each other,
+                                // and also because we don't care about caching at this point yet
+                                BoosterParser parser = new BoosterParser(activity, boosterName, dom);
+                                imgSrc = parser.getImageLink();
+                                String tmpDate = parser.getEnglishReleaseDate();
+                                if (tmpDate == null) {
+                                    tmpDate = parser.getJapaneseReleaseDate();
                                 }
-                                catch (Exception e) {
-                                    Log.i("ygodb", "Failed to get release date for: " + boosterName);
+
+                                if (tmpDate != null) {
+                                    date = tmpDate;
                                 }
 
                                 imgSrcPrefEditor.putString(boosterLink, imgSrc);
