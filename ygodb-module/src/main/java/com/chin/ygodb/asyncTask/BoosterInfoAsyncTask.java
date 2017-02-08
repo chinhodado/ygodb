@@ -11,8 +11,6 @@ import com.chin.ygodb.activity.BoosterDetailActivity;
 import com.chin.ygodb2.R;
 import com.nostra13.universalimageloader.core.ImageLoader;
 
-import org.jsoup.Jsoup;
-
 /**
  * Async task for booster info
  *
@@ -35,10 +33,7 @@ public class BoosterInfoAsyncTask extends AsyncTask<String, Void, BoosterParser>
     @Override
     protected BoosterParser doInBackground(String... params) {
         try {
-            String html = Jsoup.connect("http://yugioh.wikia.com" + boosterUrl)
-                    .ignoreContentType(true).execute().body();
-
-            return new BoosterParser(html);
+            return new BoosterParser(activity, boosterName, boosterUrl);
         } catch (Exception e) {
             Log.w("ygodb", "Failed to fetch " + boosterName + "'s info");
             e.printStackTrace();

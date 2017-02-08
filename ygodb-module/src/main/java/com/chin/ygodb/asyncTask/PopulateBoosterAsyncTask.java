@@ -1,19 +1,5 @@
 package com.chin.ygodb.asyncTask;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
-import org.json.JSONArray;
-import org.json.JSONObject;
-import org.jsoup.Jsoup;
-import org.jsoup.nodes.Document;
-import org.jsoup.nodes.Element;
-import org.jsoup.select.Elements;
-
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -30,8 +16,9 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.TableLayout;
-import android.widget.TextView;
 import android.widget.TableLayout.LayoutParams;
+import android.widget.TextView;
+import android.widget.Toast;
 
 import com.chin.common.Util;
 import com.chin.ygodb.Booster;
@@ -40,11 +27,27 @@ import com.chin.ygodb.activity.BoosterDetailActivity;
 import com.chin.ygodb2.R;
 import com.nostra13.universalimageloader.core.ImageLoader;
 
+import org.json.JSONArray;
+import org.json.JSONObject;
+import org.jsoup.Jsoup;
+import org.jsoup.nodes.Document;
+import org.jsoup.nodes.Element;
+import org.jsoup.select.Elements;
+
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
 public class PopulateBoosterAsyncTask extends AsyncTask<String, Void, Void> {
     private LinearLayout layout;
     private BoosterActivity activity;
-    private static ArrayList<String> boosterUrls; // a list of links to booster articles
+    private static Map<String, String> boosterUrls; // a map of booster name to links its articles
     private boolean exceptionOccurred = false;
+    private Toast toast = null;
+    private final Object toastLock = new Object();
 
     public PopulateBoosterAsyncTask(LinearLayout layout, BoosterActivity activity) {
         this.layout = layout;
@@ -60,10 +63,11 @@ public class PopulateBoosterAsyncTask extends AsyncTask<String, Void, Void> {
 
             JSONObject myJSON = new JSONObject(html);
             JSONArray myArray = myJSON.getJSONArray("items");
-            boosterUrls = new ArrayList<String>();
+            boosterUrls = new HashMap<>();
             for (int i = 0; i < myArray.length(); i++) {
+                String boosterName = myArray.getJSONObject(i).getString("title");
                 String boosterLink = myArray.getJSONObject(i).getString("url");
-                boosterUrls.add(boosterLink);
+                boosterUrls.put(boosterName, boosterLink);
             }
 
             if (isCancelled()) {
@@ -79,8 +83,7 @@ public class PopulateBoosterAsyncTask extends AsyncTask<String, Void, Void> {
     }
 
     @Override
-    protected void onPostExecute(Void param) {
-
+    protected void onPostExecute(final Void param) {
         if (exceptionOccurred) {
             // remove the spinner
             ProgressBar pgrBar = (ProgressBar) activity.findViewById(R.id.progressBar_fragment_general);
@@ -105,13 +108,6 @@ public class PopulateBoosterAsyncTask extends AsyncTask<String, Void, Void> {
             @SuppressWarnings("unchecked")
             HashMap<String, String> imgLinkMap = new HashMap<String, String>((Map<String, String>) preferences.getAll());
 
-            // get the shared preferences as a (booster link, booster name) HashMap
-            final String nameMapFileName = "boosterName.txt";
-            preferences = activity.getSharedPreferences(nameMapFileName, Context.MODE_PRIVATE);
-            final Editor namePrefEditor = preferences.edit();
-            @SuppressWarnings("unchecked")
-            HashMap<String, String> nameMap = new HashMap<String, String>((Map<String, String>) preferences.getAll());
-
             // get the shared preferences as a (booster link, booster release date) HashMap
             final String dateMapFileName = "boosterDate.txt";
             preferences = activity.getSharedPreferences(dateMapFileName, Context.MODE_PRIVATE);
@@ -122,10 +118,11 @@ public class PopulateBoosterAsyncTask extends AsyncTask<String, Void, Void> {
             final List<Booster> boosters = new ArrayList<>();
 
             // loop through the booster list and display them
-            for (int i = 0; i < boosterUrls.size(); i++) {
+            for (Map.Entry<String, String> entry : boosterUrls.entrySet()) {
                 final Booster booster = new Booster();
                 addToBoosterList(boosters, booster);
-                final String boosterLink = boosterUrls.get(i);
+                final String boosterName = entry.getKey();
+                final String boosterLink = entry.getValue();
                 String imgSrc;
 
                 // create a new image view and set its dimensions
@@ -150,7 +147,6 @@ public class PopulateBoosterAsyncTask extends AsyncTask<String, Void, Void> {
                     ImageLoader.getInstance().displayImage(newScaledLink, imgView);
 
                     // change the name textview
-                    final String boosterName = nameMap.get(boosterLink);
                     nameTv.setText(boosterName);
                     booster.setName(boosterName);
 
@@ -168,14 +164,12 @@ public class PopulateBoosterAsyncTask extends AsyncTask<String, Void, Void> {
                         boolean exceptionOccurred2 = false;
                         @Override
                         protected String[] doInBackground(String... params) {
-                            String imgSrc = null, boosterLink = null, boosterName = null;
+                            String imgSrc = null;
                             String date = "January 1, 1970"; // default date
                             try {
-                                boosterLink = params[0];
                                 String html = Jsoup.connect("http://yugioh.wikia.com" + boosterLink)
-                                      .ignoreContentType(true).execute().body();
+                                        .ignoreContentType(true).execute().body();
                                 Document dom = Jsoup.parse(html);
-                                boosterName = dom.getElementById("WikiaPageHeader").getElementsByTag("h1").first().text();
                                 imgSrc = dom.getElementsByClass("image-thumbnail").first().attr("href");
 
                                 try {
@@ -196,9 +190,6 @@ public class PopulateBoosterAsyncTask extends AsyncTask<String, Void, Void> {
                                     Log.i("ygodb", "Failed to get release date for: " + boosterName);
                                 }
 
-                                namePrefEditor.putString(boosterLink, boosterName);
-                                namePrefEditor.commit();
-
                                 imgSrcPrefEditor.putString(boosterLink, imgSrc);
                                 imgSrcPrefEditor.commit();
 
@@ -213,31 +204,41 @@ public class PopulateBoosterAsyncTask extends AsyncTask<String, Void, Void> {
                                 exceptionOccurred2 = true;
                             }
 
-                            return new String[] {boosterName, imgSrc, date};
+                            return new String[] {imgSrc, date};
                         }
 
                         @Override
                         protected void onPostExecute(String[] params) {
                             if (exceptionOccurred2) return;
                             // get the scaled image link and display it
-                            String newScaledLink = Util.getScaledWikiaImageLink(params[1], scaleWidth);
+                            String newScaledLink = Util.getScaledWikiaImageLink(params[0], scaleWidth);
                             ImageLoader.getInstance().displayImage(newScaledLink, imgView);
 
                             // add the name to the name row
-                            final String boosterName = params[0];
                             nameTv.setText(boosterName);
                             booster.setName(boosterName);
 
                             // set the booster release date and sort the booster list
-                            booster.setReleaseDate(params[2]);
+                            booster.setReleaseDate(params[1]);
                             sortBoosterList(boosters);
 
                             // set listener for imgView
                             setImgViewListener(imgView, boosterName, boosterLink);
 
                             displayBoosterPage(boosters);
+
+                            synchronized (toastLock) {
+                                // cancel the currently showing toast if any
+                                if (toast != null) {
+                                    toast.cancel();
+                                }
+
+                                // show the new toast for the current booster
+                                toast = Toast.makeText(activity, "Fetched info: " + boosterName, Toast.LENGTH_SHORT);
+                                toast.show();
+                            }
                         }
-                    }.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, boosterLink);
+                    }.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
                 }
             }
 

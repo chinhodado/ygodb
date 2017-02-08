@@ -4,16 +4,11 @@ import android.os.AsyncTask;
 import android.util.Log;
 import android.widget.ListView;
 
+import com.chin.ygodb.BoosterParser;
 import com.chin.ygodb.Card;
 import com.chin.ygodb.CardRegexFilterArrayAdapter;
-import com.chin.ygodb.DatabaseQuerier;
 import com.chin.ygodb.activity.BoosterDetailActivity;
 import com.chin.ygodb2.R;
-
-import org.jsoup.Jsoup;
-import org.jsoup.nodes.Document;
-import org.jsoup.nodes.Element;
-import org.jsoup.select.Elements;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -41,38 +36,8 @@ public class BoosterCardListAsyncTask extends AsyncTask<String, Void, List<Card>
     protected List<Card> doInBackground(String... params) {
         List<Card> cards = new ArrayList<>();
         try {
-            String html = Jsoup.connect("http://yugioh.wikia.com" + boosterUrl)
-                    .ignoreContentType(true).execute().body();
-            Document dom = Jsoup.parse(html);
-            Elements rows = dom.getElementsByClass("wikitable").first()
-                               .getElementsByTag("tbody").first()
-                               .getElementsByTag("tr");
-            for (Element row : rows) {
-                try {
-                    Elements cells = row.getElementsByTag("td");
-                    String setNumber = cells.get(0).text();
-                    String cardName = cells.get(1).text();
-                    String rarity = cells.get(2).text();
-
-                    DatabaseQuerier querier = new DatabaseQuerier(activity);
-                    String criteria = "name = '" + cardName + "'";
-                    List<Card> res = querier.executeQuery(criteria);
-
-                    if (res.size() > 0) {
-                        Card card = res.get(0);
-                        card.setNumber = setNumber;
-                        card.rarity = rarity;
-                        cards.add(card);
-                    }
-                    else {
-                        // TODO: card not in offline db, do something
-                    }
-                }
-                catch (Exception e) {
-                    // do nothing
-                }
-            }
-
+            BoosterParser parser = new BoosterParser(activity, boosterName, boosterUrl);
+            return parser.getCardList();
         } catch (Exception e) {
             Log.w("ygodb", "Failed to fetch " + boosterName + "'s card list");
             e.printStackTrace();
