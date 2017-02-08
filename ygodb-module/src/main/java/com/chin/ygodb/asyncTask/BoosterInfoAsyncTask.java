@@ -46,13 +46,25 @@ public class BoosterInfoAsyncTask extends AsyncTask<String, Void, BoosterParser>
     @Override
     protected void onPostExecute(BoosterParser parser) {
         if (parser == null) return;
+        String jpReleaseDate = parser.getJapaneseReleaseDate();
+        if (jpReleaseDate == null) {
+            jpReleaseDate = "N/A";
+        }
+        String enReleaseDate = parser.getEnglishReleaseDate();
+        if (enReleaseDate == null) {
+            enReleaseDate = "N/A";
+        }
         TextView tvQuickInfo = (TextView) view.findViewById(R.id.textView_booster_quickinfo);
         tvQuickInfo.setText(boosterName + "\n\n" +
-                "Japanese release date: " + parser.getJapaneseReleaseDate() + "\n" +
-                "English release date: " + parser.getEnglishReleaseDate());
+                "Japanese release date:\n" + jpReleaseDate + "\n\n" +
+                "English release date:\n" + enReleaseDate);
 
         TextView tv = (TextView) view.findViewById(R.id.textView_booster_longinfo);
-        tv.setText(parser.getIntroText() + "\n\n" + parser.getFeatureText());
+        String featureText = parser.getFeatureText();
+        if (featureText == null) {
+            featureText = "";
+        }
+        tv.setText(parser.getIntroText() + "\n\n" + featureText);
 
         ImageView imgView = (ImageView) view.findViewById(R.id.imageView_detail_booster);
         ImageLoader.getInstance().displayImage(parser.getImageLink(), imgView);
