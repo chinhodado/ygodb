@@ -1,6 +1,7 @@
 package com.chin.ygodb;
 
 import android.content.Context;
+import android.database.DatabaseUtils;
 import android.util.Log;
 import android.util.LruCache;
 
@@ -162,9 +163,11 @@ public class BoosterParser {
                     String setNumber = cells.get(0).text();
                     String cardName = cells.get(1).text();
                     String rarity = cells.get(2).text();
+                    String category = cells.get(3).text();
 
+                    // TODO: can I use the card store here??? Need to review this
                     DatabaseQuerier querier = new DatabaseQuerier(context);
-                    String criteria = "name = '" + cardName + "'";
+                    String criteria = "name = " + DatabaseUtils.sqlEscapeString(cardName);
                     List<Card> res = querier.executeQuery(criteria);
 
                     if (res.size() > 0) {
@@ -174,7 +177,12 @@ public class BoosterParser {
                         cards.add(card);
                     }
                     else {
-                        // TODO: card not in offline db, do something
+                        Card card = new Card();
+                        card.name = cardName;
+                        card.setNumber = setNumber;
+                        card.rarity = rarity;
+                        card.category = category;
+                        cards.add(card);
                     }
                 }
                 catch (Exception e) {

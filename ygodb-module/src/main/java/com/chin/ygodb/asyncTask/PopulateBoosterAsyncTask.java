@@ -141,7 +141,6 @@ public class PopulateBoosterAsyncTask extends AsyncTask<String, Void, Void> {
 
                 if (imgLinkMap.containsKey(boosterLink)) {
                     imgSrc = imgLinkMap.get(boosterLink);
-                    Log.i("foo", "Fetched " + boosterLink + " from cache");
 
                     // get the scaled image link and display it
                     String newScaledLink = Util.getScaledWikiaImageLink(imgSrc, scaleWidth);

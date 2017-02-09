@@ -26,12 +26,17 @@ public class Card {
     public String lore            = "";
     public String thumbnailImgUrl = "";
 
+    // these comes from the booster card table
     public String setNumber = "";
     public String rarity = "";
+    public String category = "";
 
     @Override
     public String toString() {
         String tmp = "<b>" + name + "</b><br>";
+        if (!category.equals("")) {
+            tmp += small(category) + "<br>";
+        }
         if (types.equals("Spell Card") || types.equals("Trap Card")) {
             tmp += small(property + " " + types);
         }
