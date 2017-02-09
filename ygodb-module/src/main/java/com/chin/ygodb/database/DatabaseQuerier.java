@@ -1,6 +1,4 @@
-package com.chin.ygodb;
-
-import java.util.ArrayList;
+package com.chin.ygodb.database;
 
 import android.content.Context;
 import android.database.Cursor;
@@ -8,13 +6,19 @@ import android.database.sqlite.SQLiteDatabase;
 import android.util.Log;
 import android.widget.Toast;
 
+import com.chin.ygodb.CardStore;
+import com.chin.ygodb.entity.Card;
+
+import java.util.ArrayList;
+import java.util.List;
+
 /**
  * A class for making queries to our sqlite database
  * @author Chin
  */
 public class DatabaseQuerier {
     private static SQLiteDatabase db;
-    Context context;
+    private Context context;
 
     public DatabaseQuerier(Context context) {
         this.context = context;
@@ -33,9 +37,9 @@ public class DatabaseQuerier {
      * @param criteria The where clause that represents the criteria of the search
      * @return List of cards that satisfy the criteria
      */
-    public ArrayList<Card> executeQuery(String criteria) {
+    public List<Card> executeQuery(String criteria) {
     	Log.i("Search", "Criteria: " + criteria);
-        ArrayList<Card> resultSet = new ArrayList<Card>();
+        List<Card> resultSet = new ArrayList<>();
         try {
             SQLiteDatabase db = getDatabase();
 

@@ -4,8 +4,8 @@ import android.os.AsyncTask;
 import android.util.Log;
 import android.widget.ListView;
 
-import com.chin.ygodb.BoosterParser;
-import com.chin.ygodb.Card;
+import com.chin.ygodb.html.BoosterParser;
+import com.chin.ygodb.entity.Card;
 import com.chin.ygodb.CardRegexFilterArrayAdapter;
 import com.chin.ygodb.activity.BoosterDetailActivity;
 import com.chin.ygodb2.R;

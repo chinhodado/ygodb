@@ -1,12 +1,13 @@
 package com.chin.ygodb.activity;
 
 import java.util.ArrayList;
+import java.util.List;
 
 import com.chin.common.TabListener;
-import com.chin.ygodb.Card;
+import com.chin.ygodb.entity.Card;
 import com.chin.ygodb.CardRegexFilterArrayAdapter;
-import com.chin.ygodb.DatabaseQuerier;
-import com.chin.ygodb.SearchCriterion;
+import com.chin.ygodb.database.DatabaseQuerier;
+import com.chin.ygodb.database.SearchCriterion;
 import com.chin.ygodb2.R;
 
 import android.app.ActionBar;
@@ -56,7 +57,7 @@ public class AdvancedSearchActivity extends BaseFragmentActivity {
     static String lastSelectedMainCategory = "(All)";
 
     // store the result set after each search
-    static ArrayList<Card> resultSet = new ArrayList<Card>();
+    static List<Card> resultSet = new ArrayList<Card>();
 
     @SuppressWarnings("deprecation")
     @Override
@@ -105,7 +106,7 @@ public class AdvancedSearchActivity extends BaseFragmentActivity {
                 @Override
                 public void onClick(View v) {
                     // make the list of criteria
-                    ArrayList<SearchCriterion> criteriaList = new ArrayList<SearchCriterion>();
+                    List<SearchCriterion> criteriaList = new ArrayList<SearchCriterion>();
 
                     // level/rank
                     EditText levelRankEdit = (EditText) view.findViewById(R.id.criteriaLevelRank);

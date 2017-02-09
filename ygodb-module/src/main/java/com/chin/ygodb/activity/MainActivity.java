@@ -2,7 +2,7 @@ package com.chin.ygodb.activity;
 
 import com.chin.common.CustomDialogFragment;
 import com.chin.common.Util;
-import com.chin.ygodb.Card;
+import com.chin.ygodb.entity.Card;
 import com.chin.ygodb.CardRegexFilterArrayAdapter;
 import com.chin.ygodb.CardStore;
 import com.chin.ygodb2.R;

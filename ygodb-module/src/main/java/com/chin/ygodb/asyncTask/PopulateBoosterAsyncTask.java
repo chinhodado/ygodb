@@ -21,8 +21,8 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.chin.common.Util;
-import com.chin.ygodb.Booster;
-import com.chin.ygodb.BoosterParser;
+import com.chin.ygodb.entity.Booster;
+import com.chin.ygodb.html.BoosterParser;
 import com.chin.ygodb.activity.BoosterActivity;
 import com.chin.ygodb.activity.BoosterDetailActivity;
 import com.chin.ygodb2.R;
@@ -32,8 +32,6 @@ import org.json.JSONArray;
 import org.json.JSONObject;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
-import org.jsoup.nodes.Element;
-import org.jsoup.select.Elements;
 
 import java.util.ArrayList;
 import java.util.Collections;

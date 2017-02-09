@@ -3,6 +3,8 @@ package com.chin.ygodb;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Hashtable;
+import java.util.List;
+import java.util.Map;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -13,6 +15,9 @@ import org.jsoup.select.Elements;
 
 import com.chin.common.Util;
 import com.chin.ygodb.activity.MainActivity;
+import com.chin.ygodb.database.DatabaseQuerier;
+import com.chin.ygodb.entity.Card;
+import com.chin.ygodb.html.YgoWikiaHtmlCleaner;
 
 import android.content.Context;
 import android.database.Cursor;
@@ -31,7 +36,6 @@ import android.view.Display;
  *
  */
 public final class CardStore {
-
     public static class Pair {
         public String key;
         public String value;
@@ -45,7 +49,7 @@ public final class CardStore {
         Ruling, Tips, Trivia
     }
 
-    public static Hashtable<String, String> columnNameMap = new Hashtable<String, String>();
+    private static Map<String, String> columnNameMap = new Hashtable<>();
     static {
         // not all columns are in here, just those in the info section
         columnNameMap.put("attribute"      , "Attribute");
@@ -72,30 +76,30 @@ public final class CardStore {
     }
 
     // a list of all cards available, initialized in MainActivity's onCreate()
-    public static ArrayList<String> cardNameList = null;
+    public static List<String> cardNameList = null;
 
     // map a card name to its wiki page url, initialized in MainActivity's onCreate()
-    public static Hashtable<String, String[]> cardLinkTable = null;
+    private static Map<String, String[]> cardLinkTable = null;
 
     // a storage for cards' detail after being fetched online
-    private static Hashtable<String, Document> cardDomCache = new Hashtable<String, Document>();
+    private static Map<String, Document> cardDomCache = new Hashtable<>();
 
     // list of Card objects, used for displaying in the ListView (the backing list for the adapter)
-    public static ArrayList<Card> cardList = new ArrayList<Card>(8192);
+    public static List<Card> cardList = new ArrayList<>(8192);
 
     // basically a hashtable of cardList that maps a card's name to its Card object
-    private static Hashtable<String, Card> cardSet = new Hashtable<String, Card>(8192);
+    private static Map<String, Card> cardSet = new Hashtable<>(8192);
 
     // list of cards in the offline database
-    private static ArrayList<String> offlineCardList = new ArrayList<String>(8192);
+    private static List<String> offlineCardList = new ArrayList<>(8192);
 
     private static CardStore CARDSTORE;
     private static Context context;
 
     // flag: initialized the cardList, but not the cardLinkTable
-    static boolean initializedOffline = false;
+    private static boolean initializedOffline = false;
 
-    static boolean initializedOnline = false;
+    private static boolean initializedOnline = false;
     /**
      * Private constructor. For singleton.
      */
@@ -131,7 +135,7 @@ public final class CardStore {
             }
 
             // add those that are online but not offline
-            ArrayList<String> onlineOfflineDiff = new ArrayList<String>(CardStore.cardNameList);
+            List<String> onlineOfflineDiff = new ArrayList<String>(CardStore.cardNameList);
             onlineOfflineDiff.removeAll(offlineCardList);
             Log.i("ygodb", "Diff between online and offline: " + onlineOfflineDiff.size());
             for (int i = 0; i < onlineOfflineDiff.size(); i++) {
@@ -381,7 +385,7 @@ public final class CardStore {
     // CARD INFO
     //////////////////////////////////////////////////////////////////////
 
-    public ArrayList<Pair> getCardInfo(String cardName) throws Exception {
+    public List<Pair> getCardInfo(String cardName) throws Exception {
         if (Util.hasNetworkConnectivity(context)) {
             return getCardInfoOnline(cardName);
         }
@@ -390,8 +394,8 @@ public final class CardStore {
         }
     }
 
-    private ArrayList<Pair> getCardInfoOffline(String cardName) {
-        ArrayList<Pair> array = new ArrayList<Pair>();
+    private List<Pair> getCardInfoOffline(String cardName) {
+        List<Pair> array = new ArrayList<Pair>();
         DatabaseQuerier dbq = new DatabaseQuerier(context);
         SQLiteDatabase db = dbq.getDatabase();
         Cursor cursor = db.rawQuery("select * from card where name = ?", new String[] {cardName});
@@ -414,9 +418,9 @@ public final class CardStore {
         return array;
     }
 
-    private ArrayList<Pair> getCardInfoOnline(String cardName) throws Exception {
+    private List<Pair> getCardInfoOnline(String cardName) throws Exception {
         initializeCardList();
-        ArrayList<Pair> infos = new ArrayList<CardStore.Pair>();
+        List<Pair> infos = new ArrayList<CardStore.Pair>();
         getCardDomReady(cardName);
         Document dom = cardDomCache.get(cardName);
         Elements rows = dom.getElementsByClass("cardtable").first().getElementsByClass("cardtablerow");
@@ -430,7 +434,7 @@ public final class CardStore {
             if (!foundFirstRow && !headerText.equals("Attribute") && !headerText.equals("Type") && !headerText.equals("Types")) {
                 continue;
             }
-            if (headerText.equals("Other card information") || header.equals("External links")) {
+            if (headerText.equals("Other card information") || header.text().equals("External links")) {
                 // we have reached the end for some reasons, exit now
                 break;
             }
@@ -451,7 +455,7 @@ public final class CardStore {
     // CARD STATUS
     //////////////////////////////////////////////////////////////////////
 
-    public ArrayList<Pair> getCardStatus(String cardName) throws Exception {
+    public List<Pair> getCardStatus(String cardName) throws Exception {
         if (Util.hasNetworkConnectivity(context)) {
             return getCardStatusOnline(cardName);
         }
@@ -460,8 +464,8 @@ public final class CardStore {
         }
     }
 
-    private ArrayList<Pair> getCardStatusOffline(String cardName) {
-        ArrayList<Pair> array = new ArrayList<Pair>();
+    private List<Pair> getCardStatusOffline(String cardName) {
+        List<Pair> array = new ArrayList<Pair>();
         DatabaseQuerier dbq = new DatabaseQuerier(context);
         SQLiteDatabase db = dbq.getDatabase();
         Cursor cursor = db.rawQuery("select ocgStatus, tcgAdvStatus, tcgTrnStatus from card where name = ?", new String[] {cardName});
@@ -488,9 +492,9 @@ public final class CardStore {
         return array;
     }
 
-    private ArrayList<Pair> getCardStatusOnline(String cardName) throws Exception {
+    private List<Pair> getCardStatusOnline(String cardName) throws Exception {
         initializeCardList();
-        ArrayList<Pair> statuses = new ArrayList<CardStore.Pair>();
+        List<Pair> statuses = new ArrayList<CardStore.Pair>();
         getCardDomReady(cardName);
         Document dom = cardDomCache.get(cardName);
 

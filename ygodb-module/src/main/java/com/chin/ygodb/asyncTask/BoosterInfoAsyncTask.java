@@ -6,7 +6,7 @@ import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import com.chin.ygodb.BoosterParser;
+import com.chin.ygodb.html.BoosterParser;
 import com.chin.ygodb.activity.BoosterDetailActivity;
 import com.chin.ygodb2.R;
 import com.nostra13.universalimageloader.core.ImageLoader;

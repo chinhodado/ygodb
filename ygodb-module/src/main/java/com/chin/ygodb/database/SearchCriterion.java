@@ -1,6 +1,6 @@
-package com.chin.ygodb;
+package com.chin.ygodb.database;
 
-import java.util.ArrayList;
+import java.util.List;
 
 /**
  * A simple class that represents a search criterion
@@ -9,9 +9,9 @@ import java.util.ArrayList;
  *
  */
 public class SearchCriterion {
-    public String subject;
-    public String operator;
-    public String object;
+    private String subject;
+    private String operator;
+    private String object;
 
     public SearchCriterion(String subject, String operator, String object) {
         this.subject = subject;
@@ -29,7 +29,7 @@ public class SearchCriterion {
      * @param list A list of SearchCriterion
      * @return A string represents the whole criteria
      */
-    public static String getCriteria(ArrayList<SearchCriterion> list) {
+    public static String getCriteria(List<SearchCriterion> list) {
         if (list.isEmpty()) return "";
 
         String string = list.get(0).toString();

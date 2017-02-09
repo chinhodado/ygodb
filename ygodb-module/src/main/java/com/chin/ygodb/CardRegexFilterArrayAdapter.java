@@ -6,6 +6,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import com.chin.common.RegexFilterArrayAdapter;
+import com.chin.ygodb.entity.Card;
 import com.chin.ygodb2.R;
 import com.nostra13.universalimageloader.core.ImageLoader;
 
@@ -112,7 +113,7 @@ public class CardRegexFilterArrayAdapter extends RegexFilterArrayAdapter<Card> {
             }
 
             if (prefix == null || prefix.length() == 0) {
-                ArrayList<Card> list;
+                List<Card> list;
                 synchronized (mLock) {
                     list = new ArrayList<Card>(mOriginalValues);
                 }
@@ -121,13 +122,13 @@ public class CardRegexFilterArrayAdapter extends RegexFilterArrayAdapter<Card> {
             } else {
                 String filterString = prefix.toString().toLowerCase();
 
-                ArrayList<Card> values;
+                List<Card> values;
                 synchronized (mLock) {
                     values = new ArrayList<Card>(mOriginalValues);
                 }
 
                 final int count = values.size();
-                final ArrayList<Card> newValues = new ArrayList<Card>();
+                final List<Card> newValues = new ArrayList<Card>();
 
                 for (int i = 0; i < count; i++) {
                     final Card card = values.get(i);

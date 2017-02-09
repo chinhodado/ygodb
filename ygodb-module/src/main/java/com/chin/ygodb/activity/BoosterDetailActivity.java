@@ -16,7 +16,7 @@ import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ListView;
 
-import com.chin.ygodb.Card;
+import com.chin.ygodb.entity.Card;
 import com.chin.ygodb.PagerSlidingTabStrip;
 import com.chin.ygodb.asyncTask.BoosterCardListAsyncTask;
 import com.chin.ygodb.asyncTask.BoosterInfoAsyncTask;

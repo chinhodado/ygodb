@@ -1,4 +1,4 @@
-package com.chin.ygodb;
+package com.chin.ygodb.html;
 
 import org.jsoup.nodes.Attribute;
 import org.jsoup.nodes.Attributes;
@@ -9,7 +9,7 @@ import org.jsoup.select.Elements;
 import com.chin.ygodb.CardStore.CardAdditionalInfoType;
 
 public class YgoWikiaHtmlCleaner {
-    static String getCleanedHtml(Element content, CardAdditionalInfoType type) {
+    public static String getCleanedHtml(Element content, CardAdditionalInfoType type) {
         Elements navboxes = content.select("table.navbox");
         if (!navboxes.isEmpty()) {navboxes.first().remove();} // remove the navigation box
 

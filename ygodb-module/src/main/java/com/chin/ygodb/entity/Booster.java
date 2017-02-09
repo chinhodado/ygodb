@@ -1,4 +1,4 @@
-package com.chin.ygodb;
+package com.chin.ygodb.entity;
 
 import android.util.Log;
 import android.widget.ImageView;

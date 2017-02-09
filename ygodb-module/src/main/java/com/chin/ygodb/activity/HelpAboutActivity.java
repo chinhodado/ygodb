@@ -1,6 +1,6 @@
 package com.chin.ygodb.activity;
 
-import com.chin.ygodb.YgoSqliteDatabase;
+import com.chin.ygodb.database.YgoSqliteDatabase;
 import com.chin.ygodb2.R;
 
 import android.content.Intent;

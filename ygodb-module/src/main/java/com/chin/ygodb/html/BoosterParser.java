@@ -1,9 +1,12 @@
-package com.chin.ygodb;
+package com.chin.ygodb.html;
 
 import android.content.Context;
 import android.database.DatabaseUtils;
 import android.util.Log;
 import android.util.LruCache;
+
+import com.chin.ygodb.database.DatabaseQuerier;
+import com.chin.ygodb.entity.Card;
 
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;

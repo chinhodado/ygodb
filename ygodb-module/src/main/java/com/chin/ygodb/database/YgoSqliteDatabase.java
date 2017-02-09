@@ -1,4 +1,4 @@
-package com.chin.ygodb;
+package com.chin.ygodb.database;
 
 import com.readystatesoftware.sqliteasset.SQLiteAssetHelper;
 

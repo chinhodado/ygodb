@@ -1,6 +1,7 @@
 package com.chin.ygodb.asyncTask;
 
 import java.util.ArrayList;
+import java.util.List;
 
 import com.chin.common.MyTagHandler;
 import com.chin.common.Util;
@@ -31,9 +32,9 @@ import android.widget.TextView;
  */
 public class AddCardInfoTask extends AsyncTask<String, Void, Void> {
 
-    CardDetailActivity activity;
-    String cardName;
-    CardStore cardStore;
+    private CardDetailActivity activity;
+    private String cardName;
+    private CardStore cardStore;
 
     public AddCardInfoTask(CardDetailActivity activity) {
         this.activity = activity;
@@ -45,7 +46,7 @@ public class AddCardInfoTask extends AsyncTask<String, Void, Void> {
         cardName = params[0];
 
         try { cardStore.getCardDomReady(cardName);     } catch (Exception e) {e.printStackTrace();}
-        if (isCancelled()) {return null; }; // attempt to return early
+        if (isCancelled()) {return null; } // attempt to return early
         return null;
     }
 
@@ -58,7 +59,7 @@ public class AddCardInfoTask extends AsyncTask<String, Void, Void> {
         try { addCardStatus();              } catch (Exception e) {e.printStackTrace();}
     }
 
-    public void addCardImage() throws Exception {
+    private void addCardImage() throws Exception {
         final LinearLayout pgrbarWrapper = (LinearLayout) activity.findViewById(R.id.progressbar_wrapper);
         final LinearLayout layout = (LinearLayout) activity.findViewById(R.id.fragmentCardInfo_mainLinearLayout);
 
@@ -109,14 +110,14 @@ public class AddCardInfoTask extends AsyncTask<String, Void, Void> {
         });
     }
 
-    public void addCardInfo() throws Exception {
+    private void addCardInfo() throws Exception {
         // remove the spinner
         ProgressBar pgrBar = (ProgressBar) activity.findViewById(R.id.fragmentCardInfo_progressBar2);
         LinearLayout layout = (LinearLayout) activity.findViewById(R.id.fragmentCardInfo_mainLinearLayout);
         layout.removeView(pgrBar);
 
         TableLayout infoTable = (TableLayout) activity.findViewById(R.id.infoTable);
-        ArrayList<Pair> infos = cardStore.getCardInfo(cardName);
+        List<Pair> infos = cardStore.getCardInfo(cardName);
         for (Pair pair : infos) {
             Util.addRowWithTwoTextView(activity, infoTable, pair.key + "  ", pair.value, true);
         }
@@ -124,15 +125,15 @@ public class AddCardInfoTask extends AsyncTask<String, Void, Void> {
         Util.addBlankRow(activity, infoTable);
     }
 
-    public void addCardLore() throws Exception {
+    private void addCardLore() throws Exception {
         TextView effectTv = (TextView) activity.findViewById(R.id.textViewCardEffect);
         effectTv.setText(Html.fromHtml(cardStore.getCardLore(cardName), null, new MyTagHandler()));
     }
 
-    public void addCardStatus() throws Exception {
+    private void addCardStatus() throws Exception {
         TableLayout statusTable = (TableLayout) activity.findViewById(R.id.banlistTable);
 
-        ArrayList<Pair> statuses = cardStore.getCardStatus(cardName);
+        List<Pair> statuses = cardStore.getCardStatus(cardName);
         for (Pair pair : statuses) {
             Util.addRowWithTwoTextView(activity, statusTable, pair.key + "  ", pair.value, true);
         }

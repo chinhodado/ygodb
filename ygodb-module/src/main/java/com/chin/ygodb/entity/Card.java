@@ -1,4 +1,4 @@
-package com.chin.ygodb;
+package com.chin.ygodb.entity;
 
 public class Card {
     public String name            = "";
