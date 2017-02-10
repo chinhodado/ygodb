@@ -14,6 +14,7 @@ import android.annotation.SuppressLint;
 import android.content.Context;
 import android.graphics.Point;
 import android.text.Html;
+import android.util.Log;
 import android.view.Display;
 import android.view.View;
 import android.view.ViewGroup;
@@ -79,7 +80,13 @@ public class CardRegexFilterArrayAdapter extends RegexFilterArrayAdapter<Card> {
         imgView.setImageResource(android.R.color.transparent);
         imgView.getLayoutParams().width  = imgviewWidth;
         imgView.getLayoutParams().height = imgviewHeight;
-        ImageLoader.getInstance().displayImage(CardStore.getInstance(mContext).getImageLink(card.name), imgView);
+        try {
+            ImageLoader.getInstance().displayImage(CardStore.getInstance(mContext).getImageLink(card.name), imgView);
+        }
+        catch (Exception e) {
+            Log.w("frdict", "Cannot display image for: " + card.name);
+        }
+
 
         return view;
     }

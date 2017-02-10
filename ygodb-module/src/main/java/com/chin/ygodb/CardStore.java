@@ -261,6 +261,10 @@ public final class CardStore {
         return cardDomCache.get(cardName);
     }
 
+    public boolean hasCard(String cardName) {
+        return cardSet.containsKey(cardName);
+    }
+
     public String getImageLink(String cardName) {
         // try get from cache
         Card card = CardStore.cardSet.get(cardName);

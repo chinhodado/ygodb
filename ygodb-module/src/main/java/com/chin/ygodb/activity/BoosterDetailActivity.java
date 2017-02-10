@@ -15,7 +15,9 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ListView;
+import android.widget.Toast;
 
+import com.chin.ygodb.CardStore;
 import com.chin.ygodb.entity.Card;
 import com.chin.ygodb.PagerSlidingTabStrip;
 import com.chin.ygodb.asyncTask.BoosterCardListAsyncTask;
@@ -110,9 +112,16 @@ public class BoosterDetailActivity extends BaseFragmentActivity {
                 @Override
                 public void onItemClick(AdapterView<?> arg0, View v, int position, long arg3) {
                     String cardName = ((Card)arg0.getItemAtPosition(position)).name;
-                    Intent intent = new Intent(v.getContext(), CardDetailActivity.class);
-                    intent.putExtra(MainActivity.CARD_NAME, cardName);
-                    startActivity(intent);
+                    // new packs may not have actual card name in the table yet, or the card may not
+                    // have an article yet
+                    if (CardStore.getInstance(getActivity()).hasCard(cardName)) {
+                        Intent intent = new Intent(v.getContext(), CardDetailActivity.class);
+                        intent.putExtra(MainActivity.CARD_NAME, cardName);
+                        startActivity(intent);
+                    }
+                    else {
+                        Toast.makeText(getActivity(), "Unable to get card data", Toast.LENGTH_SHORT).show();
+                    }
                 }
             });
 
