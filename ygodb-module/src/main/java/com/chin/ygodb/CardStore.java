@@ -425,10 +425,10 @@ public final class CardStore {
                 "atk", "def", "cardnum", "passcode", "limitText", "ritualSpell", "ritualMonster", "fusionMaterials",
                 "synchroMaterial", "materials", "summonedBy", "effectTypes"};
 
-        for (int i = 0; i < columns.length; i++) {
-            String value = cursor.getString(cursor.getColumnIndex(columns[i]));
+        for (String column : columns) {
+            String value = cursor.getString(cursor.getColumnIndex(column));
             if (!value.equals("")) {
-                array.add(new Pair(columnNameMap.get(columns[i]), value));
+                array.add(new Pair(columnNameMap.get(column), value));
             }
         }
         cursor.close();
@@ -493,8 +493,8 @@ public final class CardStore {
         // order of the columns here is important, to make it persistent between online vs offline
         String[] columns = new String[] {"ocgStatus", "tcgAdvStatus", "tcgTrnStatus"};
 
-        for (int i = 0; i < columns.length; i++) {
-            String value = cursor.getString(cursor.getColumnIndex(columns[i]));
+        for (String column : columns) {
+            String value = cursor.getString(cursor.getColumnIndex(column));
             if (value.equals("")) {
                 continue;
             }
@@ -503,7 +503,7 @@ public final class CardStore {
                 value = "Unlimited";
             }
 
-            array.add(new Pair(columnNameMap.get(columns[i]), value));
+            array.add(new Pair(columnNameMap.get(column), value));
         }
         cursor.close();
         return array;

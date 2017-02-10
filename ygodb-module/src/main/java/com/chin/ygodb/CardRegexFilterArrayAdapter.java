@@ -13,6 +13,7 @@ import com.nostra13.universalimageloader.core.ImageLoader;
 import android.annotation.SuppressLint;
 import android.content.Context;
 import android.graphics.Point;
+import android.os.AsyncTask;
 import android.text.Html;
 import android.util.Log;
 import android.view.Display;
@@ -72,21 +73,48 @@ public class CardRegexFilterArrayAdapter extends RegexFilterArrayAdapter<Card> {
             view = convertView;
         }
 
+        final CardStore cardStore = CardStore.getInstance(mContext);
         TextView text = (TextView) view.findViewById(mFieldId);
         Card card = getItem(position);
         text.setText(Html.fromHtml(card.toString()));
 
-        ImageView imgView = (ImageView) view.findViewById(R.id.itemRowImage);
+        final ImageView imgView = (ImageView) view.findViewById(R.id.itemRowImage);
         imgView.setImageResource(android.R.color.transparent);
         imgView.getLayoutParams().width  = imgviewWidth;
         imgView.getLayoutParams().height = imgviewHeight;
+
+        String imgLink = null;
         try {
-            ImageLoader.getInstance().displayImage(CardStore.getInstance(mContext).getImageLink(card.name), imgView);
+            // this will fail if the card does not exist in the card store
+            imgLink = cardStore.getImageLink(card.name);
         }
         catch (Exception e) {
-            Log.w("frdict", "Cannot display image for: " + card.name);
+            Log.w("frdict", "Cannot get image link for: " + card.name);
         }
 
+        if (imgLink != null) {
+            ImageLoader.getInstance().displayImage(imgLink, imgView);
+        }
+        else if (cardStore.hasCard(card.name)){
+            // this will mostly be for cards that are online but not in the offline database
+            // (e.g. new cards since the last db update)
+            new AsyncTask<String, Void, String>() {
+                @Override
+                protected String doInBackground(String... params) {
+                    try {
+                        return cardStore.getImageLinkOnline(params[0]);
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
+                    return null;
+                }
+
+                @Override
+                protected void onPostExecute(String s) {
+                    ImageLoader.getInstance().displayImage(s, imgView);
+                }
+            }.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, card.name);
+        }
 
         return view;
     }
