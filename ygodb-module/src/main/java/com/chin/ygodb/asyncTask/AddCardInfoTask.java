@@ -1,6 +1,5 @@
 package com.chin.ygodb.asyncTask;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import com.chin.common.MyTagHandler;
