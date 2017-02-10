@@ -101,14 +101,14 @@ public class PopulateBoosterAsyncTask extends AsyncTask<String, Void, Void> {
             SharedPreferences preferences = activity.getSharedPreferences(imgLinkMapFileName, Context.MODE_PRIVATE);
             final Editor imgSrcPrefEditor = preferences.edit();
             @SuppressWarnings("unchecked")
-            HashMap<String, String> imgLinkMap = new HashMap<String, String>((Map<String, String>) preferences.getAll());
+            HashMap<String, String> imgLinkMap = new HashMap<>((Map<String, String>) preferences.getAll());
 
             // get the shared preferences as a (booster link, booster release date) HashMap
             final String dateMapFileName = "boosterDate.txt";
             preferences = activity.getSharedPreferences(dateMapFileName, Context.MODE_PRIVATE);
             final Editor datePrefEditor = preferences.edit();
             @SuppressWarnings("unchecked")
-            HashMap<String, String> dateMap = new HashMap<String, String>((Map<String, String>) preferences.getAll());
+            HashMap<String, String> dateMap = new HashMap<>((Map<String, String>) preferences.getAll());
 
             final List<Booster> boosters = new ArrayList<>();
 
@@ -118,7 +118,6 @@ public class PopulateBoosterAsyncTask extends AsyncTask<String, Void, Void> {
                 addToBoosterList(boosters, booster);
                 final String boosterName = entry.getKey();
                 final String boosterLink = entry.getValue();
-                String imgSrc;
 
                 // create a new image view and set its dimensions
                 final ImageView imgView = new ImageView(activity);
@@ -134,11 +133,8 @@ public class PopulateBoosterAsyncTask extends AsyncTask<String, Void, Void> {
                 booster.setTxtView(nameTv);
 
                 if (imgLinkMap.containsKey(boosterLink)) {
-                    imgSrc = imgLinkMap.get(boosterLink);
-
-                    // get the scaled image link and display it
-                    String newScaledLink = Util.getScaledWikiaImageLink(imgSrc, scaleWidth);
-                    ImageLoader.getInstance().displayImage(newScaledLink, imgView);
+                    String imgSrc = imgLinkMap.get(boosterLink);
+                    ImageLoader.getInstance().displayImage(imgSrc, imgView);
 
                     // change the name textview
                     nameTv.setText(boosterName);
@@ -168,7 +164,18 @@ public class PopulateBoosterAsyncTask extends AsyncTask<String, Void, Void> {
                                 // here so that multiple threads don't have to wait for each other,
                                 // and also because we don't care about caching at this point yet
                                 BoosterParser parser = new BoosterParser(activity, boosterName, dom);
+
+                                // get the image link
                                 imgSrc = parser.getImageLink();
+                                if (imgSrc != null) {
+                                    // get the scaled image link
+                                    imgSrc = Util.getScaledWikiaImageLink(imgSrc, scaleWidth);
+                                }
+                                else {
+                                    // use the placeholder image
+                                    imgSrc = "drawable://" + R.drawable.no_image_available;
+                                }
+
                                 String tmpDate = parser.getEnglishReleaseDate();
                                 if (tmpDate == null) {
                                     tmpDate = parser.getJapaneseReleaseDate();
@@ -198,9 +205,8 @@ public class PopulateBoosterAsyncTask extends AsyncTask<String, Void, Void> {
                         @Override
                         protected void onPostExecute(String[] params) {
                             if (exceptionOccurred2) return;
-                            // get the scaled image link and display it
-                            String newScaledLink = Util.getScaledWikiaImageLink(params[0], scaleWidth);
-                            ImageLoader.getInstance().displayImage(newScaledLink, imgView);
+
+                            ImageLoader.getInstance().displayImage(params[0], imgView);
 
                             // add the name to the name row
                             nameTv.setText(boosterName);
