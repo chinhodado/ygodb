@@ -114,10 +114,16 @@ public class PopulateBoosterAsyncTask extends AsyncTask<String, Void, Void> {
 
             // loop through the booster list and display them
             for (Map.Entry<String, String> entry : boosterUrls.entrySet()) {
-                final Booster booster = new Booster();
-                addToBoosterList(boosters, booster);
                 final String boosterName = entry.getKey();
                 final String boosterLink = entry.getValue();
+
+                // ignore the aggregate articles
+                if (boosterName.equals("Astral Pack") || boosterName.equals("OTS Tournament Pack")) {
+                    continue;
+                }
+
+                final Booster booster = new Booster();
+                addToBoosterList(boosters, booster);
 
                 // create a new image view and set its dimensions
                 final ImageView imgView = new ImageView(activity);
