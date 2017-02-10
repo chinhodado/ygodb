@@ -19,6 +19,7 @@ import com.chin.ygodb.database.DatabaseQuerier;
 import com.chin.ygodb.entity.Card;
 import com.chin.ygodb.html.YgoWikiaHtmlCleaner;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
@@ -93,21 +94,25 @@ public final class CardStore {
     // list of cards in the offline database
     private static List<String> offlineCardList = new ArrayList<>(8192);
 
-    private static CardStore CARDSTORE;
-    private static Context context;
-
     // flag: initialized the cardList, but not the cardLinkTable
     private static boolean initializedOffline = false;
 
     private static boolean initializedOnline = false;
+
+    // we use the application context so don't worry about this
+    @SuppressLint("StaticFieldLeak")
+    private static volatile CardStore INSTANCE;
+
+    private Context context;
+
     /**
      * Private constructor. For singleton.
      */
     private CardStore(Context context) {
-        if (CARDSTORE != null) {
+        if (INSTANCE != null) {
             throw new IllegalStateException("Already instantiated");
         }
-        CardStore.context = context;
+        this.context = context;
     }
 
     /**
@@ -115,10 +120,18 @@ public final class CardStore {
      * @return The only instance of this class.
      */
     public static CardStore getInstance(Context context) {
-        if (CARDSTORE == null) {
-            CARDSTORE = new CardStore(context);
+        // double-checked locking
+        CardStore result = INSTANCE;
+        if (result == null) {
+            synchronized(CardStore.class) {
+                result = INSTANCE;
+                if (result == null) {
+                    INSTANCE = result = new CardStore(context.getApplicationContext());
+                }
+            }
         }
-        return CARDSTORE;
+
+        return result;
     }
 
     public void initializeCardList() throws Exception {
