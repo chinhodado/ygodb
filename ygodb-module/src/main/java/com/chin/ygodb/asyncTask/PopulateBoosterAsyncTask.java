@@ -68,10 +68,6 @@ public class PopulateBoosterAsyncTask extends AsyncTask<String, Void, Void> {
                 String boosterLink = myArray.getJSONObject(i).getString("url");
                 boosterUrls.put(boosterName, boosterLink);
             }
-
-            if (isCancelled()) {
-                return null;
-            }
         } catch (Exception e) {
             e.printStackTrace();
 

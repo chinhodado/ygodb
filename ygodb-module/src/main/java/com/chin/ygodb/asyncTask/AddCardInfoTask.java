@@ -46,7 +46,6 @@ public class AddCardInfoTask extends AsyncTask<String, Void, Void> {
         cardName = params[0];
 
         try { cardStore.getCardDomReady(cardName);     } catch (Exception e) {e.printStackTrace();}
-        if (isCancelled()) {return null; } // attempt to return early
         return null;
     }
 
