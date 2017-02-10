@@ -25,6 +25,7 @@ import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.graphics.Point;
 import android.util.Log;
+import android.util.LruCache;
 import android.view.Display;
 
 /**
@@ -83,7 +84,7 @@ public final class CardStore {
     private static Map<String, String[]> cardLinkTable = null;
 
     // a storage for cards' detail after being fetched online
-    private static Map<String, Document> cardDomCache = new Hashtable<>();
+    private static LruCache<String, Document> cardDomCache = new LruCache<>(10);
 
     // list of Card objects, used for displaying in the ListView (the backing list for the adapter)
     public static List<Card> cardList = new ArrayList<>(8192);
@@ -249,7 +250,8 @@ public final class CardStore {
         if (!Util.hasNetworkConnectivity(context)) {
             return; // what else can we do? switch to offline db, meh
         }
-        if (cardDomCache.containsKey(cardName)) {
+
+        if (cardDomCache.get(cardName) != null) {
             return; // already cached, just return
         }
 
