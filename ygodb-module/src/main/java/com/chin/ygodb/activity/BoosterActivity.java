@@ -16,9 +16,11 @@ import com.chin.ygodb.PagerSlidingTabStrip;
 import com.chin.ygodb.asyncTask.PopulateBoosterAsyncTask;
 import com.chin.ygodb2.R;
 
-public class BoosterActivity extends BaseFragmentActivity {
+public abstract class BoosterActivity extends BaseFragmentActivity {
     public static final String BOOSTER_NAME = "BOOSTER_NAME";
     public static final String BOOSTER_URL = "BOOSTER_URL";
+    public static final String TYPE_TCG = "TCG";
+    public static final String TYPE_OCG = "OCG";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -35,6 +37,12 @@ public class BoosterActivity extends BaseFragmentActivity {
         tabs.setViewPager(pager);
         tabs.setIndicatorColor(getResources().getColor(R.color.red));
     }
+
+    /**
+     * Get the type of this activity
+     * @return either BoosterActivity.TYPE_TCG or BoosterActivity.TYPE_OCG
+     */
+    public abstract String getType();
 
     public static class BoosterListFragment extends Fragment {
         PopulateBoosterAsyncTask myTask;

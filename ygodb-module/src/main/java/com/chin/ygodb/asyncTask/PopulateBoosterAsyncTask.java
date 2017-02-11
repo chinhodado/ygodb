@@ -47,17 +47,25 @@ public class PopulateBoosterAsyncTask extends AsyncTask<String, Void, Void> {
     private boolean exceptionOccurred = false;
     private Toast toast = null;
     private final Object toastLock = new Object();
+    private String type; // TCG or OCG
 
     public PopulateBoosterAsyncTask(LinearLayout layout, BoosterActivity activity) {
         this.layout = layout;
         this.activity = activity;
+        this.type = activity.getType();
     }
 
     @Override
     protected Void doInBackground(String... params) {
-        if (boosterUrls != null) return null;
         try {
-            String baseUrl = "http://yugioh.wikia.com/api/v1/Articles/List?category=TCG_Booster_Packs&limit=5000&namespaces=0";
+            String baseUrl = null;
+            if (type.equals(BoosterActivity.TYPE_TCG)) {
+                baseUrl = "http://yugioh.wikia.com/api/v1/Articles/List?category=TCG_Booster_Packs&limit=5000&namespaces=0";
+            }
+            else {
+                baseUrl = "http://yugioh.wikia.com/api/v1/Articles/List?category=OCG_Booster_Packs&limit=5000&namespaces=0";
+            }
+
             String html = Jsoup.connect(baseUrl).ignoreContentType(true).execute().body();
 
             JSONObject myJSON = new JSONObject(html);

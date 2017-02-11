@@ -53,8 +53,7 @@ public class BaseFragmentActivity extends FragmentActivity{
         }
 
         // create the navigation drawer
-//        String[] mListTitles = {"Card", "TCG Boosters"};
-        String[] mListTitles = {"Card", "Advanced search", "TCG Boosters"};
+        String[] mListTitles = {"Card", "Advanced search", "TCG Boosters", "OCG Boosters"};
         final DrawerLayout mDrawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
         ListView mDrawerList = (ListView) findViewById(R.id.left_drawer);
 
@@ -81,8 +80,13 @@ public class BaseFragmentActivity extends FragmentActivity{
                     intent.setFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT);
                     startActivity(intent);
                 }
-                else if (position == 2) { // booster
-                    intent = new Intent(v.getContext(), BoosterActivity.class);
+                else if (position == 2) { // booster TCG
+                    intent = new Intent(v.getContext(), TcgBoosterActivity.class);
+                    intent.setFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT);
+                    startActivity(intent);
+                }
+                else if (position == 3) { // booster OCG
+                    intent = new Intent(v.getContext(), OcgBoosterActivity.class);
                     intent.setFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT);
                     startActivity(intent);
                 }

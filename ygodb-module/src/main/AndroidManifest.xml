@@ -43,8 +43,12 @@
                 android:value="com.chin.ygodb.activity.MainActivity" />
         </activity>
         <activity
-            android:name="com.chin.ygodb.activity.BoosterActivity"
-            android:label="Boosters" >
+            android:name="com.chin.ygodb.activity.TcgBoosterActivity"
+            android:label="TCG Boosters" >
+        </activity>
+        <activity
+            android:name="com.chin.ygodb.activity.OcgBoosterActivity"
+            android:label="OCG Boosters" >
         </activity>
         <activity
             android:name="com.chin.ygodb.activity.BoosterDetailActivity"
