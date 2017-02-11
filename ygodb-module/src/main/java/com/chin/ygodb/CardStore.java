@@ -2,9 +2,11 @@ package com.chin.ygodb;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.Hashtable;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -93,7 +95,7 @@ public final class CardStore {
     private static Map<String, Card> cardSet = new Hashtable<>(8192);
 
     // list of cards in the offline database
-    private static List<String> offlineCardList = new ArrayList<>(8192);
+    private static Set<String> offlineCardSet = new HashSet<>(8192);
 
     // flag: initialized the cardList, but not the cardLinkTable
     private static boolean initializedOffline = false;
@@ -150,7 +152,7 @@ public final class CardStore {
 
             // add those that are online but not offline
             List<String> onlineOfflineDiff = new ArrayList<String>(CardStore.cardNameList);
-            onlineOfflineDiff.removeAll(offlineCardList);
+            onlineOfflineDiff.removeAll(offlineCardSet);
             Log.i("ygodb", "Diff between online and offline: " + onlineOfflineDiff.size());
             for (int i = 0; i < onlineOfflineDiff.size(); i++) {
                 Card card = new Card();
@@ -199,7 +201,7 @@ public final class CardStore {
                 if (isOffline) {
                     cardNameList.add(name);
                 }
-                offlineCardList.add(name);
+                offlineCardSet.add(name);
                 cursor.moveToNext();
             }
         }
@@ -278,6 +280,14 @@ public final class CardStore {
 
     public boolean hasCard(String cardName) {
         return cardSet.containsKey(cardName);
+    }
+
+    public boolean hasCardOffline(String cardName) {
+        return offlineCardSet.contains(cardName);
+    }
+
+    public Card getCard(String cardName) {
+        return cardSet.get(cardName);
     }
 
     public String getImageLink(String cardName) {

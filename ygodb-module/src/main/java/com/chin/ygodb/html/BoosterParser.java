@@ -1,11 +1,10 @@
 package com.chin.ygodb.html;
 
 import android.content.Context;
-import android.database.DatabaseUtils;
 import android.util.Log;
 import android.util.LruCache;
 
-import com.chin.ygodb.database.DatabaseQuerier;
+import com.chin.ygodb.CardStore;
 import com.chin.ygodb.entity.Card;
 
 import org.jsoup.Jsoup;
@@ -178,18 +177,17 @@ public class BoosterParser {
                         category = cells.get(4).text();
                     }
 
-                    // TODO: can I use the card store here??? Need to review this
-                    DatabaseQuerier querier = new DatabaseQuerier(context);
-                    String criteria = "name = " + DatabaseUtils.sqlEscapeString(cardName);
-                    List<Card> res = querier.executeQuery(criteria);
+                    CardStore cardStore = CardStore.getInstance(context);
 
-                    if (res.size() > 0) {
-                        Card card = res.get(0);
+                    if (cardStore.hasCardOffline(cardName)) {
+                        // if we have the card in the offline db then we know all its info already
+                        Card card = cardStore.getCard(cardName);
                         card.setNumber = setNumber;
                         card.rarity = rarity;
                         cards.add(card);
                     }
                     else {
+                        // otherwise, the card is either online and not in our db, or does not exist
                         Card card = new Card();
                         card.name = cardName;
                         card.setNumber = setNumber;
