@@ -58,3 +58,5 @@ proNote.txt
 
 .idea/
 *.iml
+
+*.hprof
