@@ -29,6 +29,7 @@ public class Booster {
     private TextView txtView;
     private String name;
     private Date releaseDate;
+    private String imgSrc;
 
     public Booster() {
         try {
@@ -82,5 +83,13 @@ public class Booster {
         if (!parsed) {
             Log.i("ygodb", "Unable to parse date: " + releaseDate + " for " + name);
         }
+    }
+
+    public String getImgSrc() {
+        return imgSrc;
+    }
+
+    public void setImgSrc(String imgSrc) {
+        this.imgSrc = imgSrc;
     }
 }

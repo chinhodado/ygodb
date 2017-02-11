@@ -11,6 +11,7 @@ import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.GridView;
 import android.widget.LinearLayout;
 import com.chin.ygodb.PagerSlidingTabStrip;
 import com.chin.ygodb.asyncTask.PopulateBoosterAsyncTask;
@@ -63,9 +64,9 @@ public abstract class BoosterActivity extends BaseFragmentActivity {
         @SuppressLint("RtlHardcoded")
         @Override
         public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-            View view = inflater.inflate(R.layout.fragment_general_linear, container, false);
-            LinearLayout layout = (LinearLayout) view.findViewById(R.id.fragment_layout);
-            layout.setGravity(Gravity.RIGHT);
+            View view = inflater.inflate(R.layout.fragment_booster_grid, container, false);
+            GridView layout = (GridView) view.findViewById(R.id.booster_gridview);
+//            layout.setGravity(Gravity.RIGHT);
 
             myTask = (PopulateBoosterAsyncTask) new PopulateBoosterAsyncTask(layout, (BoosterActivity) getActivity())
                             .execute();

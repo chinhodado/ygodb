@@ -12,6 +12,7 @@ import android.view.Gravity;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewParent;
+import android.widget.GridView;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ProgressBar;
@@ -21,6 +22,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.chin.common.Util;
+import com.chin.ygodb.BoosterAdapter;
 import com.chin.ygodb.entity.Booster;
 import com.chin.ygodb.html.BoosterParser;
 import com.chin.ygodb.activity.BoosterActivity;
@@ -41,7 +43,7 @@ import java.util.List;
 import java.util.Map;
 
 public class PopulateBoosterAsyncTask extends AsyncTask<String, Void, Void> {
-    private LinearLayout layout;
+    private GridView gridView;
     private BoosterActivity activity;
     private static Map<String, String> boosterUrls; // a map of booster name to links its articles
     private boolean exceptionOccurred = false;
@@ -49,8 +51,8 @@ public class PopulateBoosterAsyncTask extends AsyncTask<String, Void, Void> {
     private final Object toastLock = new Object();
     private String type; // TCG or OCG
 
-    public PopulateBoosterAsyncTask(LinearLayout layout, BoosterActivity activity) {
-        this.layout = layout;
+    public PopulateBoosterAsyncTask(GridView layout, BoosterActivity activity) {
+        this.gridView = layout;
         this.activity = activity;
         this.type = activity.getType();
     }
@@ -87,15 +89,15 @@ public class PopulateBoosterAsyncTask extends AsyncTask<String, Void, Void> {
 
     @Override
     protected void onPostExecute(final Void param) {
-        if (exceptionOccurred) {
-            // remove the spinner
-            ProgressBar pgrBar = (ProgressBar) activity.findViewById(R.id.progressBar_fragment_general);
-            layout.removeView(pgrBar);
-            TextView tv = new TextView(activity);
-            layout.addView(tv);
-            tv.setText("Something went wrong. Please restart the app and try again.");
-            return;
-        }
+//        if (exceptionOccurred) {
+//            // remove the spinner
+//            ProgressBar pgrBar = (ProgressBar) activity.findViewById(R.id.progressBar_fragment_general);
+//            gridView.removeView(pgrBar);
+//            TextView tv = new TextView(activity);
+//            gridView.addView(tv);
+//            tv.setText("Something went wrong. Please restart the app and try again.");
+//            return;
+//        }
 
         try {
             // calculate the width of the images to be displayed later on
@@ -119,6 +121,7 @@ public class PopulateBoosterAsyncTask extends AsyncTask<String, Void, Void> {
             HashMap<String, String> dateMap = new HashMap<>((Map<String, String>) preferences.getAll());
 
             final List<Booster> boosters = new ArrayList<>();
+
 
             // loop through the booster list and display them
             for (Map.Entry<String, String> entry : boosterUrls.entrySet()) {
@@ -148,10 +151,11 @@ public class PopulateBoosterAsyncTask extends AsyncTask<String, Void, Void> {
 
                 if (imgLinkMap.containsKey(boosterLink)) {
                     String imgSrc = imgLinkMap.get(boosterLink);
-                    ImageLoader.getInstance().displayImage(imgSrc, imgView);
+//                    ImageLoader.getInstance().displayImage(imgSrc, imgView);
+                    booster.setImgSrc(imgSrc);
 
                     // change the name textview
-                    nameTv.setText(boosterName);
+//                    nameTv.setText(boosterName);
                     booster.setName(boosterName);
 
                     // set the booster release date and sort the booster list
@@ -161,7 +165,10 @@ public class PopulateBoosterAsyncTask extends AsyncTask<String, Void, Void> {
                     // set listener for imgView
                     setImgViewListener(imgView, boosterName, boosterLink);
 
-                    displayBoosterPage(boosters);
+//                    displayBoosterPage(boosters);
+
+                    BoosterAdapter adapter = new BoosterAdapter(activity, R.layout.grid_item_booster, R.id.itemRowTextBooster, boosters);
+                    gridView.setAdapter(adapter);
                 }
                 else {
                     new AsyncTask<String, Void, String[]>(){
@@ -250,9 +257,9 @@ public class PopulateBoosterAsyncTask extends AsyncTask<String, Void, Void> {
                 }
             }
 
-            // remove the spinner
-            ProgressBar pgrBar = (ProgressBar) activity.findViewById(R.id.progressBar_fragment_general);
-            layout.removeView(pgrBar);
+//            // remove the spinner
+//            ProgressBar pgrBar = (ProgressBar) activity.findViewById(R.id.progressBar_fragment_general);
+//            gridView.removeView(pgrBar);
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -290,7 +297,7 @@ public class PopulateBoosterAsyncTask extends AsyncTask<String, Void, Void> {
         final int BOOSTER_PER_ROW = 4;
 
         // remove all existing rows of boosters and names
-        layout.removeAllViews();
+        gridView.removeAllViews();
 
         for (int i = 0; i < boosters.size(); i++) {
             Booster booster = boosters.get(i);
@@ -303,14 +310,14 @@ public class PopulateBoosterAsyncTask extends AsyncTask<String, Void, Void> {
                 tmpLayout.setLayoutParams(new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT,
                         ViewGroup.LayoutParams.WRAP_CONTENT));
                 tmpLayout.setGravity(Gravity.CENTER);
-                layout.addView(tmpLayout);
+                gridView.addView(tmpLayout);
 
                 // and a new LinearLayout for a name row
                 tmpLayoutName = new LinearLayout(activity);
                 tmpLayoutName.setLayoutParams(new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT,
                         ViewGroup.LayoutParams.WRAP_CONTENT));
                 tmpLayoutName.setGravity(Gravity.CENTER);
-                layout.addView(tmpLayoutName);
+                gridView.addView(tmpLayoutName);
             }
 
             // remove the existing parent of the img view
