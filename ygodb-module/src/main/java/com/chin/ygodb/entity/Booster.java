@@ -1,8 +1,6 @@
 package com.chin.ygodb.entity;
 
 import android.util.Log;
-import android.widget.ImageView;
-import android.widget.TextView;
 
 import java.text.DateFormat;
 import java.text.ParseException;
@@ -25,10 +23,10 @@ public class Booster {
             new SimpleDateFormat("MMMM d yyyy", Locale.ENGLISH),
     };
 
-    private ImageView imgView;
-    private TextView txtView;
     private String name;
     private Date releaseDate;
+    private String imgSrc;
+    private String url;
 
     public Booster() {
         try {
@@ -36,22 +34,6 @@ public class Booster {
         } catch (ParseException e) {
             e.printStackTrace();
         }
-    }
-
-    public ImageView getImgView() {
-        return imgView;
-    }
-
-    public void setImgView(ImageView imgView) {
-        this.imgView = imgView;
-    }
-
-    public TextView getTxtView() {
-        return txtView;
-    }
-
-    public void setTxtView(TextView txtView) {
-        this.txtView = txtView;
     }
 
     public String getName() {
@@ -82,5 +64,21 @@ public class Booster {
         if (!parsed) {
             Log.i("ygodb", "Unable to parse date: " + releaseDate + " for " + name);
         }
+    }
+
+    public String getImgSrc() {
+        return imgSrc;
+    }
+
+    public void setImgSrc(String imgSrc) {
+        this.imgSrc = imgSrc;
+    }
+
+    public String getUrl() {
+        return url;
+    }
+
+    public void setUrl(String url) {
+        this.url = url;
     }
 }

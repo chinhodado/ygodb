@@ -1,39 +1,25 @@
 package com.chin.ygodb.asyncTask;
 
 import android.content.Context;
-import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.SharedPreferences.Editor;
 import android.os.AsyncTask;
+import android.support.v7.widget.RecyclerView;
 import android.util.DisplayMetrics;
 import android.util.Log;
-import android.util.TypedValue;
-import android.view.Gravity;
-import android.view.View;
-import android.view.ViewGroup;
-import android.view.ViewParent;
-import android.widget.ImageView;
-import android.widget.LinearLayout;
-import android.widget.ProgressBar;
-import android.widget.TableLayout;
-import android.widget.TableLayout.LayoutParams;
-import android.widget.TextView;
 import android.widget.Toast;
 
 import com.chin.common.Util;
+import com.chin.ygodb.activity.BoosterActivity;
 import com.chin.ygodb.entity.Booster;
 import com.chin.ygodb.html.BoosterParser;
-import com.chin.ygodb.activity.BoosterActivity;
-import com.chin.ygodb.activity.BoosterDetailActivity;
 import com.chin.ygodb2.R;
-import com.nostra13.universalimageloader.core.ImageLoader;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
@@ -41,7 +27,7 @@ import java.util.List;
 import java.util.Map;
 
 public class PopulateBoosterAsyncTask extends AsyncTask<String, Void, Void> {
-    private LinearLayout layout;
+    private RecyclerView recyclerView;
     private BoosterActivity activity;
     private static Map<String, String> boosterUrls; // a map of booster name to links its articles
     private boolean exceptionOccurred = false;
@@ -49,8 +35,8 @@ public class PopulateBoosterAsyncTask extends AsyncTask<String, Void, Void> {
     private final Object toastLock = new Object();
     private String type; // TCG or OCG
 
-    public PopulateBoosterAsyncTask(LinearLayout layout, BoosterActivity activity) {
-        this.layout = layout;
+    public PopulateBoosterAsyncTask(RecyclerView recyclerView, BoosterActivity activity) {
+        this.recyclerView = recyclerView;
         this.activity = activity;
         this.type = activity.getType();
     }
@@ -88,12 +74,7 @@ public class PopulateBoosterAsyncTask extends AsyncTask<String, Void, Void> {
     @Override
     protected void onPostExecute(final Void param) {
         if (exceptionOccurred) {
-            // remove the spinner
-            ProgressBar pgrBar = (ProgressBar) activity.findViewById(R.id.progressBar_fragment_general);
-            layout.removeView(pgrBar);
-            TextView tv = new TextView(activity);
-            layout.addView(tv);
-            tv.setText("Something went wrong. Please restart the app and try again.");
+            Toast.makeText(activity, "Something went wrong. Please restart the app and try again.", Toast.LENGTH_SHORT).show();
             return;
         }
 
@@ -118,7 +99,7 @@ public class PopulateBoosterAsyncTask extends AsyncTask<String, Void, Void> {
             @SuppressWarnings("unchecked")
             HashMap<String, String> dateMap = new HashMap<>((Map<String, String>) preferences.getAll());
 
-            final List<Booster> boosters = new ArrayList<>();
+            final List<Booster> boosters = activity.getBoosterList();
 
             // loop through the booster list and display them
             for (Map.Entry<String, String> entry : boosterUrls.entrySet()) {
@@ -131,37 +112,18 @@ public class PopulateBoosterAsyncTask extends AsyncTask<String, Void, Void> {
                 }
 
                 final Booster booster = new Booster();
+                booster.setName(boosterName);
+                booster.setUrl(boosterLink);
                 addToBoosterList(boosters, booster);
-
-                // create a new image view and set its dimensions
-                final ImageView imgView = new ImageView(activity);
-                imgView.setLayoutParams(new TableLayout.LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT, 1f));
-                imgView.setScaleType(ImageView.ScaleType.FIT_CENTER);
-                booster.setImgView(imgView);
-
-                // create a text view for the name
-                final TextView nameTv = new TextView(activity);
-                nameTv.setLayoutParams(new TableLayout.LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT, 1f));
-                nameTv.setTextSize(TypedValue.COMPLEX_UNIT_SP, 12);
-                nameTv.setGravity(Gravity.CENTER);
-                booster.setTxtView(nameTv);
 
                 if (imgLinkMap.containsKey(boosterLink)) {
                     String imgSrc = imgLinkMap.get(boosterLink);
-                    ImageLoader.getInstance().displayImage(imgSrc, imgView);
 
-                    // change the name textview
-                    nameTv.setText(boosterName);
-                    booster.setName(boosterName);
-
-                    // set the booster release date and sort the booster list
+                    booster.setImgSrc(imgSrc);
                     booster.setReleaseDate(dateMap.get(boosterLink));
+
                     sortBoosterList(boosters);
-
-                    // set listener for imgView
-                    setImgViewListener(imgView, boosterName, boosterLink);
-
-                    displayBoosterPage(boosters);
+                    recyclerView.getAdapter().notifyDataSetChanged();
                 }
                 else {
                     new AsyncTask<String, Void, String[]>(){
@@ -220,20 +182,11 @@ public class PopulateBoosterAsyncTask extends AsyncTask<String, Void, Void> {
                         protected void onPostExecute(String[] params) {
                             if (exceptionOccurred2) return;
 
-                            ImageLoader.getInstance().displayImage(params[0], imgView);
-
-                            // add the name to the name row
-                            nameTv.setText(boosterName);
-                            booster.setName(boosterName);
-
-                            // set the booster release date and sort the booster list
+                            booster.setImgSrc(params[0]);
                             booster.setReleaseDate(params[1]);
+
                             sortBoosterList(boosters);
-
-                            // set listener for imgView
-                            setImgViewListener(imgView, boosterName, boosterLink);
-
-                            displayBoosterPage(boosters);
+                            recyclerView.getAdapter().notifyDataSetChanged();
 
                             synchronized (toastLock) {
                                 // cancel the currently showing toast if any
@@ -249,25 +202,9 @@ public class PopulateBoosterAsyncTask extends AsyncTask<String, Void, Void> {
                     }.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
                 }
             }
-
-            // remove the spinner
-            ProgressBar pgrBar = (ProgressBar) activity.findViewById(R.id.progressBar_fragment_general);
-            layout.removeView(pgrBar);
         } catch (Exception e) {
             e.printStackTrace();
         }
-    }
-
-    private void setImgViewListener(ImageView imgView, final String boosterName, final String boosterUrl) {
-        imgView.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent intent = new Intent(v.getContext(), BoosterDetailActivity.class);
-                intent.putExtra(BoosterActivity.BOOSTER_NAME, boosterName);
-                intent.putExtra(BoosterActivity.BOOSTER_URL, boosterUrl);
-                activity.startActivity(intent);
-            }
-        });
     }
 
     private synchronized void addToBoosterList(List<Booster> boosters, Booster booster) {
@@ -281,53 +218,5 @@ public class PopulateBoosterAsyncTask extends AsyncTask<String, Void, Void> {
                 return o2.getReleaseDate().compareTo(o1.getReleaseDate());
             }
         });
-    }
-
-    private void displayBoosterPage(List<Booster> boosters) {
-        LinearLayout tmpLayout = null;
-        LinearLayout tmpLayoutName = null;
-
-        final int BOOSTER_PER_ROW = 4;
-
-        // remove all existing rows of boosters and names
-        layout.removeAllViews();
-
-        for (int i = 0; i < boosters.size(); i++) {
-            Booster booster = boosters.get(i);
-            ImageView imgView = booster.getImgView();
-            TextView txtView = booster.getTxtView();
-
-            if (i % BOOSTER_PER_ROW == 0) {
-                // add a new LinearLayout for a new image row
-                tmpLayout = new LinearLayout(activity);
-                tmpLayout.setLayoutParams(new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT,
-                        ViewGroup.LayoutParams.WRAP_CONTENT));
-                tmpLayout.setGravity(Gravity.CENTER);
-                layout.addView(tmpLayout);
-
-                // and a new LinearLayout for a name row
-                tmpLayoutName = new LinearLayout(activity);
-                tmpLayoutName.setLayoutParams(new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT,
-                        ViewGroup.LayoutParams.WRAP_CONTENT));
-                tmpLayoutName.setGravity(Gravity.CENTER);
-                layout.addView(tmpLayoutName);
-            }
-
-            // remove the existing parent of the img view
-            ViewParent parent = imgView.getParent();
-            if (parent != null) {
-                ((ViewGroup)parent).removeAllViews();
-            }
-
-            // remove the existing parent of the txt view
-            parent = txtView.getParent();
-            if (parent != null) {
-                ((ViewGroup)parent).removeAllViews();
-            }
-
-            // add the imgView and txtView to their respective row
-            tmpLayout.addView(imgView);
-            tmpLayoutName.addView(txtView);
-        }
     }
 }
