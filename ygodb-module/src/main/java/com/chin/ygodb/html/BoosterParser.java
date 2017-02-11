@@ -165,8 +165,18 @@ public class BoosterParser {
                     Elements cells = row.getElementsByTag("td");
                     String setNumber = cells.get(0).text();
                     String cardName = cells.get(1).text();
-                    String rarity = cells.get(2).text();
-                    String category = cells.get(3).text();
+                    String rarity = "", category = "";
+                    if (cells.size() == 4) {
+                        // table without Japanese name column
+                        rarity = cells.get(2).text();
+                        category = cells.get(3).text();
+                    }
+                    else if (cells.size() == 5) {
+                        // table with Japanese name column
+                        // String jpName = cells.get(2).text();
+                        rarity = cells.get(3).text();
+                        category = cells.get(4).text();
+                    }
 
                     // TODO: can I use the card store here??? Need to review this
                     DatabaseQuerier querier = new DatabaseQuerier(context);
