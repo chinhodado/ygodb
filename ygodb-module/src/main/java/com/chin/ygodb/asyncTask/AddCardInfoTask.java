@@ -2,6 +2,7 @@ package com.chin.ygodb.asyncTask;
 
 import java.util.List;
 
+import com.chin.common.HtmlUtil;
 import com.chin.common.MyTagHandler;
 import com.chin.common.Util;
 import com.chin.ygodb.dataSource.CardStore;
@@ -88,7 +89,7 @@ public class AddCardInfoTask extends AsyncTask<String, Void, Void> {
 
         // set the image
         String originalLink = cardStore.getImageLinkOnline(cardName);
-        ImageLoader.getInstance().displayImage(Util.getScaledWikiaImageLink(originalLink, scaleWidth), imgView, new SimpleImageLoadingListener() {
+        ImageLoader.getInstance().displayImage(HtmlUtil.getScaledWikiaImageLink(originalLink, scaleWidth), imgView, new SimpleImageLoadingListener() {
             @Override
             public void onLoadingComplete(String imageUri, View view, Bitmap loadedImage) {
                 // remove the spinner

@@ -4,6 +4,7 @@ import android.content.Context;
 import android.util.Log;
 import android.util.LruCache;
 
+import com.chin.common.HtmlUtil;
 import com.chin.ygodb.dataSource.CardStore;
 import com.chin.ygodb.entity.Card;
 
@@ -22,13 +23,11 @@ import java.util.List;
  * Created by Chin on 06-Feb-17.
  */
 public class BoosterParser {
-    private Context context;
     private Element dom;
     private String boosterName;
     private static final LruCache<String, Element> cache = new LruCache<>(5);
 
-    public BoosterParser(Context context, String boosterName, String boosterUrl) throws IOException {
-        this.context = context;
+    public BoosterParser(String boosterName, String boosterUrl) throws IOException {
         this.boosterName = boosterName;
         this.dom = getDocument(boosterName, boosterUrl);
     }
@@ -36,15 +35,13 @@ public class BoosterParser {
     /**
      * Use this constructor when you don't want to use the cache (to avoid waiting for the
      * synchronized cache access, or because of memory issue)
-     * @param context A context
      * @param boosterName The booster name
      * @param dom The dom of the booster page
      */
-    public BoosterParser(Context context, String boosterName, Document dom) {
-        this.context = context;
+    public BoosterParser(String boosterName, Document dom) {
         this.boosterName = boosterName;
         Element elem = dom.getElementById("mw-content-text");
-        removeSupTag(elem);
+        HtmlUtil.removeSupTag(elem);
         this.dom = elem;
     }
 
@@ -59,7 +56,7 @@ public class BoosterParser {
                         .ignoreContentType(true).execute().body();
                 Document dom = Jsoup.parse(html);
                 elem = dom.getElementById("mw-content-text");
-                removeSupTag(elem);
+                HtmlUtil.removeSupTag(elem);
                 cache.put(boosterName, elem);
                 return elem;
             }
@@ -153,7 +150,7 @@ public class BoosterParser {
      * Get the list of cards in this booster
      * @return list of cards
      */
-    public List<Card> getCardList() {
+    public List<Card> getCardList(Context context) {
         List<Card> cards = new ArrayList<>();
         try {
             Elements rows = dom.getElementsByClass("wikitable").first()
@@ -206,12 +203,5 @@ public class BoosterParser {
         }
 
         return cards;
-    }
-
-    private static void removeSupTag(Element elem) {
-        Elements sups = elem.getElementsByTag("sup");
-        for (Element e : sups) {
-            e.remove();
-        }
     }
 }

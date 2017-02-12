@@ -1,5 +1,27 @@
 package com.chin.ygodb.dataSource;
 
+import android.annotation.SuppressLint;
+import android.content.Context;
+import android.database.Cursor;
+import android.database.sqlite.SQLiteDatabase;
+import android.graphics.Point;
+import android.util.Log;
+import android.view.Display;
+
+import com.chin.common.HtmlUtil;
+import com.chin.common.Util;
+import com.chin.ygodb.activity.MainActivity;
+import com.chin.ygodb.database.DatabaseQuerier;
+import com.chin.ygodb.entity.Card;
+import com.chin.ygodb.html.CardParser;
+import com.chin.ygodb.html.YgoWikiaHtmlCleaner;
+
+import org.json.JSONArray;
+import org.json.JSONObject;
+import org.jsoup.Jsoup;
+import org.jsoup.nodes.Document;
+import org.jsoup.nodes.Element;
+
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashSet;
@@ -7,28 +29,6 @@ import java.util.Hashtable;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-
-import org.json.JSONArray;
-import org.json.JSONObject;
-import org.jsoup.Jsoup;
-import org.jsoup.nodes.Document;
-import org.jsoup.nodes.Element;
-import org.jsoup.select.Elements;
-
-import com.chin.common.Util;
-import com.chin.ygodb.activity.MainActivity;
-import com.chin.ygodb.database.DatabaseQuerier;
-import com.chin.ygodb.entity.Card;
-import com.chin.ygodb.html.YgoWikiaHtmlCleaner;
-
-import android.annotation.SuppressLint;
-import android.content.Context;
-import android.database.Cursor;
-import android.database.sqlite.SQLiteDatabase;
-import android.graphics.Point;
-import android.util.Log;
-import android.util.LruCache;
-import android.view.Display;
 
 /**
  * A singleton class that acts as a storage for card information. Support lazy loading information.
@@ -84,9 +84,6 @@ public final class CardStore {
 
     // map a card name to its wiki page url, initialized in MainActivity's onCreate()
     private static Map<String, String[]> cardLinkTable = null;
-
-    // a storage for cards' detail after being fetched online
-    private static LruCache<String, Document> cardDomCache = new LruCache<>(10);
 
     // list of Card objects, used for displaying in the ListView (the backing list for the adapter)
     public static List<Card> cardList = new ArrayList<>(8192);
@@ -247,35 +244,15 @@ public final class CardStore {
         }
     }
 
-    public void getCardDomReady(String cardName) throws Exception {
+    public CardParser getCardDomReady(String cardName) throws Exception {
         initializeCardList();
         if (!Util.hasNetworkConnectivity(context)) {
-            return; // what else can we do? switch to offline db, meh
-        }
-
-        if (cardDomCache.get(cardName) != null) {
-            return; // already cached, just return
+            return null; // what else can we do? switch to offline db, meh
         }
 
         String cardURL = "http://yugioh.wikia.com" + CardStore.cardLinkTable.get(cardName)[0];
-
-        String cardHTML = null;
-        try {
-            cardHTML = Jsoup.connect(cardURL).ignoreContentType(true).execute().body();
-        } catch (Exception e) {
-            Log.e("CardDetail", "Error fetching the card HTML page");
-            e.printStackTrace();
-        }
-        Document cardDOM = Jsoup.parse(cardHTML);
-
-        // save the DOM for later use. Should look into this so that it doesn't cause huge mem usage
-        cardDomCache.put(cardName, cardDOM);
-    }
-
-    public Document getCardDom(String cardName) throws Exception {
-        initializeCardList();
-        getCardDomReady(cardName);
-        return cardDomCache.get(cardName);
+        CardParser parser = new CardParser(cardName, cardURL);
+        return parser;
     }
 
     public boolean hasCard(String cardName) {
@@ -307,17 +284,8 @@ public final class CardStore {
     }
 
     public String getImageLinkOnline(String cardName) throws Exception {
-        getCardDomReady(cardName);
-        Document dom = cardDomCache.get(cardName);
-
-        Element td = dom.getElementsByClass("cardtable-cardimage").first();
-
-        String imageUrl = td.getElementsByTag("a").first().attr("href");
-
-        // Strip out the unnecessary stuffs in the image url
-        if (imageUrl.contains("/revision/")) {
-            imageUrl = imageUrl.substring(0, imageUrl.indexOf("/revision/"));
-        }
+        CardParser parser = getCardDomReady(cardName);
+        String imageUrl = parser.getImageLink();
 
         Card card = CardStore.cardSet.get(cardName);
         if (card.thumbnailImgUrl.equals("")) {
@@ -327,7 +295,7 @@ public final class CardStore {
         return imageUrl;
     }
 
-    public String getImageLinkOffline(String cardName) {
+    private String getImageLinkOffline(String cardName) {
         DatabaseQuerier dbq = new DatabaseQuerier(context);
         SQLiteDatabase db = dbq.getDatabase();
         Cursor cursor = db.rawQuery("select img from card where name = ?", new String[] {cardName});
@@ -345,8 +313,7 @@ public final class CardStore {
         cursor.close();
 
         try {
-            String originalLink = "http://vignette" + img.charAt(0) + ".wikia.nocookie.net/yugioh/images/" + img.charAt(1)
-                + "/" + img.charAt(1) + img.charAt(2) + "/" + img.substring(3);
+            String originalLink = HtmlUtil.getFullImageLink(img);
 
             // calculate the width of the images to be displayed
             Display display = MainActivity.instance.getWindowManager().getDefaultDisplay();
@@ -355,7 +322,7 @@ public final class CardStore {
             int screenWidth = size.x;
             int scaleWidth = (int) (screenWidth * 0.2);
 
-            String finalLink = Util.getScaledWikiaImageLink(originalLink, scaleWidth);
+            String finalLink = HtmlUtil.getScaledWikiaImageLink(originalLink, scaleWidth);
             return finalLink;
         }
         catch (Exception e) {
@@ -397,15 +364,8 @@ public final class CardStore {
             return card.lore;
         }
 
-        initializeCardList();
-        getCardDomReady(cardName);
-        Document dom = cardDomCache.get(cardName);
-
-        Element effectBox = dom.getElementsByClass("cardtablespanrow").first().getElementsByClass("navbox-list").first();
-        String lore = YgoWikiaHtmlCleaner.getCleanedHtml(effectBox, null);
-
-        // turn <dl> into <p> and <dt> into <b>
-        lore = lore.replace("<dl", "<p").replace("dl>", "p>").replace("<dt", "<b").replace("dt>", "b>");
+        CardParser parser = getCardDomReady(cardName);
+        String lore = parser.getCardLore();
         card.lore = lore;
         return lore;
     }
@@ -448,35 +408,8 @@ public final class CardStore {
     }
 
     private List<Pair> getCardInfoOnline(String cardName) throws Exception {
-        initializeCardList();
-        List<Pair> infos = new ArrayList<CardStore.Pair>();
-        getCardDomReady(cardName);
-        Document dom = cardDomCache.get(cardName);
-        Elements rows = dom.getElementsByClass("cardtable").first().getElementsByClass("cardtablerow");
-
-        // first row is "Attribute" for monster, "Type" for spell/trap and "Types" for token
-        boolean foundFirstRow = false;
-        for (Element row : rows) {
-            Element header = row.getElementsByClass("cardtablerowheader").first();
-            if (header == null) continue;
-            String headerText = header.text();
-            if (!foundFirstRow && !headerText.equals("Attribute") && !headerText.equals("Type") && !headerText.equals("Types")) {
-                continue;
-            }
-            if (headerText.equals("Other card information") || header.text().equals("External links")) {
-                // we have reached the end for some reasons, exit now
-                break;
-            }
-            else {
-                foundFirstRow = true;
-                String data = row.getElementsByClass("cardtablerowdata").first().text();
-                infos.add(new Pair(headerText, data));
-                if (headerText.equals("Card effect types") || headerText.equals("Limitation Text")) {
-                    break;
-                }
-            }
-        }
-
+        CardParser parser = getCardDomReady(cardName);
+        List<Pair> infos = parser.getCardInfo();
         return infos;
     }
 
@@ -494,7 +427,7 @@ public final class CardStore {
     }
 
     private List<Pair> getCardStatusOffline(String cardName) {
-        List<Pair> array = new ArrayList<Pair>();
+        List<Pair> array = new ArrayList<>();
         DatabaseQuerier dbq = new DatabaseQuerier(context);
         SQLiteDatabase db = dbq.getDatabase();
         Cursor cursor = db.rawQuery("select ocgStatus, tcgAdvStatus, tcgTrnStatus from card where name = ?", new String[] {cardName});
@@ -522,62 +455,14 @@ public final class CardStore {
     }
 
     private List<Pair> getCardStatusOnline(String cardName) throws Exception {
-        initializeCardList();
-        List<Pair> statuses = new ArrayList<CardStore.Pair>();
-        getCardDomReady(cardName);
-        Document dom = cardDomCache.get(cardName);
-
-        Elements tableRows = dom.getElementsByClass("cardtable").first().getElementsByClass("cardtablerow");
-        boolean foundStatusRow = false;
-        for (int i = 0; i < tableRows.size(); i++) {
-            Element row = tableRows.get(i);
-            if (row.getElementsByClass("cardtablespanrow").size() > 0) {
-                // we reached the end of the status rows (past the banlist status rows and
-                // now is the Card descriptions row with nested table)
-                break;
-            }
-
-            Element rowHeader = row.getElementsByClass("cardtablerowheader").first();
-            if (rowHeader != null && rowHeader.text().equals("Statuses")) {
-                foundStatusRow = true;
-            }
-
-            if (foundStatusRow) {
-                String rowData = row.getElementsByClass("cardtablerowdata").first().text();
-                String[] tokens = rowData.split(" \\(");
-                if (tokens.length == 1) {
-                    statuses.add(new Pair("All formats", tokens[0]));
-                }
-                else {
-                    String status = tokens[0];
-                    String format = tokens[1].replace("(", "").replace(")", "");
-                    statuses.add(new Pair(format, status));
-                }
-            }
-        }
-
-        if (statuses.isEmpty()) {
-            Log.i("ygodb", "Card banlist status not found online");
-        }
-
+        CardParser parser = getCardDomReady(cardName);
+        List<Pair> statuses = parser.getCardStatus();
         return statuses;
     }
 
     //////////////////////////////////////////////////////////////////////
     // CARD RULING, TIPS AND TRIVIA
     //////////////////////////////////////////////////////////////////////
-
-    public String getCardRuling(String cardName) throws Exception {
-        return getCardGenericInfo(CardAdditionalInfoType.Ruling, cardName);
-    }
-
-    public String getCardTips(String cardName) throws Exception {
-        return getCardGenericInfo(CardAdditionalInfoType.Tips, cardName);
-    }
-
-    public String getCardTrivia(String cardName) throws Exception {
-        return getCardGenericInfo(CardAdditionalInfoType.Trivia, cardName);
-    }
 
     public String getCardGenericInfo(CardAdditionalInfoType type, String cardName) throws Exception {
         if (Util.hasNetworkConnectivity(context) && cardLinkTable != null) {
@@ -591,7 +476,7 @@ public final class CardStore {
     private String getCardGenericInfoOffline(CardAdditionalInfoType type, String cardName) throws Exception {
         DatabaseQuerier dbq = new DatabaseQuerier(context);
         SQLiteDatabase db = dbq.getDatabase();
-        String columnName = "";
+        String columnName;
         switch (type) {
             case Ruling: columnName = "ruling"; break;
             case Tips:   columnName = "tips";   break;

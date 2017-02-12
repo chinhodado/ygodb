@@ -33,7 +33,7 @@ public class BoosterInfoAsyncTask extends AsyncTask<String, Void, BoosterParser>
     @Override
     protected BoosterParser doInBackground(String... params) {
         try {
-            return new BoosterParser(activity, boosterName, boosterUrl);
+            return new BoosterParser(boosterName, boosterUrl);
         } catch (Exception e) {
             Log.w("ygodb", "Failed to fetch " + boosterName + "'s info");
             e.printStackTrace();

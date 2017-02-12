@@ -9,7 +9,7 @@ import android.util.DisplayMetrics;
 import android.util.Log;
 import android.widget.Toast;
 
-import com.chin.common.Util;
+import com.chin.common.HtmlUtil;
 import com.chin.ygodb.activity.BoosterActivity;
 import com.chin.ygodb.dataSource.BoosterStore;
 import com.chin.ygodb.entity.Booster;
@@ -122,9 +122,8 @@ public class PopulateBoosterAsyncTask extends AsyncTask<String, Void, Void> {
                     if (scaledImgSrc == null) {
                         try {
                             String img = booster.getShortenedImgSrc();
-                            String originalLink = "http://vignette" + img.charAt(0) + ".wikia.nocookie.net/yugioh/images/" + img.charAt(1)
-                                    + "/" + img.charAt(1) + img.charAt(2) + "/" + img.substring(3);
-                            scaledImgSrc = Util.getScaledWikiaImageLink(originalLink, scaleWidth);
+                            String originalLink = HtmlUtil.getFullImageLink(img);
+                            scaledImgSrc = HtmlUtil.getScaledWikiaImageLink(originalLink, scaleWidth);
                             booster.setScaledImgSrc(scaledImgSrc);
                         }
                         catch (Exception e) {
@@ -172,13 +171,13 @@ public class PopulateBoosterAsyncTask extends AsyncTask<String, Void, Void> {
                                 // note: we deliberately don't use the cached version of BoosterParser
                                 // here so that multiple threads don't have to wait for each other,
                                 // and also because we don't care about caching at this point yet
-                                BoosterParser parser = new BoosterParser(activity, boosterName, dom);
+                                BoosterParser parser = new BoosterParser(boosterName, dom);
 
                                 // get the image link
                                 imgSrc = parser.getImageLink();
                                 if (imgSrc != null) {
                                     // get the scaled image link
-                                    imgSrc = Util.getScaledWikiaImageLink(imgSrc, scaleWidth);
+                                    imgSrc = HtmlUtil.getScaledWikiaImageLink(imgSrc, scaleWidth);
                                 }
                                 else {
                                     // use the placeholder image

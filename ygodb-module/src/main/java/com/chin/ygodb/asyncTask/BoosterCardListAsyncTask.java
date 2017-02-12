@@ -36,8 +36,8 @@ public class BoosterCardListAsyncTask extends AsyncTask<String, Void, List<Card>
     protected List<Card> doInBackground(String... params) {
         List<Card> cards = new ArrayList<>();
         try {
-            BoosterParser parser = new BoosterParser(activity, boosterName, boosterUrl);
-            return parser.getCardList();
+            BoosterParser parser = new BoosterParser(boosterName, boosterUrl);
+            return parser.getCardList(activity);
         } catch (Exception e) {
             Log.w("ygodb", "Failed to fetch " + boosterName + "'s card list");
             e.printStackTrace();
