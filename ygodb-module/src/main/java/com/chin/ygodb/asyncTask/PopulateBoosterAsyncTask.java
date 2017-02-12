@@ -94,7 +94,7 @@ public class PopulateBoosterAsyncTask extends AsyncTask<String, Void, Void> {
             @SuppressWarnings("unchecked")
             HashMap<String, String> imgLinkMap = new HashMap<>((Map<String, String>) preferences.getAll());
 
-            // get the shared preferences as a (booster link, booster release date) HashMap
+            // get the shared preferences as a (booster link, [enReleaseDate, jpReleaseDate]) HashMap
             final String dateMapFileName = "boosterDate.txt";
             preferences = activity.getSharedPreferences(dateMapFileName, Context.MODE_PRIVATE);
             final Editor datePrefEditor = preferences.edit();
@@ -146,11 +146,14 @@ public class PopulateBoosterAsyncTask extends AsyncTask<String, Void, Void> {
                 boosterStore.addBooster(boosterName, booster);
                 addToBoosterList(boosters, booster);
 
+                // if the booster is not in the store but in shared preference (e.g. after an app restart)
                 if (imgLinkMap.containsKey(boosterLink)) {
                     String imgSrc = imgLinkMap.get(boosterLink);
 
                     booster.setScaledImgSrc(imgSrc);
-                    booster.setReleaseDate(dateMap.get(boosterLink));
+                    String[] tokens = dateMap.get(boosterLink).split("|");
+                    booster.setEnReleaseDate(tokens[0]);
+                    booster.setJpReleaseDate(tokens[1]);
 
                     sortBoosterList(boosters);
                     recyclerView.getAdapter().notifyDataSetChanged();
@@ -161,7 +164,7 @@ public class PopulateBoosterAsyncTask extends AsyncTask<String, Void, Void> {
                         @Override
                         protected String[] doInBackground(String... params) {
                             String imgSrc = null;
-                            String date = "January 1, 1970"; // default date
+                            String enDate = "January 1, 1970", jpDate = "January 1, 1970";
                             try {
                                 String html = Jsoup.connect("http://yugioh.wikia.com" + boosterLink)
                                         .ignoreContentType(true).execute().body();
@@ -183,18 +186,19 @@ public class PopulateBoosterAsyncTask extends AsyncTask<String, Void, Void> {
                                 }
 
                                 String tmpDate = parser.getEnglishReleaseDate();
-                                if (tmpDate == null) {
-                                    tmpDate = parser.getJapaneseReleaseDate();
+                                if (tmpDate != null) {
+                                    enDate = tmpDate;
                                 }
 
+                                tmpDate = parser.getJapaneseReleaseDate();
                                 if (tmpDate != null) {
-                                    date = tmpDate;
+                                    jpDate = tmpDate;
                                 }
 
                                 imgSrcPrefEditor.putString(boosterLink, imgSrc);
                                 imgSrcPrefEditor.commit();
 
-                                datePrefEditor.putString(boosterLink, date);
+                                datePrefEditor.putString(boosterLink, enDate + "|" + jpDate);
                                 datePrefEditor.commit();
 
                                 Log.i("foo", "Fetched " + boosterLink + " from scratch, saved to cache");
@@ -205,7 +209,7 @@ public class PopulateBoosterAsyncTask extends AsyncTask<String, Void, Void> {
                                 exceptionOccurred2 = true;
                             }
 
-                            return new String[] {imgSrc, date};
+                            return new String[] {imgSrc, enDate, jpDate};
                         }
 
                         @Override
@@ -213,7 +217,8 @@ public class PopulateBoosterAsyncTask extends AsyncTask<String, Void, Void> {
                             if (exceptionOccurred2) return;
 
                             booster.setScaledImgSrc(params[0]);
-                            booster.setReleaseDate(params[1]);
+                            booster.setEnReleaseDate(params[1]);
+                            booster.setJpReleaseDate(params[2]);
 
                             sortBoosterList(boosters);
                             recyclerView.getAdapter().notifyDataSetChanged();
@@ -242,11 +247,25 @@ public class PopulateBoosterAsyncTask extends AsyncTask<String, Void, Void> {
     }
 
     private synchronized void sortBoosterList(List<Booster> boosters) {
+        final SortOrder order = type.equals(BoosterActivity.TYPE_TCG) ?
+                SortOrder.EN_RELEASE_DATE_DES : SortOrder.JP_RELEASE_DATE_DES;
         Collections.sort(boosters, new Comparator<Booster>() {
             @Override
             public int compare(Booster o1, Booster o2) {
-                return o2.getReleaseDate().compareTo(o1.getReleaseDate());
+                if (order == SortOrder.EN_RELEASE_DATE_DES) {
+                    return o2.getEnReleaseDate().compareTo(o1.getEnReleaseDate());
+                }
+                else if (order == SortOrder.JP_RELEASE_DATE_DES) {
+                    return o2.getJpReleaseDate().compareTo(o1.getJpReleaseDate());
+                }
+
+                return 0;
             }
         });
+    }
+
+    private enum SortOrder {
+        EN_RELEASE_DATE_DES,
+        JP_RELEASE_DATE_DES,
     }
 }

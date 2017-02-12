@@ -24,14 +24,16 @@ public class Booster {
     };
 
     private String name;
-    private Date releaseDate;
+    private Date enReleaseDate;
+    private Date jpReleaseDate;
     private String shortenedImgSrc; // comes from the db
     private String scaledImgSrc;    // to be used in the booster list
     private String url;
 
     public Booster() {
         try {
-            releaseDate = DEFAULT_DATE_FORMAT.parse("January 1, 1970");
+            enReleaseDate = DEFAULT_DATE_FORMAT.parse("January 1, 1970");
+            jpReleaseDate = DEFAULT_DATE_FORMAT.parse("January 1, 1970");
         } catch (ParseException e) {
             e.printStackTrace();
         }
@@ -45,26 +47,26 @@ public class Booster {
         this.name = name;
     }
 
-    public Date getReleaseDate() {
-        return releaseDate;
+    public Date getEnReleaseDate() {
+        return enReleaseDate;
     }
 
     /**
-     * Set the release date of the booster. If the date is not parsable,
+     * Set the English release date of the booster. If the date is not parsable,
      * the previous release date will not change (which has a default value
      * of January 1, 1970)
      *
-     * @param releaseDate Release date to set
+     * @param date Release date to set
      */
-    public void setReleaseDate(String releaseDate) {
-        if (releaseDate == null) {
+    public void setEnReleaseDate(String date) {
+        if (date == null) {
             return;
         }
 
         boolean parsed = false;
         for (DateFormat dateFormat : DATE_FORMATS) {
             try {
-                this.releaseDate = dateFormat.parse(releaseDate);
+                this.enReleaseDate = dateFormat.parse(date);
                 parsed = true;
                 break;
             }
@@ -74,7 +76,40 @@ public class Booster {
         }
 
         if (!parsed) {
-            Log.i("ygodb", "Unable to parse date: " + releaseDate + " for " + name);
+            Log.i("ygodb", "Unable to parse date: " + date + " for " + name);
+        }
+    }
+
+    public Date getJpReleaseDate() {
+        return jpReleaseDate;
+    }
+
+    /**
+     * Set the Japanese release date of the booster. If the date is not parsable,
+     * the previous release date will not change (which has a default value
+     * of January 1, 1970)
+     *
+     * @param date Release date to set
+     */
+    public void setJpReleaseDate(String date) {
+        if (date == null) {
+            return;
+        }
+
+        boolean parsed = false;
+        for (DateFormat dateFormat : DATE_FORMATS) {
+            try {
+                this.jpReleaseDate = dateFormat.parse(date);
+                parsed = true;
+                break;
+            }
+            catch (Exception e) {
+                // do nothing
+            }
+        }
+
+        if (!parsed) {
+            Log.i("ygodb", "Unable to parse date: " + date + " for " + name);
         }
     }
 

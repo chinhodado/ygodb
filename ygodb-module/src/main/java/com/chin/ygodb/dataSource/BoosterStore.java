@@ -64,7 +64,8 @@ public class BoosterStore {
                 String name = cursor.getString(cursor.getColumnIndex("name"));
                 Booster booster = new Booster();
                 booster.setName(name);
-                booster.setReleaseDate(cursor.getString(cursor.getColumnIndex("enReleaseDate")));
+                booster.setEnReleaseDate(cursor.getString(cursor.getColumnIndex("enReleaseDate")));
+                booster.setJpReleaseDate(cursor.getString(cursor.getColumnIndex("jpReleaseDate")));
                 booster.setShortenedImgSrc(cursor.getString(cursor.getColumnIndex("imgSrc")));
 
                 offlineBoosterSet.add(name);
