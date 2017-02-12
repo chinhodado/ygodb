@@ -4,8 +4,8 @@ import java.util.List;
 
 import com.chin.common.MyTagHandler;
 import com.chin.common.Util;
-import com.chin.ygodb.CardStore;
-import com.chin.ygodb.CardStore.Pair;
+import com.chin.ygodb.dataSource.CardStore;
+import com.chin.ygodb.dataSource.CardStore.Pair;
 import com.chin.ygodb.activity.CardDetailActivity;
 import com.chin.ygodb2.R;
 import com.nostra13.universalimageloader.core.ImageLoader;

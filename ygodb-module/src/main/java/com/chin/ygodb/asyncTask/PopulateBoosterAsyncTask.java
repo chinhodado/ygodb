@@ -11,6 +11,7 @@ import android.widget.Toast;
 
 import com.chin.common.Util;
 import com.chin.ygodb.activity.BoosterActivity;
+import com.chin.ygodb.dataSource.BoosterStore;
 import com.chin.ygodb.entity.Booster;
 import com.chin.ygodb.html.BoosterParser;
 import com.chin.ygodb2.R;
@@ -44,6 +45,7 @@ public class PopulateBoosterAsyncTask extends AsyncTask<String, Void, Void> {
     @Override
     protected Void doInBackground(String... params) {
         try {
+            BoosterStore.getInstance(activity).init();
             String baseUrl = null;
             if (type.equals(BoosterActivity.TYPE_TCG)) {
                 baseUrl = "http://yugioh.wikia.com/api/v1/Articles/List?category=TCG_Booster_Packs&limit=5000&namespaces=0";
@@ -100,6 +102,7 @@ public class PopulateBoosterAsyncTask extends AsyncTask<String, Void, Void> {
             HashMap<String, String> dateMap = new HashMap<>((Map<String, String>) preferences.getAll());
 
             final List<Booster> boosters = activity.getBoosterList();
+            BoosterStore boosterStore = BoosterStore.getInstance(activity);
 
             // loop through the booster list and display them
             for (Map.Entry<String, String> entry : boosterUrls.entrySet()) {
@@ -111,15 +114,42 @@ public class PopulateBoosterAsyncTask extends AsyncTask<String, Void, Void> {
                     continue;
                 }
 
+                // if the booster is already in the store, use it
+                if (boosterStore.hasBooster(boosterName)) {
+                    Booster booster = boosterStore.getBooster(boosterName);
+
+                    String scaledImgSrc = booster.getScaledImgSrc();
+                    if (scaledImgSrc == null) {
+                        try {
+                            String img = booster.getShortenedImgSrc();
+                            String originalLink = "http://vignette" + img.charAt(0) + ".wikia.nocookie.net/yugioh/images/" + img.charAt(1)
+                                    + "/" + img.charAt(1) + img.charAt(2) + "/" + img.substring(3);
+                            scaledImgSrc = Util.getScaledWikiaImageLink(originalLink, scaleWidth);
+                            booster.setScaledImgSrc(scaledImgSrc);
+                        }
+                        catch (Exception e) {
+                            // usually happens when the booster have no image
+                            booster.setScaledImgSrc("drawable://" + R.drawable.no_image_available);
+                        }
+                    }
+                    booster.setUrl(boosterLink);
+
+                    addToBoosterList(boosters, booster);
+                    sortBoosterList(boosters);
+                    recyclerView.getAdapter().notifyDataSetChanged();
+                    continue;
+                }
+
                 final Booster booster = new Booster();
                 booster.setName(boosterName);
                 booster.setUrl(boosterLink);
+                boosterStore.addBooster(boosterName, booster);
                 addToBoosterList(boosters, booster);
 
                 if (imgLinkMap.containsKey(boosterLink)) {
                     String imgSrc = imgLinkMap.get(boosterLink);
 
-                    booster.setImgSrc(imgSrc);
+                    booster.setScaledImgSrc(imgSrc);
                     booster.setReleaseDate(dateMap.get(boosterLink));
 
                     sortBoosterList(boosters);
@@ -182,7 +212,7 @@ public class PopulateBoosterAsyncTask extends AsyncTask<String, Void, Void> {
                         protected void onPostExecute(String[] params) {
                             if (exceptionOccurred2) return;
 
-                            booster.setImgSrc(params[0]);
+                            booster.setScaledImgSrc(params[0]);
                             booster.setReleaseDate(params[1]);
 
                             sortBoosterList(boosters);

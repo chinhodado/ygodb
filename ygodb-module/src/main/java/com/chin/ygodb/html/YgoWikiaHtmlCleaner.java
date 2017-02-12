@@ -6,7 +6,7 @@ import org.jsoup.nodes.Element;
 import org.jsoup.nodes.Node;
 import org.jsoup.select.Elements;
 
-import com.chin.ygodb.CardStore.CardAdditionalInfoType;
+import com.chin.ygodb.dataSource.CardStore.CardAdditionalInfoType;
 
 public class YgoWikiaHtmlCleaner {
     public static String getCleanedHtml(Element content, CardAdditionalInfoType type) {

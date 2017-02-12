@@ -4,7 +4,7 @@ import android.content.Context;
 import android.util.Log;
 import android.util.LruCache;
 
-import com.chin.ygodb.CardStore;
+import com.chin.ygodb.dataSource.CardStore;
 import com.chin.ygodb.entity.Card;
 
 import org.jsoup.Jsoup;

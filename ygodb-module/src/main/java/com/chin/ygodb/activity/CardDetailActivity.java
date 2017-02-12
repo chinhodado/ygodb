@@ -1,8 +1,8 @@
 package com.chin.ygodb.activity;
 
 import com.chin.common.MyTagHandler;
-import com.chin.ygodb.CardStore;
-import com.chin.ygodb.CardStore.CardAdditionalInfoType;
+import com.chin.ygodb.dataSource.CardStore;
+import com.chin.ygodb.dataSource.CardStore.CardAdditionalInfoType;
 import com.chin.ygodb.PagerSlidingTabStrip;
 import com.chin.ygodb.asyncTask.AddCardInfoTask;
 import com.chin.ygodb2.R;

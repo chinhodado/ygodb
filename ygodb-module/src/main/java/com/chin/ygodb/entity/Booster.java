@@ -25,7 +25,8 @@ public class Booster {
 
     private String name;
     private Date releaseDate;
-    private String imgSrc;
+    private String shortenedImgSrc; // comes from the db
+    private String scaledImgSrc;    // to be used in the booster list
     private String url;
 
     public Booster() {
@@ -48,7 +49,18 @@ public class Booster {
         return releaseDate;
     }
 
+    /**
+     * Set the release date of the booster. If the date is not parsable,
+     * the previous release date will not change (which has a default value
+     * of January 1, 1970)
+     *
+     * @param releaseDate Release date to set
+     */
     public void setReleaseDate(String releaseDate) {
+        if (releaseDate == null) {
+            return;
+        }
+
         boolean parsed = false;
         for (DateFormat dateFormat : DATE_FORMATS) {
             try {
@@ -56,7 +68,7 @@ public class Booster {
                 parsed = true;
                 break;
             }
-            catch (ParseException e) {
+            catch (Exception e) {
                 // do nothing
             }
         }
@@ -66,12 +78,20 @@ public class Booster {
         }
     }
 
-    public String getImgSrc() {
-        return imgSrc;
+    public String getScaledImgSrc() {
+        return scaledImgSrc;
     }
 
-    public void setImgSrc(String imgSrc) {
-        this.imgSrc = imgSrc;
+    public void setScaledImgSrc(String scaledImgSrc) {
+        this.scaledImgSrc = scaledImgSrc;
+    }
+
+    public String getShortenedImgSrc() {
+        return shortenedImgSrc;
+    }
+
+    public void setShortenedImgSrc(String shortenedImgSrc) {
+        this.shortenedImgSrc = shortenedImgSrc;
     }
 
     public String getUrl() {

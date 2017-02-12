@@ -57,7 +57,7 @@ public class BoosterRecyclerViewAdapter extends RecyclerView.Adapter<BoosterView
         // reset the imgView initially to avoid flickering (e.g. when the old image is still there and
         // the new image has not loaded yet)
         holder.imgView.setImageResource(android.R.color.transparent);
-        ImageLoader.getInstance().displayImage(booster.getImgSrc(), holder.imgView);
+        ImageLoader.getInstance().displayImage(booster.getScaledImgSrc(), holder.imgView);
     }
 
     @Override

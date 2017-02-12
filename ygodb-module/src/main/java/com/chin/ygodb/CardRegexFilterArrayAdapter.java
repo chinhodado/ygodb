@@ -13,6 +13,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import com.chin.common.RegexFilterArrayAdapter;
+import com.chin.ygodb.dataSource.CardStore;
 import com.chin.ygodb.entity.Card;
 import com.chin.ygodb2.R;
 import com.nostra13.universalimageloader.core.ImageLoader;
