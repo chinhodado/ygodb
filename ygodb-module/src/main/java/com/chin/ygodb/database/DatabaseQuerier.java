@@ -43,7 +43,7 @@ public class DatabaseQuerier {
         try {
             SQLiteDatabase db = getDatabase();
 
-            Cursor cursor = db.rawQuery("Select name, attribute, types, level, atk, def, rank, pendulumScale, property "
+            Cursor cursor = db.rawQuery("Select name, attribute, cardType, types, level, atk, def, link, rank, pendulumScale, property "
                                       + "from card where " + criteria + " order by name", null);
             if (cursor.moveToFirst()) {
                 while (!cursor.isAfterLast()) {
@@ -55,10 +55,12 @@ public class DatabaseQuerier {
                         card.name = name;
                         // note that we don't need all card info here - just those needed for displaying in the ListView
                         card.attribute        = cursor.getString(cursor.getColumnIndex("attribute"));
+                        card.cardType         = cursor.getString(cursor.getColumnIndex("cardType"));
                         card.types            = cursor.getString(cursor.getColumnIndex("types"));
                         card.level            = cursor.getString(cursor.getColumnIndex("level"));
                         card.atk              = cursor.getString(cursor.getColumnIndex("atk"));
                         card.def              = cursor.getString(cursor.getColumnIndex("def"));
+                        card.link             = cursor.getString(cursor.getColumnIndex("link"));
                         card.rank             = cursor.getString(cursor.getColumnIndex("rank"));
                         card.pendulumScale    = cursor.getString(cursor.getColumnIndex("pendulumScale"));
                         card.property         = cursor.getString(cursor.getColumnIndex("property"));

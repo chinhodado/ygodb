@@ -175,7 +175,7 @@ public final class CardStore {
     private void addOfflineCardsToCardList(boolean isOffline) {
         DatabaseQuerier dbq = new DatabaseQuerier(context);
         SQLiteDatabase db = dbq.getDatabase();
-        Cursor cursor = db.rawQuery("select name, attribute, types, level, atk, def, rank, pendulumScale, property "
+        Cursor cursor = db.rawQuery("select name, attribute, cardType, types, level, atk, def, link, rank, pendulumScale, property "
                                   + "from card order by name", null);
 
         if (cursor.moveToFirst()) {
@@ -185,10 +185,12 @@ public final class CardStore {
                 card.name = name;
                 // note that we don't need all card info here - just those needed for displaying in the ListView
                 card.attribute        = cursor.getString(cursor.getColumnIndex("attribute"));
+                card.cardType         = cursor.getString(cursor.getColumnIndex("cardType"));
                 card.types            = cursor.getString(cursor.getColumnIndex("types"));
                 card.level            = cursor.getString(cursor.getColumnIndex("level"));
                 card.atk              = cursor.getString(cursor.getColumnIndex("atk"));
                 card.def              = cursor.getString(cursor.getColumnIndex("def"));
+                card.link             = cursor.getString(cursor.getColumnIndex("link"));
                 card.rank             = cursor.getString(cursor.getColumnIndex("rank"));
                 card.pendulumScale    = cursor.getString(cursor.getColumnIndex("pendulumScale"));
                 card.property         = cursor.getString(cursor.getColumnIndex("property"));

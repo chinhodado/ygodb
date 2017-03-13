@@ -3,11 +3,11 @@ package com.chin.ygodb.entity;
 public class Card {
     public String name            = "";
     public String attribute       = "";
+    public String cardType        = "";
     public String types           = "";
     public String level           = "";
     public String atk             = "";
     public String def             = "";
-    public String cardnum         = "";
     public String passcode        = "";
     public String effectTypes     = "";
     public String materials       = "";
@@ -15,6 +15,8 @@ public class Card {
     public String rank            = "";
     public String ritualSpell     = "";
     public String pendulumScale   = "";
+    public String linkMarkers     = "";
+    public String link            = "";
     public String property        = "";
     public String summonedBy      = "";
     public String limitText       = "";
@@ -37,8 +39,8 @@ public class Card {
         if (!category.equals("")) {
             tmp += small(category) + "<br>";
         }
-        if (types.equals("Spell Card") || types.equals("Trap Card")) {
-            tmp += small(property + " " + types);
+        if (cardType.equals("Spell") || cardType.equals("Trap")) {
+            tmp += small(property + " " + cardType);
         }
         else {
             tmp += "<small>";
@@ -52,7 +54,7 @@ public class Card {
             else if (!rank.equals("")) {
                 tmp += "Rank " + rank + "<br>";
             }
-            tmp += (attribute + " " + types + "<br>" + atk + "/" + def + "</small>");
+            tmp += (attribute + " " + types + "<br>" + atk + "/" + (!link.equals("")? "LINK " + link : def) + "</small>");
         }
 
         if (!setNumber.equals("")) {

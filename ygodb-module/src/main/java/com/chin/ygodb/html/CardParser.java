@@ -110,7 +110,7 @@ public class CardParser {
             Element header = row.getElementsByClass("cardtablerowheader").first();
             if (header == null) continue;
             String headerText = header.text();
-            if (!foundFirstRow && !headerText.equals("Attribute") && !headerText.equals("Type") && !headerText.equals("Types")) {
+            if (!foundFirstRow && !headerText.equals("Card type") && !headerText.equals("Types")) {
                 continue;
             }
             if (headerText.equals("Other card information") || header.text().equals("External links")) {

@@ -39,13 +39,13 @@ import android.widget.Toast;
 public class AdvancedSearchActivity extends BaseFragmentActivity {
     public static String[] mainCategoryList = {"(All)", "Monster", "Spell", "Trap"};
     public static String[] subCategoryMonsterList = {"(All)", "Normal", "Effect", "Fusion", "Ritual", "Synchro", "Xyz",
-    		"Pendulum", "Tuner", "Gemini", "Union", "Spirit", "Flip", "Toon"};
+    		"Pendulum", "Link", "Tuner", "Gemini", "Union", "Spirit", "Flip", "Toon"};
     public static String[] subCategorySpellList = {"(All)", "Normal", "Quick-Play", "Continuous", "Ritual", "Equip", "Field"};
     public static String[] subCategoryTrapList = {"(All)", "Normal", "Continuous", "Counter"};
     public static String[] attributeList = {"(All)", "Earth", "Water", "Fire", "Wind", "Light", "Dark", "Divine"};
     public static String[] typeList = {"(All)", "Warrior", "Spellcaster", "Fairy", "Fiend", "Zombie", "Machine", "Aqua",
     		"Pyro", "Rock", "Winged Beast", "Plant", "Insect", "Thunder", "Dragon", "Beast", "Beast-Warrior", "Dinosaur",
-    		"Fish", "Sea Serpent", "Reptile", "Psychic", "Divine-Beast", "Creator God", "Wyrm"};
+    		"Fish", "Sea Serpent", "Reptile", "Psychic", "Divine-Beast", "Creator God", "Wyrm", "Cyverse"};
     public static String[] statusList = {"(All)", "Forbidden", "Limited", "Semi-Limited", "Unlimited",
             "Illegal", "Legal", "Not yet released"};
     public static String[] tcgOcgList = {"(All)", "TCG", "TCG Exclusive", "OCG", "OCG Exclusive"};
@@ -159,13 +159,13 @@ public class AdvancedSearchActivity extends BaseFragmentActivity {
                     String mainCategorySql = null;
                     if (!mainCategoryInput.equals("(All)")) {
                         if (mainCategoryInput.equals("Monster")) {
-                        	mainCategorySql = "atk <> \"\""; // relies on the fact that all monster have atk
+                        	mainCategorySql = "cardType = \"Monster\"";
                         }
                         else if (mainCategoryInput.equals("Spell")) {
-                        	mainCategorySql = "types = \"Spell Card\"";
+                        	mainCategorySql = "cardType = \"Spell\"";
                         }
                         else if (mainCategoryInput.equals("Trap")) {
-                        	mainCategorySql = "types = \"Trap Card\"";
+                        	mainCategorySql = "cardType = \"Trap\"";
                         }
                     }
 
