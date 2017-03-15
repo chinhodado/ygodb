@@ -24,8 +24,8 @@ import org.jsoup.nodes.Element;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.HashSet;
-import java.util.Hashtable;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -53,7 +53,7 @@ public final class CardStore {
         Ruling, Tips, Trivia
     }
 
-    private static Map<String, String> columnNameMap = new Hashtable<>();
+    private static Map<String, String> columnNameMap = new HashMap<>();
     static {
         // not all columns are in here, just those in the info section
         columnNameMap.put("attribute"      , "Attribute");
@@ -79,22 +79,22 @@ public final class CardStore {
         columnNameMap.put("tcgTrnStatus"   , "TCG Traditional");
     }
 
-    // a list of all cards available, initialized in MainActivity's onCreate()
+    // List of all cards names, initialized in MainActivity's onCreate()
     public static List<String> cardNameList = null;
-
-    // map a card name to its wiki page url, initialized in MainActivity's onCreate()
-    private static Map<String, String[]> cardLinkTable = null;
 
     // list of Card objects, used for displaying in the ListView (the backing list for the adapter)
     public static List<Card> cardList = new ArrayList<>(8192);
 
-    // basically a hashtable of cardList that maps a card's name to its Card object
-    private static Map<String, Card> cardSet = new Hashtable<>(8192);
+    // Map of a card's name to its wiki page url, initialized in MainActivity's onCreate()
+    private static Map<String, String[]> cardLinkMap = null;
 
-    // list of cards in the offline database
+    // Map of a card's name to its Card object
+    private static Map<String, Card> cardMap = new HashMap<>(8192);
+
+    // Set of card names in the offline database
     private static Set<String> offlineCardSet = new HashSet<>(8192);
 
-    // flag: initialized the cardList, but not the cardLinkTable
+    // flag: initialized the cardList, but not the cardLinkMap
     private static boolean initializedOffline = false;
 
     private static boolean initializedOnline = false;
@@ -139,7 +139,7 @@ public final class CardStore {
         if (Util.hasNetworkConnectivity(context)) {
             Log.i("ygodb", "Initializing online...");
             cardNameList = new ArrayList<String>(8192);
-            cardLinkTable = new Hashtable<String, String[]>(8192);
+            cardLinkMap = new HashMap<String, String[]>(8192);
             initializeCardListOnline(null, true);
             initializeCardListOnline(null, false);
 
@@ -155,7 +155,7 @@ public final class CardStore {
                 Card card = new Card();
                 card.name = onlineOfflineDiff.get(i);
                 CardStore.cardList.add(card);
-                CardStore.cardSet.put(card.name, card);
+                CardStore.cardMap.put(card.name, card);
             }
 
             initializedOnline = true;
@@ -196,7 +196,7 @@ public final class CardStore {
                 card.property         = cursor.getString(cursor.getColumnIndex("property"));
 
                 CardStore.cardList.add(card);
-                CardStore.cardSet.put(name, card);
+                CardStore.cardMap.put(name, card);
                 if (isOffline) {
                     cardNameList.add(name);
                 }
@@ -233,11 +233,11 @@ public final class CardStore {
         JSONArray myArray = myJSON.getJSONArray("items");
         for (int i = 0; i < myArray.length(); i++) {
             String cardName = myArray.getJSONObject(i).getString("title");
-            if (!cardLinkTable.containsKey(cardName)) {
+            if (!cardLinkMap.containsKey(cardName)) {
                 cardNameList.add(cardName);
                 String[] tmp = {myArray.getJSONObject(i).getString("url"),
                                 myArray.getJSONObject(i).getString("id")};
-                cardLinkTable.put(cardName, tmp);
+                cardLinkMap.put(cardName, tmp);
             }
         }
 
@@ -252,13 +252,13 @@ public final class CardStore {
             return null; // what else can we do? switch to offline db, meh
         }
 
-        String cardURL = "http://yugioh.wikia.com" + CardStore.cardLinkTable.get(cardName)[0];
+        String cardURL = "http://yugioh.wikia.com" + CardStore.cardLinkMap.get(cardName)[0];
         CardParser parser = new CardParser(cardName, cardURL);
         return parser;
     }
 
     public boolean hasCard(String cardName) {
-        return cardSet.containsKey(cardName);
+        return cardMap.containsKey(cardName);
     }
 
     public boolean hasCardOffline(String cardName) {
@@ -266,12 +266,12 @@ public final class CardStore {
     }
 
     public Card getCard(String cardName) {
-        return cardSet.get(cardName);
+        return cardMap.get(cardName);
     }
 
     public String getImageLink(String cardName) {
         // try get from cache
-        Card card = CardStore.cardSet.get(cardName);
+        Card card = CardStore.cardMap.get(cardName);
         if (!card.thumbnailImgUrl.equals("")) {
             return card.thumbnailImgUrl;
         }
@@ -289,7 +289,7 @@ public final class CardStore {
         CardParser parser = getCardDomReady(cardName);
         String imageUrl = parser.getImageLink();
 
-        Card card = CardStore.cardSet.get(cardName);
+        Card card = CardStore.cardMap.get(cardName);
         if (card.thumbnailImgUrl.equals("")) {
             card.thumbnailImgUrl = imageUrl;
         }
@@ -361,7 +361,7 @@ public final class CardStore {
     }
 
     private String getCardLoreOnline(String cardName) throws Exception {
-        Card card = CardStore.cardSet.get(cardName);
+        Card card = CardStore.cardMap.get(cardName);
         if (!card.lore.equals("")) {
             return card.lore;
         }
@@ -467,7 +467,7 @@ public final class CardStore {
     //////////////////////////////////////////////////////////////////////
 
     public String getCardGenericInfo(CardAdditionalInfoType type, String cardName) throws Exception {
-        if (Util.hasNetworkConnectivity(context) && cardLinkTable != null) {
+        if (Util.hasNetworkConnectivity(context) && cardLinkMap != null) {
             return getCardGenericInfoOnline(type, cardName);
         }
         else {
@@ -515,7 +515,7 @@ public final class CardStore {
             default:
                 throw new Exception("Unknown type of additional info!");
         }
-        String url = baseUrl + CardStore.cardLinkTable.get(cardName)[0].substring(6);
+        String url = baseUrl + CardStore.cardLinkMap.get(cardName)[0].substring(6);
 
         Document dom;
 
