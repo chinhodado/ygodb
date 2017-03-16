@@ -1,7 +1,12 @@
 package com.chin.ygodb.entity;
 
 public class Card {
+    // name is the title of the article, which is guaranteed to be unique, but may not be the card's true name
+    // e.g. it may be missing #, have "(card)" at the end, etc.
     public String name            = "";
+
+    // realName is the real name of the card, but may not be unique (e.g. tokens, egyptian gods, etc.)
+    public String realName        = "";
     public String attribute       = "";
     public String cardType        = "";
     public String types           = "";

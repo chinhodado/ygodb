@@ -94,6 +94,9 @@ public final class CardStore {
     // Set of card names in the offline database
     private static Set<String> offlineCardSet = new HashSet<>(8192);
 
+    // Map of real card name to article name
+    private static Map<String, String> realNameMap = new HashMap<>();
+
     // flag: initialized the cardList, but not the cardLinkMap
     private static boolean initializedOffline = false;
 
@@ -175,8 +178,9 @@ public final class CardStore {
     private void addOfflineCardsToCardList(boolean isOffline) {
         DatabaseQuerier dbq = new DatabaseQuerier(context);
         SQLiteDatabase db = dbq.getDatabase();
-        Cursor cursor = db.rawQuery("select name, attribute, cardType, types, level, atk, def, link, rank, pendulumScale, property "
-                                  + "from card order by name", null);
+        Cursor cursor = db.rawQuery("select name, realName, attribute, cardType, types, level, atk, " +
+                                    "def, link, rank, pendulumScale, property " +
+                                    "from card order by name", null);
 
         if (cursor.moveToFirst()) {
             while (!cursor.isAfterLast()) {
@@ -184,6 +188,7 @@ public final class CardStore {
                 Card card = new Card();
                 card.name = name;
                 // note that we don't need all card info here - just those needed for displaying in the ListView
+                card.realName         = cursor.getString(cursor.getColumnIndex("realName"));
                 card.attribute        = cursor.getString(cursor.getColumnIndex("attribute"));
                 card.cardType         = cursor.getString(cursor.getColumnIndex("cardType"));
                 card.types            = cursor.getString(cursor.getColumnIndex("types"));
@@ -200,6 +205,15 @@ public final class CardStore {
                 if (isOffline) {
                     cardNameList.add(name);
                 }
+
+                // If the card has a real name, we also map that real name to the card object
+                // However, this real name is not guaranteed to be unique and so the value of
+                // the mapping may be incorrect.
+                if (!card.realName.equals("")) {
+                    realNameMap.put(card.realName, card.name);
+                    CardStore.cardMap.put(card.realName, card);
+                }
+
                 offlineCardSet.add(name);
                 cursor.moveToNext();
             }
@@ -258,11 +272,17 @@ public final class CardStore {
     }
 
     public boolean hasCard(String cardName) {
-        return cardMap.containsKey(cardName);
+        // technically the second check inside realNameMap is not needed since we already add the
+        // mapping into cardMap
+        return cardMap.containsKey(cardName) || realNameMap.containsKey(cardName);
     }
 
     public boolean hasCardOffline(String cardName) {
-        return offlineCardSet.contains(cardName);
+        // technically the offlineCardSet.contains(realNameMap.get(cardName)) check is not needed
+        // since all our real names come from the db, so if our realNameMap contains it, it must be
+        // in the db
+        return offlineCardSet.contains(cardName) ||
+                (realNameMap.containsKey(cardName) && offlineCardSet.contains(realNameMap.get(cardName)));
     }
 
     public Card getCard(String cardName) {
