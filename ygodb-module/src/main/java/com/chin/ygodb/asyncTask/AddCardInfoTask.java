@@ -118,7 +118,7 @@ public class AddCardInfoTask extends AsyncTask<String, Void, Void> {
         TableLayout infoTable = (TableLayout) activity.findViewById(R.id.infoTable);
         List<Pair> infos = cardStore.getCardInfo(cardName);
         for (Pair pair : infos) {
-            Util.addRowWithTwoTextView(activity, infoTable, pair.key + "  ", pair.value, true);
+            Util.addRowWithTwoTextView(activity, infoTable, pair.key + "     ", pair.value, true);
         }
 
         Util.addBlankRow(activity, infoTable);
@@ -134,7 +134,7 @@ public class AddCardInfoTask extends AsyncTask<String, Void, Void> {
 
         List<Pair> statuses = cardStore.getCardStatus(cardName);
         for (Pair pair : statuses) {
-            Util.addRowWithTwoTextView(activity, statusTable, pair.key + "  ", pair.value, true);
+            Util.addRowWithTwoTextView(activity, statusTable, pair.key + "          ", pair.value, true);
         }
     }
 }
