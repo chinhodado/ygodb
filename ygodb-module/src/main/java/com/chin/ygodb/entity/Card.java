@@ -40,7 +40,7 @@ public class Card {
 
     @Override
     public String toString() {
-        String tmp = "<b>" + name + "</b><br>";
+        String tmp = "<b>" + getDisplayName() + "</b><br>";
         if (!category.equals("")) {
             tmp += small(category) + "<br>";
         }
@@ -78,5 +78,29 @@ public class Card {
 
     private String smaller(String text) {
         return "<small>" + small(text) + "</small>";
+    }
+
+    /**
+     * Get the display name for the card. Most of the time this is the card's "name" property,
+     * which is its article name on wikia. However when this name is different from the card's
+     * real name, we may want to use the real name instead. Note that we don't always want to
+     * display the real name because the article name can be useful (e.g. all tokens's real name
+     * is the same).
+     * @return a name suitable to be displayed
+     */
+    private String getDisplayName() {
+        String displayName = name;
+
+        // for cards like Jinzo #7 where the # is always missing from the article name
+        if (realName != null && realName.contains("#")) {
+            displayName = realName;
+        }
+
+        // for cards with article name like "Pharaoh's Servant (card)"
+        if (realName != null && !realName.equals("") && name.endsWith("(card)")) {
+            displayName = realName;
+        }
+
+        return displayName;
     }
 }
