@@ -88,7 +88,7 @@ public class Card {
      * is the same).
      * @return a name suitable to be displayed
      */
-    private String getDisplayName() {
+    public String getDisplayName() {
         String displayName = name;
 
         // for cards like Jinzo #7 where the # is always missing from the article name

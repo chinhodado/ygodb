@@ -60,7 +60,7 @@ public class CardDetailActivity extends BaseFragmentActivity {
         tabs.setViewPager(pager);
         tabs.setIndicatorColor(ContextCompat.getColor(this, R.color.red));
 
-        getActionBar().setTitle(cardName);
+        getActionBar().setTitle(CardStore.getInstance(this).getCard(cardName).getDisplayName());
     }
 
     @Override
