@@ -11,7 +11,7 @@ import android.content.Context;
  */
 public class YgoSqliteDatabase extends SQLiteAssetHelper {
     private static final String DATABASE_NAME = "ygo.db";
-    public static final int DATABASE_VERSION = 20170319;
+    public static final int DATABASE_VERSION = 20170430;
 
     public YgoSqliteDatabase(Context context) {
         super(context, DATABASE_NAME, null, DATABASE_VERSION);
