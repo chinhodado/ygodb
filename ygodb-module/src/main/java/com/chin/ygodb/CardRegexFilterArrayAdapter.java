@@ -131,7 +131,7 @@ public class CardRegexFilterArrayAdapter extends RegexFilterArrayAdapter<Card> {
             imgLink = cardStore.getImageLink(card.name);
         }
         catch (Exception e) {
-            Log.w("frdict", "Cannot get image link for: " + card.name);
+            Log.w("ygodb", "Cannot get image link for: " + card.name);
         }
 
         if (imgLink != null) {
