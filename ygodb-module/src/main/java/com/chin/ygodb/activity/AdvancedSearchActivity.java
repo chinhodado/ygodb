@@ -45,7 +45,7 @@ public class AdvancedSearchActivity extends BaseFragmentActivity {
     public static String[] attributeList = {"(All)", "Earth", "Water", "Fire", "Wind", "Light", "Dark", "Divine"};
     public static String[] typeList = {"(All)", "Warrior", "Spellcaster", "Fairy", "Fiend", "Zombie", "Machine", "Aqua",
     		"Pyro", "Rock", "Winged Beast", "Plant", "Insect", "Thunder", "Dragon", "Beast", "Beast-Warrior", "Dinosaur",
-    		"Fish", "Sea Serpent", "Reptile", "Psychic", "Divine-Beast", "Creator God", "Wyrm", "Cyverse"};
+    		"Fish", "Sea Serpent", "Reptile", "Psychic", "Divine-Beast", "Creator God", "Wyrm", "Cyberse"};
     public static String[] statusList = {"(All)", "Forbidden", "Limited", "Semi-Limited", "Unlimited",
             "Illegal", "Legal", "Not yet released"};
     public static String[] tcgOcgList = {"(All)", "TCG", "TCG Exclusive", "OCG", "OCG Exclusive"};
