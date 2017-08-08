@@ -161,6 +161,11 @@ public class BoosterParser {
                     Elements cells = row.getElementsByTag("td");
                     String setNumber = cells.get(0).text();
                     String cardName = cells.get(1).text();
+
+                    if (cardName != null && cardName.length() > 2 && cardName.startsWith("\"") && cardName.endsWith("\"")) {
+                        cardName = cardName.substring(1, cardName.length() - 1);
+                    }
+
                     String rarity = "", category = "";
                     if (cells.size() == 4) {
                         // table without Japanese name column
