@@ -57,7 +57,7 @@ public class AdvancedSearchActivity extends BaseFragmentActivity {
     static String lastSelectedMainCategory = "(All)";
 
     // store the result set after each search
-    static List<Card> resultSet = new ArrayList<Card>();
+    static List<Card> resultSet = new ArrayList<>();
 
     @SuppressWarnings("deprecation")
     @Override
@@ -69,9 +69,9 @@ public class AdvancedSearchActivity extends BaseFragmentActivity {
         bar.setNavigationMode(ActionBar.NAVIGATION_MODE_TABS);
 
         bar.addTab(bar.newTab().setText("Search")
-                .setTabListener(new TabListener<SearchCriteriaFragment>(this, "search", SearchCriteriaFragment.class, null, R.id.tab_viewgroup)));
+                .setTabListener(new TabListener<>(this, "search", SearchCriteriaFragment.class, null, R.id.tab_viewgroup)));
         bar.addTab(bar.newTab().setText("Results")
-                .setTabListener(new TabListener<SearchResultFragment>(this, "result", SearchResultFragment.class, null, R.id.tab_viewgroup)));
+                .setTabListener(new TabListener<>(this, "result", SearchResultFragment.class, null, R.id.tab_viewgroup)));
 
         // if we're resuming the activity, re-select the tab that was selected before
         if (savedInstanceState != null) {
@@ -97,19 +97,19 @@ public class AdvancedSearchActivity extends BaseFragmentActivity {
         public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
             // Inflate the layout for this fragment
             final View view = inflater.inflate(R.layout.fragment_advanced_search_criteria, container, false);
-            LinearLayout layout = (LinearLayout) view.findViewById(R.id.fragment_layout);
+            LinearLayout layout = view.findViewById(R.id.fragment_layout);
             initializeSkillSearchUI(layout);
 
-            Button searchButton = (Button) layout.findViewById(R.id.searchButton);
+            Button searchButton = layout.findViewById(R.id.searchButton);
             searchButton.setOnClickListener(new OnClickListener() {
                 @SuppressWarnings("deprecation")
                 @Override
                 public void onClick(View v) {
                     // make the list of criteria
-                    List<SearchCriterion> criteriaList = new ArrayList<SearchCriterion>();
+                    List<SearchCriterion> criteriaList = new ArrayList<>();
 
                     // level/rank
-                    EditText levelRankEdit = (EditText) view.findViewById(R.id.criteriaLevelRank);
+                    EditText levelRankEdit = view.findViewById(R.id.criteriaLevelRank);
                     String levelRankInput = levelRankEdit.getText().toString().trim();
                     String levelRankSql = null;
                     if (!levelRankInput.equals("")) {
@@ -120,7 +120,7 @@ public class AdvancedSearchActivity extends BaseFragmentActivity {
                     }
 
                     // pendulum scale
-                    EditText pendulumScaleEdit = (EditText) view.findViewById(R.id.criteriaPendulumScale);
+                    EditText pendulumScaleEdit = view.findViewById(R.id.criteriaPendulumScale);
                     String pendulumScaleInput = pendulumScaleEdit.getText().toString().trim();
                     String pendulumScaleOperator = ((Spinner) view.findViewById(R.id.spinnerOperatorPendulumScale)).getSelectedItem().toString();
                     if (!pendulumScaleInput.equals("")) {
@@ -129,7 +129,7 @@ public class AdvancedSearchActivity extends BaseFragmentActivity {
                     }
 
                     // atk
-                    EditText atkEdit = (EditText) view.findViewById(R.id.criteriaAtk);
+                    EditText atkEdit = view.findViewById(R.id.criteriaAtk);
                     String atkInput = atkEdit.getText().toString().trim();
                     String atkOperator = ((Spinner) view.findViewById(R.id.spinnerOperatorAtk)).getSelectedItem().toString();
                     if (!atkInput.equals("")) {
@@ -142,7 +142,7 @@ public class AdvancedSearchActivity extends BaseFragmentActivity {
                     }
 
                     // def
-                    EditText defEdit = (EditText) view.findViewById(R.id.criteriaDef);
+                    EditText defEdit = view.findViewById(R.id.criteriaDef);
                     String defInput = defEdit.getText().toString().trim();
                     String defOperator = ((Spinner) view.findViewById(R.id.spinnerOperatorDef)).getSelectedItem().toString();
                     if (!defInput.equals("")) {
@@ -158,14 +158,16 @@ public class AdvancedSearchActivity extends BaseFragmentActivity {
                     String mainCategoryInput = ((Spinner) view.findViewById(R.id.spinnerMainCategory)).getSelectedItem().toString();
                     String mainCategorySql = null;
                     if (!mainCategoryInput.equals("(All)")) {
-                        if (mainCategoryInput.equals("Monster")) {
-                        	mainCategorySql = "cardType = \"Monster\"";
-                        }
-                        else if (mainCategoryInput.equals("Spell")) {
-                        	mainCategorySql = "cardType = \"Spell\"";
-                        }
-                        else if (mainCategoryInput.equals("Trap")) {
-                        	mainCategorySql = "cardType = \"Trap\"";
+                        switch (mainCategoryInput) {
+                            case "Monster":
+                                mainCategorySql = "cardType = \"Monster\"";
+                                break;
+                            case "Spell":
+                                mainCategorySql = "cardType = \"Spell\"";
+                                break;
+                            case "Trap":
+                                mainCategorySql = "cardType = \"Trap\"";
+                                break;
                         }
                     }
 
@@ -235,17 +237,19 @@ public class AdvancedSearchActivity extends BaseFragmentActivity {
                     String tcgOcgInput = ((Spinner) view.findViewById(R.id.spinnerTcgOcg)).getSelectedItem().toString();
                     String tcgOcgSql = null;
                     if (!tcgOcgInput.equals("(All)")) {
-                        if (tcgOcgInput.equals("TCG Exclusive")) {
-                            tcgOcgSql = "tcgOnly = 1";
-                        }
-                        else if (tcgOcgInput.equals("OCG Exclusive")) {
-                            tcgOcgSql = "ocgOnly = 1";
-                        }
-                        else if (tcgOcgInput.equals("TCG")) {
-                            tcgOcgSql = "ocgOnly <> 1";
-                        }
-                        else if (tcgOcgInput.equals("OCG")) {
-                            tcgOcgSql = "tcgOnly <> 1";
+                        switch (tcgOcgInput) {
+                            case "TCG Exclusive":
+                                tcgOcgSql = "tcgOnly = 1";
+                                break;
+                            case "OCG Exclusive":
+                                tcgOcgSql = "ocgOnly = 1";
+                                break;
+                            case "TCG":
+                                tcgOcgSql = "ocgOnly <> 1";
+                                break;
+                            case "OCG":
+                                tcgOcgSql = "tcgOnly <> 1";
+                                break;
                         }
                     }
 
@@ -324,116 +328,121 @@ public class AdvancedSearchActivity extends BaseFragmentActivity {
                 R.id.spinnerOperatorAtk, R.id.spinnerOperatorDef, R.id.spinnerOperatorLevelRank, R.id.spinnerOperatorPendulumScale
             };
 
-            ArrayAdapter<String> operatorAdapter = new ArrayAdapter<String>(getActivity(),
-                    android.R.layout.simple_spinner_item, new String[] {
+            ArrayAdapter<String> operatorAdapter = new ArrayAdapter<>(getActivity(),
+                    android.R.layout.simple_spinner_item, new String[]{
                     ">", ">=", "<", "<=", "="
             });
 
             // Specify the layout to use when the list of choices appears
             operatorAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
 
-            for (int i = 0; i < spinnerOperatorIdList.length; i++) {
-                final Spinner operatorSpin = (Spinner) view.findViewById(spinnerOperatorIdList[i]);
+            for (int aSpinnerOperatorIdList : spinnerOperatorIdList) {
+                final Spinner operatorSpin = view.findViewById(aSpinnerOperatorIdList);
                 operatorSpin.setAdapter(operatorAdapter);
             }
 
             // main category
-            Spinner mainCategorySpinner = (Spinner) view.findViewById(R.id.spinnerMainCategory);
-            ArrayAdapter<String> mainCategoryAdapter = new ArrayAdapter<String>(getActivity(),
-            		android.R.layout.simple_spinner_item, mainCategoryList);
+            Spinner mainCategorySpinner = view.findViewById(R.id.spinnerMainCategory);
+            ArrayAdapter<String> mainCategoryAdapter = new ArrayAdapter<>(getActivity(),
+                    android.R.layout.simple_spinner_item, mainCategoryList);
             mainCategoryAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
             mainCategorySpinner.setAdapter(mainCategoryAdapter);
 
             // attribute
-            Spinner attributeSpinner = (Spinner) view.findViewById(R.id.spinnerAttribute);
-            ArrayAdapter<String> attributeAdapter = new ArrayAdapter<String>(getActivity(),
-            		android.R.layout.simple_spinner_item, attributeList);
+            Spinner attributeSpinner = view.findViewById(R.id.spinnerAttribute);
+            ArrayAdapter<String> attributeAdapter = new ArrayAdapter<>(getActivity(),
+                    android.R.layout.simple_spinner_item, attributeList);
             attributeAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
             attributeSpinner.setAdapter(attributeAdapter);
 
             // type
-            Spinner typeSpinner = (Spinner) view.findViewById(R.id.spinnerType);
-            ArrayAdapter<String> typeAdapter = new ArrayAdapter<String>(getActivity(),
-            		android.R.layout.simple_spinner_item, typeList);
+            Spinner typeSpinner = view.findViewById(R.id.spinnerType);
+            ArrayAdapter<String> typeAdapter = new ArrayAdapter<>(getActivity(),
+                    android.R.layout.simple_spinner_item, typeList);
             typeAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
             typeSpinner.setAdapter(typeAdapter);
 
             // status tcg adv
-            Spinner statusTcgAdvSpinner = (Spinner) view.findViewById(R.id.spinnerStatusTcgAdv);
-            ArrayAdapter<String> statusTcgAdvAdapter = new ArrayAdapter<String>(getActivity(),
-            		android.R.layout.simple_spinner_item, statusList);
+            Spinner statusTcgAdvSpinner = view.findViewById(R.id.spinnerStatusTcgAdv);
+            ArrayAdapter<String> statusTcgAdvAdapter = new ArrayAdapter<>(getActivity(),
+                    android.R.layout.simple_spinner_item, statusList);
             statusTcgAdvAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
             statusTcgAdvSpinner.setAdapter(statusTcgAdvAdapter);
 
             // status ocg
-            Spinner statusOcgSpinner = (Spinner) view.findViewById(R.id.spinnerStatusOcg);
-            ArrayAdapter<String> statusOcgAdapter = new ArrayAdapter<String>(getActivity(),
+            Spinner statusOcgSpinner = view.findViewById(R.id.spinnerStatusOcg);
+            ArrayAdapter<String> statusOcgAdapter = new ArrayAdapter<>(getActivity(),
                     android.R.layout.simple_spinner_item, statusList);
             statusOcgAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
             statusOcgSpinner.setAdapter(statusOcgAdapter);
 
             // tcg/ocg
-            Spinner tcgOcgSpinner = (Spinner) view.findViewById(R.id.spinnerTcgOcg);
-            ArrayAdapter<String> tcgOcgAdapter = new ArrayAdapter<String>(getActivity(),
+            Spinner tcgOcgSpinner = view.findViewById(R.id.spinnerTcgOcg);
+            ArrayAdapter<String> tcgOcgAdapter = new ArrayAdapter<>(getActivity(),
                     android.R.layout.simple_spinner_item, tcgOcgList);
             tcgOcgAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
             tcgOcgSpinner.setAdapter(tcgOcgAdapter);
 
             // sub-categories
-            final Spinner subCategorySpinner = (Spinner) view.findViewById(R.id.spinnerSubCategory);
+            final Spinner subCategorySpinner = view.findViewById(R.id.spinnerSubCategory);
             if (subCategoryMonsterAdapter == null) {
-            	subCategoryMonsterAdapter = new ArrayAdapter<String>(getActivity(),
-            		android.R.layout.simple_spinner_item, subCategoryMonsterList);
+            	subCategoryMonsterAdapter = new ArrayAdapter<>(getActivity(),
+                        android.R.layout.simple_spinner_item, subCategoryMonsterList);
             	subCategoryMonsterAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         	}
 
             if (subCategorySpellAdapter == null) {
-            	subCategorySpellAdapter = new ArrayAdapter<String>(getActivity(),
-            		android.R.layout.simple_spinner_item, subCategorySpellList);
+            	subCategorySpellAdapter = new ArrayAdapter<>(getActivity(),
+                        android.R.layout.simple_spinner_item, subCategorySpellList);
             	subCategorySpellAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
             }
 
             if (subCategoryTrapAdapter == null) {
-            	subCategoryTrapAdapter = new ArrayAdapter<String>(getActivity(),
-            		android.R.layout.simple_spinner_item, subCategoryTrapList);
+            	subCategoryTrapAdapter = new ArrayAdapter<>(getActivity(),
+                        android.R.layout.simple_spinner_item, subCategoryTrapList);
             	subCategoryTrapAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
             }
 			mainCategorySpinner.setOnItemSelectedListener(new OnItemSelectedListener() {
 				@Override
 				public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
 					String selected = (String) parent.getItemAtPosition(position);
-					if (selected.equals("(All)")) {
-						subCategorySpinner.setEnabled(false);
-						subCategorySpinner.setAdapter(new ArrayAdapter<String>(getActivity(),
-								android.R.layout.simple_spinner_item, new String[] { "(All)" }));
-						if (!lastSelectedMainCategory.equals("(All)")) {
-							lastSelectedSubCategoryPosition = -1;
-						}
-						lastSelectedMainCategory = "(All)";
-					} else if (selected.equals("Monster")) {
-						subCategorySpinner.setEnabled(true);
-						subCategorySpinner.setAdapter(subCategoryMonsterAdapter);
-						// if we have just come from another main category, allow the subcategory spinner to reset
-						// to the first item in the list. Same thing below.
-						if (!lastSelectedMainCategory.equals("Monster")) {
-							lastSelectedSubCategoryPosition = -1;
-						}
-						lastSelectedMainCategory = "Monster";
-					} else if (selected.equals("Spell")) {
-						subCategorySpinner.setEnabled(true);
-						subCategorySpinner.setAdapter(subCategorySpellAdapter);
-						if (!lastSelectedMainCategory.equals("Spell")) {
-							lastSelectedSubCategoryPosition = -1;
-						}
-						lastSelectedMainCategory = "Spell";
-					} else if (selected.equals("Trap")) {
-						subCategorySpinner.setEnabled(true);
-						subCategorySpinner.setAdapter(subCategoryTrapAdapter);
-						if (!lastSelectedMainCategory.equals("Trap")) {
-							lastSelectedSubCategoryPosition = -1;
-						}
-						lastSelectedMainCategory = "Trap";
-					}
+                    switch (selected) {
+                        case "(All)":
+                            subCategorySpinner.setEnabled(false);
+                            subCategorySpinner.setAdapter(new ArrayAdapter<>(getActivity(),
+                                    android.R.layout.simple_spinner_item, new String[]{"(All)"}));
+                            if (!lastSelectedMainCategory.equals("(All)")) {
+                                lastSelectedSubCategoryPosition = -1;
+                            }
+                            lastSelectedMainCategory = "(All)";
+                            break;
+                        case "Monster":
+                            subCategorySpinner.setEnabled(true);
+                            subCategorySpinner.setAdapter(subCategoryMonsterAdapter);
+                            // if we have just come from another main category, allow the subcategory spinner to reset
+                            // to the first item in the list. Same thing below.
+                            if (!lastSelectedMainCategory.equals("Monster")) {
+                                lastSelectedSubCategoryPosition = -1;
+                            }
+                            lastSelectedMainCategory = "Monster";
+                            break;
+                        case "Spell":
+                            subCategorySpinner.setEnabled(true);
+                            subCategorySpinner.setAdapter(subCategorySpellAdapter);
+                            if (!lastSelectedMainCategory.equals("Spell")) {
+                                lastSelectedSubCategoryPosition = -1;
+                            }
+                            lastSelectedMainCategory = "Spell";
+                            break;
+                        case "Trap":
+                            subCategorySpinner.setEnabled(true);
+                            subCategorySpinner.setAdapter(subCategoryTrapAdapter);
+                            if (!lastSelectedMainCategory.equals("Trap")) {
+                                lastSelectedSubCategoryPosition = -1;
+                            }
+                            lastSelectedMainCategory = "Trap";
+                            break;
+                    }
 
 					// re-select the last selected item in the sub category spinner. This is needed so that
 					// the spinner doesn't reset to "(All)" every time we come back to the search panel
@@ -468,7 +477,7 @@ public class AdvancedSearchActivity extends BaseFragmentActivity {
         public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
             // Inflate the layout for this fragment
             View view = inflater.inflate(R.layout.fragment_search_result, container, false);
-            ListView famListView = (ListView) view.findViewById(R.id.resultListView);
+            ListView famListView = view.findViewById(R.id.resultListView);
 
             // set the result set of the previous search as the adapter for the list
             famListView.setAdapter(new CardRegexFilterArrayAdapter(getActivity(), R.layout.list_item_card, R.id.itemRowText, resultSet));
