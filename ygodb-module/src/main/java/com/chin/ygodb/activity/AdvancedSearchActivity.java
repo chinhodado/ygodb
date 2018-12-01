@@ -154,6 +154,15 @@ public class AdvancedSearchActivity extends BaseFragmentActivity {
                     	criteriaList.add(new SearchCriterion("def", "<>", "\"\""));
                     }
 
+                    // link
+                    EditText linkEdit = view.findViewById(R.id.criteriaLink);
+                    String linkInput = linkEdit.getText().toString().trim();
+                    String linkOperator = ((Spinner) view.findViewById(R.id.spinnerOperatorLink)).getSelectedItem().toString();
+                    if (!linkInput.equals("")) {
+                        criteriaList.add(new SearchCriterion("link", linkOperator, linkInput));
+                        criteriaList.add(new SearchCriterion("link", "<>", "\"\""));
+                    }
+
                     // main category
                     String mainCategoryInput = ((Spinner) view.findViewById(R.id.spinnerMainCategory)).getSelectedItem().toString();
                     String mainCategorySql = null;
@@ -325,7 +334,7 @@ public class AdvancedSearchActivity extends BaseFragmentActivity {
 
         private void initializeSkillSearchUI(View view) {
             int[] spinnerOperatorIdList = new int[] {
-                R.id.spinnerOperatorAtk, R.id.spinnerOperatorDef, R.id.spinnerOperatorLevelRank, R.id.spinnerOperatorPendulumScale
+                R.id.spinnerOperatorAtk, R.id.spinnerOperatorDef, R.id.spinnerOperatorLevelRank, R.id.spinnerOperatorPendulumScale, R.id.spinnerOperatorLink
             };
 
             ArrayAdapter<String> operatorAdapter = new ArrayAdapter<>(getActivity(),
