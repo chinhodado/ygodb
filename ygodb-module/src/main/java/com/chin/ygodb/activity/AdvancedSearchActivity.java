@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import com.chin.common.TabListener;
+import com.chin.ygodb.MultiSelectionSpinner;
 import com.chin.ygodb.entity.Card;
 import com.chin.ygodb.CardRegexFilterArrayAdapter;
 import com.chin.ygodb.database.DatabaseQuerier;
@@ -49,6 +50,8 @@ public class AdvancedSearchActivity extends BaseFragmentActivity {
     public static String[] statusList = {"(All)", "Forbidden", "Limited", "Semi-Limited", "Unlimited",
             "Illegal", "Legal", "Not yet released"};
     public static String[] tcgOcgList = {"(All)", "TCG", "TCG Exclusive", "OCG", "OCG Exclusive"};
+
+    public static String[] linkArrows = { "Top", "Top-Right", "Right", "Bottom-Right", "Bottom", "Bottom-Left", "Left", "Top-Left" };
 
     static ArrayAdapter<String> subCategoryMonsterAdapter;
     static ArrayAdapter<String> subCategorySpellAdapter;
@@ -161,6 +164,15 @@ public class AdvancedSearchActivity extends BaseFragmentActivity {
                     if (!linkInput.equals("")) {
                         criteriaList.add(new SearchCriterion("link", linkOperator, linkInput));
                         criteriaList.add(new SearchCriterion("link", "<>", "\"\""));
+                    }
+
+                    // link arrow
+                    MultiSelectionSpinner linkArrowSpinner = view.findViewById(R.id.spinnerLinkArrow);
+                    List<String> arrows = linkArrowSpinner.getSelectedStrings();
+                    if (!arrows.isEmpty()) {
+                        for (String arrow : arrows) {
+                            criteriaList.add(new SearchCriterion("linkMarkers", "like", "'%|" + arrow + "|%'"));
+                        }
                     }
 
                     // main category
@@ -349,6 +361,9 @@ public class AdvancedSearchActivity extends BaseFragmentActivity {
                 final Spinner operatorSpin = view.findViewById(aSpinnerOperatorIdList);
                 operatorSpin.setAdapter(operatorAdapter);
             }
+
+            MultiSelectionSpinner linkArrowSpinner = view.findViewById(R.id.spinnerLinkArrow);
+            linkArrowSpinner.setItems(linkArrows);
 
             // main category
             Spinner mainCategorySpinner = view.findViewById(R.id.spinnerMainCategory);

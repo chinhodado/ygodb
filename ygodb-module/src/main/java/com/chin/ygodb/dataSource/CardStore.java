@@ -61,6 +61,8 @@ public final class CardStore {
         columnNameMap.put("level"          , "Level");
         columnNameMap.put("atk"            , "ATK");
         columnNameMap.put("def"            , "DEF");
+        columnNameMap.put("link"           , "Link");
+        columnNameMap.put("linkMarkers"    , "Link Arrows");
         columnNameMap.put("passcode"       , "Passcode");
         columnNameMap.put("effectTypes"    , "Card effect types");
         columnNameMap.put("materials"      , "Materials");
@@ -415,12 +417,15 @@ public final class CardStore {
 
         // order of the columns here is important, to make it persistent between online vs offline
         String[] columns = new String[] {"attribute", "types", "property", "level", "rank", "pendulumScale",
-                "atk", "def", "passcode", "limitText", "ritualSpell", "ritualMonster", "fusionMaterials",
-                "synchroMaterial", "materials", "summonedBy", "effectTypes"};
+                "atk", "def", "link", "linkMarkers", "passcode", "limitText", "ritualSpell", "ritualMonster",
+                "fusionMaterials", "synchroMaterial", "materials", "summonedBy", "effectTypes"};
 
         for (String column : columns) {
             String value = cursor.getString(cursor.getColumnIndex(column));
             if (!value.equals("")) {
+                if (column.equals("linkMarkers")) {
+                    value = value.replaceAll("\\|", "");
+                }
                 array.add(new Pair(columnNameMap.get(column), value));
             }
         }
