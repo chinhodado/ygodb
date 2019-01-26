@@ -5,7 +5,7 @@ android {
     buildToolsVersion '28.0.3'
 
     defaultConfig {
-        applicationId "com.chin.ygodb2"
+        applicationId "com.chin.ygodb"
         minSdkVersion 14
         targetSdkVersion 28
     }

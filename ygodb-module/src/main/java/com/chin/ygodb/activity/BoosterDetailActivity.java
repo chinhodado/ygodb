@@ -22,7 +22,7 @@ import com.chin.ygodb.entity.Card;
 import com.chin.ygodb.PagerSlidingTabStrip;
 import com.chin.ygodb.asyncTask.BoosterCardListAsyncTask;
 import com.chin.ygodb.asyncTask.BoosterInfoAsyncTask;
-import com.chin.ygodb2.R;
+import com.chin.ygodb.R;
 
 /**
  * Activity for booster detail

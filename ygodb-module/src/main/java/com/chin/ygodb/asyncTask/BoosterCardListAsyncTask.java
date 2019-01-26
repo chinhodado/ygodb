@@ -8,7 +8,7 @@ import com.chin.ygodb.html.BoosterParser;
 import com.chin.ygodb.entity.Card;
 import com.chin.ygodb.CardRegexFilterArrayAdapter;
 import com.chin.ygodb.activity.BoosterDetailActivity;
-import com.chin.ygodb2.R;
+import com.chin.ygodb.R;
 
 import java.util.ArrayList;
 import java.util.List;

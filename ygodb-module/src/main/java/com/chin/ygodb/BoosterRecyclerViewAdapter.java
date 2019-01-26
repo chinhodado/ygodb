@@ -11,7 +11,7 @@ import android.view.ViewGroup;
 import com.chin.ygodb.activity.BoosterActivity;
 import com.chin.ygodb.activity.BoosterDetailActivity;
 import com.chin.ygodb.entity.Booster;
-import com.chin.ygodb2.R;
+import com.chin.ygodb.R;
 import com.nostra13.universalimageloader.core.ImageLoader;
 
 import java.util.List;

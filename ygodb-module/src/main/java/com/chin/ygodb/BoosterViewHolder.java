@@ -5,7 +5,7 @@ import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import com.chin.ygodb2.R;
+import com.chin.ygodb.R;
 
 /**
  * View holder for booster card

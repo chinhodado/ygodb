@@ -14,7 +14,7 @@ import com.chin.ygodb.activity.BoosterActivity;
 import com.chin.ygodb.dataSource.BoosterStore;
 import com.chin.ygodb.entity.Booster;
 import com.chin.ygodb.html.BoosterParser;
-import com.chin.ygodb2.R;
+import com.chin.ygodb.R;
 
 import org.json.JSONArray;
 import org.json.JSONObject;

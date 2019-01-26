@@ -17,7 +17,7 @@ import com.chin.ygodb.BoosterRecyclerViewAdapter;
 import com.chin.ygodb.PagerSlidingTabStrip;
 import com.chin.ygodb.asyncTask.PopulateBoosterAsyncTask;
 import com.chin.ygodb.entity.Booster;
-import com.chin.ygodb2.R;
+import com.chin.ygodb.R;
 
 import java.util.ArrayList;
 import java.util.List;

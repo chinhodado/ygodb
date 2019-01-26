@@ -8,7 +8,7 @@ import android.widget.TextView;
 
 import com.chin.ygodb.html.BoosterParser;
 import com.chin.ygodb.activity.BoosterDetailActivity;
-import com.chin.ygodb2.R;
+import com.chin.ygodb.R;
 import com.nostra13.universalimageloader.core.ImageLoader;
 
 /**

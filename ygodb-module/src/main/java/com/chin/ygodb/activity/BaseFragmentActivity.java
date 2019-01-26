@@ -1,7 +1,7 @@
 package com.chin.ygodb.activity;
 
 import com.chin.common.Util;
-import com.chin.ygodb2.R;
+import com.chin.ygodb.R;
 
 import android.content.Intent;
 import android.content.res.Configuration;

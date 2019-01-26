@@ -24,7 +24,7 @@ import com.chin.ygodb.PagerSlidingTabStrip;
 import com.chin.ygodb.asyncTask.AddCardInfoTask;
 import com.chin.ygodb.dataSource.CardStore;
 import com.chin.ygodb.dataSource.CardStore.CardAdditionalInfoType;
-import com.chin.ygodb2.R;
+import com.chin.ygodb.R;
 
 /**
  * Activity to show all details about a card

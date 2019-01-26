@@ -8,7 +8,7 @@ import com.chin.common.Util;
 import com.chin.ygodb.dataSource.CardStore;
 import com.chin.ygodb.dataSource.CardStore.Pair;
 import com.chin.ygodb.activity.CardDetailActivity;
-import com.chin.ygodb2.R;
+import com.chin.ygodb.R;
 import com.nostra13.universalimageloader.core.ImageLoader;
 import com.nostra13.universalimageloader.core.assist.FailReason;
 import com.nostra13.universalimageloader.core.listener.SimpleImageLoadingListener;

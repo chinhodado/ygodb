@@ -9,7 +9,7 @@ import com.chin.ygodb.entity.Card;
 import com.chin.ygodb.CardRegexFilterArrayAdapter;
 import com.chin.ygodb.database.DatabaseQuerier;
 import com.chin.ygodb.database.SearchCriterion;
-import com.chin.ygodb2.R;
+import com.chin.ygodb.R;
 
 import android.app.ActionBar;
 import android.content.Context;

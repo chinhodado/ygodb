@@ -38,7 +38,7 @@ import android.widget.HorizontalScrollView;
 import android.widget.ImageButton;
 import android.widget.LinearLayout;
 import android.widget.TextView;
-import com.chin.ygodb2.R;
+import com.chin.ygodb.R;
 import java.util.Locale;
 
 public class PagerSlidingTabStrip extends HorizontalScrollView {
