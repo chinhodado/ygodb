@@ -1,12 +1,5 @@
 package com.chin.ygodb.activity;
 
-import com.chin.common.MyTagHandler;
-import com.chin.ygodb.dataSource.CardStore;
-import com.chin.ygodb.dataSource.CardStore.CardAdditionalInfoType;
-import com.chin.ygodb.PagerSlidingTabStrip;
-import com.chin.ygodb.asyncTask.AddCardInfoTask;
-import com.chin.ygodb2.R;
-
 import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.os.AsyncTask;
@@ -26,6 +19,13 @@ import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
+import com.chin.common.MyTagHandler;
+import com.chin.ygodb.PagerSlidingTabStrip;
+import com.chin.ygodb.asyncTask.AddCardInfoTask;
+import com.chin.ygodb.dataSource.CardStore;
+import com.chin.ygodb.dataSource.CardStore.CardAdditionalInfoType;
+import com.chin.ygodb2.R;
+
 /**
  * Activity to show all details about a card
  */
@@ -39,6 +39,17 @@ public class CardDetailActivity extends BaseFragmentActivity {
 
         if (savedInstanceState != null) {
             cardName = savedInstanceState.getString("CARDNAME");
+
+            // When system is low on mem, it kills this app in background
+            // (so hasJustBeenStarted is true). So the whole CardStore is also toasted,
+            // which means we can't do anything and need to go back to MainActivity
+            // so that it can initialize the CardStore and everything else in onCreate()
+            // TODO: come back to this activity with the current card after
+            // reinitialization is done
+            if (MainActivity.hasJustBeenStarted) {
+                finish();
+                return;
+            }
         }
         else {
             Intent intent = getIntent(); // careful, this intent may not be the intent from MainActivity...

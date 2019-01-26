@@ -1,12 +1,5 @@
 package com.chin.ygodb.activity;
 
-import com.chin.common.CustomDialogFragment;
-import com.chin.common.Util;
-import com.chin.ygodb.entity.Card;
-import com.chin.ygodb.CardRegexFilterArrayAdapter;
-import com.chin.ygodb.dataSource.CardStore;
-import com.chin.ygodb2.R;
-
 import android.content.Context;
 import android.content.Intent;
 import android.os.AsyncTask;
@@ -26,6 +19,13 @@ import android.widget.ListView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
+import com.chin.common.CustomDialogFragment;
+import com.chin.common.Util;
+import com.chin.ygodb.CardRegexFilterArrayAdapter;
+import com.chin.ygodb.dataSource.CardStore;
+import com.chin.ygodb.entity.Card;
+import com.chin.ygodb2.R;
+
 /**
  * The main activity, entry point of the app. It consists of the card search list.
  */
@@ -38,7 +38,16 @@ public class MainActivity extends BaseFragmentActivity {
 
     @Override
     protected void onCreate(final Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
+        // This activity is singleTask. While the exact meaning of that
+        // evades me after a long time not doing Android dev work, essentially
+        // there's only one instance of this activity while the app is running,
+        // and onCreate() is only called once when the app starts, and not when
+        // we resume app, or going back/coming from another activity. However,
+        // when system is low on memory, it kills this app in the background and
+        // when we resume, onCreate() is called again, with a non-null savedInstanceState.
+        // We don't want/need to use this savedInstanceState, partly because it screw up
+        // the SearchCardFragment addition and I don't know how to fix it.
+        super.onCreate(null);
 
         if (hasJustBeenStarted) {
             Util.checkNewVersion(this, "https://api.github.com/repos/chinhodado/ygodb/releases/latest",
@@ -67,11 +76,11 @@ public class MainActivity extends BaseFragmentActivity {
                     protected void onPostExecute(Void foo) {
                         initializingSpin.setVisibility(View.GONE);
                         initializingTv.setVisibility(View.GONE);
-                        if (savedInstanceState == null) {
-                            SearchCardFragment newFragment = new SearchCardFragment();
-                            FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
-                            ft.add(R.id.tab_viewgroup, newFragment).commit();
-                        }
+
+                        // no need to check savedInstanceState == null before doing this
+                        SearchCardFragment newFragment = new SearchCardFragment();
+                        FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
+                        ft.add(R.id.tab_viewgroup, newFragment).commit();
                     }
                 }.execute(this);
             } catch (Exception e) {
