@@ -1,3 +1,7 @@
 include ':ygodb-module'
+
 include ':common'
 project(':common').projectDir=new File('../android_common/common')
+
+include ':ygowikitool'
+project(':ygowikitool').projectDir=new File('../YgoSqliteDbCreator/ygowikitool')

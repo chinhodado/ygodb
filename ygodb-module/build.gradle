@@ -23,6 +23,11 @@ android {
     lintOptions {
         disable "ResourceType"
     }
+
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_1_8
+        targetCompatibility JavaVersion.VERSION_1_8
+    }
 }
 
 dependencies {
@@ -33,4 +38,5 @@ dependencies {
     implementation files('libs/sqliteassethelper-2.0.1.jar')
     implementation files('libs/universal-image-loader-1.9.4.jar')
     implementation project(':common')
+    implementation project(':ygowikitool')
 }

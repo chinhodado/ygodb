@@ -15,6 +15,7 @@ import com.chin.ygodb.database.DatabaseQuerier;
 import com.chin.ygodb.entity.Card;
 import com.chin.ygodb.html.CardParser;
 import com.chin.ygodb.html.YgoWikiaHtmlCleaner;
+import com.chin.ygowikitool.api.YugipediaApi;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -547,6 +548,17 @@ public final class CardStore {
             dom = Jsoup.parse(Jsoup.connect(url).ignoreContentType(true).execute().body());
         } catch (Exception e) {
             Log.i("ygodb", "Error fetching " + url);
+
+            if (type == CardAdditionalInfoType.Ruling) {
+                YugipediaApi api = new YugipediaApi();
+                String ruling = api.getCardRulingByCardName(cardName);
+                if (ruling != null) {
+                    return ruling;
+                }
+
+                Log.i("ygodb", "Error fetching " + cardName + " Yugipedia ruling");
+            }
+
             return "Not available.";
         }
 
