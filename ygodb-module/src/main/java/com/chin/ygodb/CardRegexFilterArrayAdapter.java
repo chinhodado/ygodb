@@ -11,6 +11,7 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import java.util.regex.PatternSyntaxException;
 
 import com.chin.common.RegexFilterArrayAdapter;
 import com.chin.ygodb.dataSource.CardStore;
@@ -196,32 +197,42 @@ public class CardRegexFilterArrayAdapter extends RegexFilterArrayAdapter<Card> {
                 }
                 results.values = list;
                 results.count = list.size();
-            } else {
-                String filterString = prefix.toString().toLowerCase();
-
-                List<Card> values;
-                synchronized (mLock) {
-                    values = new ArrayList<Card>(mOriginalValues);
-                }
-
-                final int count = values.size();
-                final List<Card> newValues = new ArrayList<Card>();
-
-                for (int i = 0; i < count; i++) {
-                    final Card card = values.get(i);
-                    final String valueText = card.name.toLowerCase();
-
-                    // Filter using the filterString as the regex pattern
-                    Pattern r = Pattern.compile(filterString);
-                    Matcher m = r.matcher(valueText);
-                    if (m.find()) {
-                        newValues.add(card);
-                    }
-                }
-
-                results.values = newValues;
-                results.count = newValues.size();
+                return results;
             }
+
+            String filterString = prefix.toString().toLowerCase();
+
+            Pattern r;
+            try {
+                r = Pattern.compile(filterString);
+            }
+            catch (PatternSyntaxException e) {
+                results.values = new ArrayList<>();
+                results.count = 0;
+                return results;
+            }
+
+            List<Card> values;
+            synchronized (mLock) {
+                values = new ArrayList<>(mOriginalValues);
+            }
+
+            final int count = values.size();
+            final List<Card> newValues = new ArrayList<>();
+
+            for (int i = 0; i < count; i++) {
+                final Card card = values.get(i);
+                final String valueText = card.name.toLowerCase();
+
+                // Filter using the filterString as the regex pattern
+                Matcher m = r.matcher(valueText);
+                if (m.find()) {
+                    newValues.add(card);
+                }
+            }
+
+            results.values = newValues;
+            results.count = newValues.size();
 
             return results;
         }
