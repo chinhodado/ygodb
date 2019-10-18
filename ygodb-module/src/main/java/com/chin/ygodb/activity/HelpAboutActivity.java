@@ -6,7 +6,7 @@ import com.chin.ygodb.R;
 import android.content.Intent;
 import android.content.pm.PackageManager.NameNotFoundException;
 import android.os.Bundle;
-import android.support.v4.app.NavUtils;
+import androidx.core.app.NavUtils;
 import android.text.Html;
 import android.view.Menu;
 import android.view.MenuItem;

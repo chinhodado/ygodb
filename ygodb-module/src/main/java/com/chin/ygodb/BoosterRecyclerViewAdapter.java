@@ -2,7 +2,7 @@ package com.chin.ygodb;
 
 import android.content.Context;
 import android.content.Intent;
-import android.support.v7.widget.RecyclerView;
+import androidx.recyclerview.widget.RecyclerView;
 import android.text.Html;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -11,7 +11,6 @@ import android.view.ViewGroup;
 import com.chin.ygodb.activity.BoosterActivity;
 import com.chin.ygodb.activity.BoosterDetailActivity;
 import com.chin.ygodb.entity.Booster;
-import com.chin.ygodb.R;
 import com.nostra13.universalimageloader.core.ImageLoader;
 
 import java.util.List;

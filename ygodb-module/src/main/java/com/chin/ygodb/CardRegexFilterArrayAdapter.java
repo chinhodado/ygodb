@@ -16,14 +16,13 @@ import java.util.regex.PatternSyntaxException;
 import com.chin.common.RegexFilterArrayAdapter;
 import com.chin.ygodb.dataSource.CardStore;
 import com.chin.ygodb.entity.Card;
-import com.chin.ygodb.R;
 import com.nostra13.universalimageloader.core.ImageLoader;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
 import android.graphics.Point;
 import android.os.AsyncTask;
-import android.support.annotation.NonNull;
+import androidx.annotation.NonNull;
 import android.text.Html;
 import android.util.Log;
 import android.view.Display;
