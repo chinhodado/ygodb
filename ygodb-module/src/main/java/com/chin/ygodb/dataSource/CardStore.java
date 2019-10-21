@@ -408,7 +408,7 @@ public final class CardStore {
     }
 
     private List<Pair> getCardInfoOffline(String cardName) {
-        List<Pair> array = new ArrayList<Pair>();
+        List<Pair> array = new ArrayList<>();
         DatabaseQuerier dbq = new DatabaseQuerier(context);
         SQLiteDatabase db = dbq.getDatabase();
         Cursor cursor = db.rawQuery("select * from card where name = ?", new String[] {cardName});
@@ -431,6 +431,28 @@ public final class CardStore {
             }
         }
         cursor.close();
+
+        cursor = db.rawQuery("select archetype.name from archetype, card_archetype, card " +
+                "where archetype.id = card_archetype.archetypeId " +
+                "and card_archetype.cardId = card.id " +
+                "and card.name = ?", new String[] {cardName});
+
+        String archetypes = "";
+        if (cursor.moveToFirst()) {
+            while (!cursor.isAfterLast()) {
+                String name = cursor.getString(cursor.getColumnIndex("name"));
+                if (!archetypes.equals("")) archetypes += ", ";
+                archetypes += name;
+
+                cursor.moveToNext();
+            }
+        }
+        cursor.close();
+
+        if (!"".equals(archetypes)) {
+            array.add(new Pair("Archetypes and series", archetypes));
+        }
+
         return array;
     }
 
