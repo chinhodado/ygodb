@@ -5,6 +5,8 @@ import android.util.LruCache;
 
 import com.chin.common.HtmlUtil;
 import com.chin.ygodb.dataSource.CardStore;
+import com.chin.ygowikitool.api.YugiohWikiaApi;
+import com.chin.ygowikitool.entity.Card;
 
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
@@ -126,6 +128,10 @@ public class CardParser {
                 }
             }
         }
+
+        com.chin.ygowikitool.parser.CardParser parser = new com.chin.ygowikitool.parser.CardParser("", dom);
+        Card card = parser.parse();
+        infos.add(new CardStore.Pair("Archetypes and series", card.getArchetypeString()));
 
         return infos;
     }
