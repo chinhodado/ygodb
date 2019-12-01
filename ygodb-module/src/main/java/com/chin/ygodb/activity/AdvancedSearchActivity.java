@@ -5,11 +5,11 @@ import java.util.List;
 
 import com.chin.common.TabListener;
 import com.chin.ygodb.MultiSelectionSpinner;
-import com.chin.ygodb.entity.Card;
 import com.chin.ygodb.CardRegexFilterArrayAdapter;
 import com.chin.ygodb.database.DatabaseQuerier;
 import com.chin.ygodb.database.SearchCriterion;
 import com.chin.ygodb.R;
+import com.chin.ygowikitool.entity.Card;
 
 import android.app.ActionBar;
 import android.content.Context;
@@ -510,7 +510,7 @@ public class AdvancedSearchActivity extends BaseFragmentActivity {
             famListView.setOnItemClickListener(new OnItemClickListener(){
                 @Override
                 public void onItemClick(AdapterView<?> arg0, View v, int position, long arg3) {
-                        String cardName = ((Card)arg0.getItemAtPosition(position)).name;
+                        String cardName = ((Card) arg0.getItemAtPosition(position)).getName();
                         Intent intent = new Intent(v.getContext(), CardDetailActivity.class);
                         intent.putExtra(MainActivity.CARD_NAME, cardName);
                         startActivity(intent);

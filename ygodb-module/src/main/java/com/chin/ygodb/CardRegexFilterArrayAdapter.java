@@ -15,7 +15,7 @@ import java.util.regex.PatternSyntaxException;
 
 import com.chin.common.RegexFilterArrayAdapter;
 import com.chin.ygodb.dataSource.CardStore;
-import com.chin.ygodb.entity.Card;
+import com.chin.ygowikitool.entity.Card;
 import com.nostra13.universalimageloader.core.ImageLoader;
 
 import android.annotation.SuppressLint;
@@ -128,16 +128,16 @@ public class CardRegexFilterArrayAdapter extends RegexFilterArrayAdapter<Card> {
         String imgLink = null;
         try {
             // this will fail if the card does not exist in the card store
-            imgLink = cardStore.getImageLink(card.name);
+            imgLink = cardStore.getImageLink(card.getName());
         }
         catch (Exception e) {
-            Log.w("ygodb", "Cannot get image link for: " + card.name);
+            Log.w("ygodb", "Cannot get image link for: " + card.getName());
         }
 
         if (imgLink != null) {
             ImageLoader.getInstance().displayImage(imgLink, imgView);
         }
-        else if (cardStore.hasCard(card.name)){
+        else if (cardStore.hasCard(card.getName())){
             // this will mostly be for cards that are online but not in the offline database
             // (e.g. new cards since the last db update)
             new AsyncTask<String, Void, String>() {
@@ -155,7 +155,7 @@ public class CardRegexFilterArrayAdapter extends RegexFilterArrayAdapter<Card> {
                 protected void onPostExecute(String s) {
                     ImageLoader.getInstance().displayImage(s, imgView);
                 }
-            }.executeOnExecutor(imageThreadPoolExecutor, card.name);
+            }.executeOnExecutor(imageThreadPoolExecutor, card.getName());
         }
 
         return view;
@@ -221,7 +221,7 @@ public class CardRegexFilterArrayAdapter extends RegexFilterArrayAdapter<Card> {
 
             for (int i = 0; i < count; i++) {
                 final Card card = values.get(i);
-                final String valueText = card.name.toLowerCase();
+                final String valueText = card.getName().toLowerCase();
 
                 // Filter using the filterString as the regex pattern
                 Matcher m = r.matcher(valueText);

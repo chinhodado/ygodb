@@ -6,7 +6,7 @@ import android.util.LruCache;
 
 import com.chin.common.HtmlUtil;
 import com.chin.ygodb.dataSource.CardStore;
-import com.chin.ygodb.entity.Card;
+import com.chin.ygowikitool.entity.Card;
 
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
@@ -184,17 +184,17 @@ public class BoosterParser {
                     if (cardStore.hasCardOffline(cardName)) {
                         // if we have the card in the offline db then we know all its info already
                         Card card = cardStore.getCard(cardName);
-                        card.setNumber = setNumber;
-                        card.rarity = rarity;
+                        card.setSetNumber(setNumber);
+                        card.setRarity(rarity);
                         cards.add(card);
                     }
                     else {
                         // otherwise, the card is either online and not in our db, or does not exist
                         Card card = new Card();
-                        card.name = cardName;
-                        card.setNumber = setNumber;
-                        card.rarity = rarity;
-                        card.category = category;
+                        card.setName(cardName);
+                        card.setSetNumber(setNumber);
+                        card.setRarity(rarity);
+                        card.setCategory(category);
                         cards.add(card);
                     }
                 }

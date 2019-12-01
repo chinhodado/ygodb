@@ -7,7 +7,7 @@ import android.util.Log;
 import android.widget.Toast;
 
 import com.chin.ygodb.dataSource.CardStore;
-import com.chin.ygodb.entity.Card;
+import com.chin.ygowikitool.entity.Card;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -52,18 +52,18 @@ public class DatabaseQuerier {
                     // verify that the card really exists in our database
                     if (CardStore.cardNameList.contains(name)) {
                         Card card = new Card();
-                        card.name = name;
+                        card.setName(name);
                         // note that we don't need all card info here - just those needed for displaying in the ListView
-                        card.attribute        = cursor.getString(cursor.getColumnIndex("attribute"));
-                        card.cardType         = cursor.getString(cursor.getColumnIndex("cardType"));
-                        card.types            = cursor.getString(cursor.getColumnIndex("types"));
-                        card.level            = cursor.getString(cursor.getColumnIndex("level"));
-                        card.atk              = cursor.getString(cursor.getColumnIndex("atk"));
-                        card.def              = cursor.getString(cursor.getColumnIndex("def"));
-                        card.link             = cursor.getString(cursor.getColumnIndex("link"));
-                        card.rank             = cursor.getString(cursor.getColumnIndex("rank"));
-                        card.pendulumScale    = cursor.getString(cursor.getColumnIndex("pendulumScale"));
-                        card.property         = cursor.getString(cursor.getColumnIndex("property"));
+                        card.setAttribute(cursor.getString(cursor.getColumnIndex("attribute")));
+                        card.setCardType(cursor.getString(cursor.getColumnIndex("cardType")));
+                        card.setTypes(cursor.getString(cursor.getColumnIndex("types")));
+                        card.setLevel(cursor.getString(cursor.getColumnIndex("level")));
+                        card.setAtk(cursor.getString(cursor.getColumnIndex("atk")));
+                        card.setDef(cursor.getString(cursor.getColumnIndex("def")));
+                        card.setLink(cursor.getString(cursor.getColumnIndex("link")));
+                        card.setRank(cursor.getString(cursor.getColumnIndex("rank")));
+                        card.setPendulumScale(cursor.getString(cursor.getColumnIndex("pendulumScale")));
+                        card.setProperty(cursor.getString(cursor.getColumnIndex("property")));
                         resultSet.add(card);
                     }
                     else {

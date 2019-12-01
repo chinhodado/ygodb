@@ -23,8 +23,8 @@ import com.chin.common.CustomDialogFragment;
 import com.chin.common.Util;
 import com.chin.ygodb.CardRegexFilterArrayAdapter;
 import com.chin.ygodb.dataSource.CardStore;
-import com.chin.ygodb.entity.Card;
 import com.chin.ygodb.R;
+import com.chin.ygowikitool.entity.Card;
 
 /**
  * The main activity, entry point of the app. It consists of the card search list.
@@ -137,7 +137,7 @@ public class MainActivity extends BaseFragmentActivity {
                 cardListView.setOnItemClickListener(new OnItemClickListener(){
                     @Override
                     public void onItemClick(AdapterView<?> arg0, View v, int position, long arg3) {
-                            String cardName = ((Card)arg0.getItemAtPosition(position)).name;
+                            String cardName = ((Card) arg0.getItemAtPosition(position)).getName();
                             Intent intent = new Intent(v.getContext(), CardDetailActivity.class);
                             intent.putExtra(CARD_NAME, cardName);
                             startActivity(intent);

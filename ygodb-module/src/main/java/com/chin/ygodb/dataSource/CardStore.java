@@ -12,10 +12,10 @@ import com.chin.common.HtmlUtil;
 import com.chin.common.Util;
 import com.chin.ygodb.activity.MainActivity;
 import com.chin.ygodb.database.DatabaseQuerier;
-import com.chin.ygodb.entity.Card;
 import com.chin.ygodb.html.CardParser;
 import com.chin.ygodb.html.YgoWikiaHtmlCleaner;
 import com.chin.ygowikitool.api.YugipediaApi;
+import com.chin.ygowikitool.entity.Card;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -158,9 +158,9 @@ public final class CardStore {
             Log.i("ygodb", "Diff between online and offline: " + onlineOfflineDiff.size());
             for (int i = 0; i < onlineOfflineDiff.size(); i++) {
                 Card card = new Card();
-                card.name = onlineOfflineDiff.get(i);
+                card.setName(onlineOfflineDiff.get(i));
                 CardStore.cardList.add(card);
-                CardStore.cardMap.put(card.name, card);
+                CardStore.cardMap.put(card.getName(), card);
             }
 
             initializedOnline = true;
@@ -188,19 +188,19 @@ public final class CardStore {
             while (!cursor.isAfterLast()) {
                 String name = cursor.getString(cursor.getColumnIndex("name"));
                 Card card = new Card();
-                card.name = name;
+                card.setName(name);
                 // note that we don't need all card info here - just those needed for displaying in the ListView
-                card.realName         = cursor.getString(cursor.getColumnIndex("realName"));
-                card.attribute        = cursor.getString(cursor.getColumnIndex("attribute"));
-                card.cardType         = cursor.getString(cursor.getColumnIndex("cardType"));
-                card.types            = cursor.getString(cursor.getColumnIndex("types"));
-                card.level            = cursor.getString(cursor.getColumnIndex("level"));
-                card.atk              = cursor.getString(cursor.getColumnIndex("atk"));
-                card.def              = cursor.getString(cursor.getColumnIndex("def"));
-                card.link             = cursor.getString(cursor.getColumnIndex("link"));
-                card.rank             = cursor.getString(cursor.getColumnIndex("rank"));
-                card.pendulumScale    = cursor.getString(cursor.getColumnIndex("pendulumScale"));
-                card.property         = cursor.getString(cursor.getColumnIndex("property"));
+                card.setRealName(cursor.getString(cursor.getColumnIndex("realName")));
+                card.setAttribute(cursor.getString(cursor.getColumnIndex("attribute")));
+                card.setCardType(cursor.getString(cursor.getColumnIndex("cardType")));
+                card.setTypes(cursor.getString(cursor.getColumnIndex("types")));
+                card.setLevel(cursor.getString(cursor.getColumnIndex("level")));
+                card.setAtk(cursor.getString(cursor.getColumnIndex("atk")));
+                card.setDef(cursor.getString(cursor.getColumnIndex("def")));
+                card.setLink(cursor.getString(cursor.getColumnIndex("link")));
+                card.setRank(cursor.getString(cursor.getColumnIndex("rank")));
+                card.setPendulumScale(cursor.getString(cursor.getColumnIndex("pendulumScale")));
+                card.setProperty(cursor.getString(cursor.getColumnIndex("property")));
 
                 CardStore.cardList.add(card);
                 CardStore.cardMap.put(name, card);
@@ -211,9 +211,9 @@ public final class CardStore {
                 // If the card has a real name, we also map that real name to the card object
                 // However, this real name is not guaranteed to be unique and so the value of
                 // the mapping may be incorrect.
-                if (!card.realName.equals("")) {
-                    realNameMap.put(card.realName, card.name);
-                    CardStore.cardMap.put(card.realName, card);
+                if (!card.getRealName().equals("")) {
+                    realNameMap.put(card.getRealName(), card.getName());
+                    CardStore.cardMap.put(card.getRealName(), card);
                 }
 
                 offlineCardSet.add(name);
@@ -294,13 +294,13 @@ public final class CardStore {
     public String getImageLink(String cardName) {
         // try get from cache
         Card card = CardStore.cardMap.get(cardName);
-        if (!card.thumbnailImgUrl.equals("")) {
-            return card.thumbnailImgUrl;
+        if (!card.getFullImgLink().equals("")) {
+            return card.getFullImgLink();
         }
 
         String link = getImageLinkOffline(cardName);
         if (link != null) {
-            card.thumbnailImgUrl = link;
+            card.setFullImgLink(link);
             return link;
         }
 
@@ -312,8 +312,8 @@ public final class CardStore {
         String imageUrl = parser.getImageLink();
 
         Card card = CardStore.cardMap.get(cardName);
-        if (card.thumbnailImgUrl.equals("")) {
-            card.thumbnailImgUrl = imageUrl;
+        if (card.getFullImgLink().equals("")) {
+            card.setFullImgLink(imageUrl);
         }
 
         return imageUrl;
@@ -384,13 +384,13 @@ public final class CardStore {
 
     private String getCardLoreOnline(String cardName) throws Exception {
         Card card = CardStore.cardMap.get(cardName);
-        if (!card.lore.equals("")) {
-            return card.lore;
+        if (!card.getLore().equals("")) {
+            return card.getLore();
         }
 
         CardParser parser = getCardDomReady(cardName);
         String lore = parser.getCardLore();
-        card.lore = lore;
+        card.setLore(lore);
         return lore;
     }
 

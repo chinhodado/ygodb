@@ -5,10 +5,10 @@ import android.util.Log;
 import android.widget.ListView;
 
 import com.chin.ygodb.html.BoosterParser;
-import com.chin.ygodb.entity.Card;
 import com.chin.ygodb.CardRegexFilterArrayAdapter;
 import com.chin.ygodb.activity.BoosterDetailActivity;
 import com.chin.ygodb.R;
+import com.chin.ygowikitool.entity.Card;
 
 import java.util.ArrayList;
 import java.util.List;

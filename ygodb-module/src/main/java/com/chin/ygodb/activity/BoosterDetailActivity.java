@@ -18,11 +18,11 @@ import android.widget.ListView;
 import android.widget.Toast;
 
 import com.chin.ygodb.dataSource.CardStore;
-import com.chin.ygodb.entity.Card;
 import com.chin.ygodb.PagerSlidingTabStrip;
 import com.chin.ygodb.asyncTask.BoosterCardListAsyncTask;
 import com.chin.ygodb.asyncTask.BoosterInfoAsyncTask;
 import com.chin.ygodb.R;
+import com.chin.ygowikitool.entity.Card;
 
 /**
  * Activity for booster detail
@@ -111,7 +111,7 @@ public class BoosterDetailActivity extends BaseFragmentActivity {
             famListView.setOnItemClickListener(new AdapterView.OnItemClickListener(){
                 @Override
                 public void onItemClick(AdapterView<?> arg0, View v, int position, long arg3) {
-                    String cardName = ((Card)arg0.getItemAtPosition(position)).name;
+                    String cardName = ((Card) arg0.getItemAtPosition(position)).getName();
                     // new packs may not have actual card name in the table yet, or the card may not
                     // have an article yet
                     if (CardStore.getInstance(getActivity()).hasCard(cardName)) {
