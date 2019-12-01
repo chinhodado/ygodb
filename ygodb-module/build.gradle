@@ -6,7 +6,7 @@ android {
 
     defaultConfig {
         applicationId "com.chin.ygodb"
-        minSdkVersion 14
+        minSdkVersion 16
         targetSdkVersion 29
     }
 
@@ -33,10 +33,12 @@ android {
 dependencies {
     implementation 'androidx.appcompat:appcompat:1.1.0'
     implementation 'androidx.cardview:cardview:1.0.0'
-    implementation 'androidx.recyclerview:recyclerview:1.0.0'
-    implementation 'com.google.android.gms:play-services-analytics:17.0.0'
+    implementation 'androidx.recyclerview:recyclerview:1.1.0'
+    implementation 'com.google.firebase:firebase-analytics:17.2.1'
     implementation files('libs/sqliteassethelper-2.0.1.jar')
     implementation files('libs/universal-image-loader-1.9.4.jar')
     implementation project(':common')
     implementation project(':ygowikitool')
 }
+
+apply plugin: 'com.google.gms.google-services'

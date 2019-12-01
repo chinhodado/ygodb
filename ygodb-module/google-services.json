@@ -1,0 +1,40 @@
+{
+  "project_info": {
+    "project_number": "158651258684",
+    "firebase_url": "https://ygodb-40d63.firebaseio.com",
+    "project_id": "ygodb-40d63",
+    "storage_bucket": "ygodb-40d63.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:158651258684:android:76e81ab08dc8c0e9dbf039",
+        "android_client_info": {
+          "package_name": "com.chin.ygodb"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "158651258684-5olo58emcmmges07jo6nojsocg85cs59.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDwFRzJl4HTfu_8V2WK299TJ1SAIJtUCIo"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "158651258684-5olo58emcmmges07jo6nojsocg85cs59.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
