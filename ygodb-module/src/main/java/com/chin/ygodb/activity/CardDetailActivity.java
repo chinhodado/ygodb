@@ -25,6 +25,7 @@ import com.chin.ygodb.asyncTask.AddCardInfoTask;
 import com.chin.ygodb.dataSource.CardStore;
 import com.chin.ygodb.dataSource.CardStore.CardAdditionalInfoType;
 import com.chin.ygodb.R;
+import com.google.firebase.analytics.FirebaseAnalytics;
 
 /**
  * Activity to show all details about a card
@@ -32,6 +33,7 @@ import com.chin.ygodb.R;
 public class CardDetailActivity extends BaseFragmentActivity {
 
     public String cardName = null;
+    private FirebaseAnalytics mFirebaseAnalytics;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -72,6 +74,14 @@ public class CardDetailActivity extends BaseFragmentActivity {
         tabs.setIndicatorColor(ContextCompat.getColor(this, R.color.red));
 
         getActionBar().setTitle(CardStore.getInstance(this).getCard(cardName).getDisplayName());
+
+        // analytics
+        mFirebaseAnalytics = FirebaseAnalytics.getInstance(this);
+        Bundle bundle = new Bundle();
+        bundle.putString(FirebaseAnalytics.Param.ITEM_ID, cardName);
+        bundle.putString(FirebaseAnalytics.Param.ITEM_NAME, cardName);
+        bundle.putString(FirebaseAnalytics.Param.CONTENT_TYPE, "card");
+        mFirebaseAnalytics.logEvent(FirebaseAnalytics.Event.SELECT_CONTENT, bundle);
     }
 
     @Override
