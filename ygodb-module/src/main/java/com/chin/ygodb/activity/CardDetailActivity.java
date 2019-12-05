@@ -61,8 +61,8 @@ public class CardDetailActivity extends BaseFragmentActivity {
             }
         }
 
-        PagerSlidingTabStrip tabs = (PagerSlidingTabStrip) findViewById(R.id.tabs);
-        ViewPager pager = (ViewPager) findViewById(R.id.pager);
+        PagerSlidingTabStrip tabs = findViewById(R.id.tabs);
+        ViewPager pager = findViewById(R.id.pager);
         MyPagerAdapter adapter = new MyPagerAdapter(getSupportFragmentManager());
 
         pager.setAdapter(adapter);
