@@ -52,7 +52,7 @@ public class BoosterParser {
                 return elem;
             }
             else {
-                String html = Jsoup.connect("http://yugioh.wikia.com" + boosterUrl)
+                String html = Jsoup.connect("https://yugioh.wikia.com" + boosterUrl)
                         .ignoreContentType(true).execute().body();
                 Document dom = Jsoup.parse(html);
                 elem = dom.getElementById("mw-content-text");

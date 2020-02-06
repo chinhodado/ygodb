@@ -48,10 +48,10 @@ public class PopulateBoosterAsyncTask extends AsyncTask<String, Void, Void> {
             BoosterStore.getInstance(activity).init();
             String baseUrl = null;
             if (type.equals(BoosterActivity.TYPE_TCG)) {
-                baseUrl = "http://yugioh.wikia.com/api/v1/Articles/List?category=TCG_Booster_Packs&limit=5000&namespaces=0";
+                baseUrl = "https://yugioh.wikia.com/api/v1/Articles/List?category=TCG_Booster_Packs&limit=5000&namespaces=0";
             }
             else {
-                baseUrl = "http://yugioh.wikia.com/api/v1/Articles/List?category=OCG_Booster_Packs&limit=5000&namespaces=0";
+                baseUrl = "https://yugioh.wikia.com/api/v1/Articles/List?category=OCG_Booster_Packs&limit=5000&namespaces=0";
             }
 
             String html = Jsoup.connect(baseUrl).ignoreContentType(true).execute().body();
@@ -165,7 +165,7 @@ public class PopulateBoosterAsyncTask extends AsyncTask<String, Void, Void> {
                             String imgSrc = null;
                             String enDate = "January 1, 1970", jpDate = "January 1, 1970";
                             try {
-                                String html = Jsoup.connect("http://yugioh.wikia.com" + boosterLink)
+                                String html = Jsoup.connect("https://yugioh.wikia.com" + boosterLink)
                                         .ignoreContentType(true).execute().body();
                                 Document dom = Jsoup.parse(html);
                                 // note: we deliberately don't use the cached version of BoosterParser

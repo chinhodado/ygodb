@@ -234,10 +234,10 @@ public final class CardStore {
         // as newly added articles may take a day or two before showing up in here
         String url;
         if (isTcg) {
-            url = "http://yugioh.wikia.com/api/v1/Articles/List?category=TCG_cards&limit=5000&namespaces=0";
+            url = "https://yugioh.wikia.com/api/v1/Articles/List?category=TCG_cards&limit=5000&namespaces=0";
         }
         else {
-            url = "http://yugioh.wikia.com/api/v1/Articles/List?category=OCG_cards&limit=5000&namespaces=0";
+            url = "https://yugioh.wikia.com/api/v1/Articles/List?category=OCG_cards&limit=5000&namespaces=0";
         }
 
         if (offset != null) {
@@ -268,7 +268,7 @@ public final class CardStore {
             return null; // what else can we do? switch to offline db, meh
         }
 
-        String cardURL = "http://yugioh.wikia.com" + CardStore.cardLinkMap.get(cardName)[0];
+        String cardURL = "https://yugioh.wikia.com" + CardStore.cardLinkMap.get(cardName)[0];
         CardParser parser = new CardParser(cardName, cardURL);
         return parser;
     }
@@ -551,13 +551,13 @@ public final class CardStore {
         String baseUrl;
         switch (type) {
             case Ruling:
-                baseUrl = "http://yugioh.wikia.com/wiki/Card_Rulings:";
+                baseUrl = "https://yugioh.wikia.com/wiki/Card_Rulings:";
                 break;
             case Tips:
-                baseUrl = "http://yugioh.wikia.com/wiki/Card_Tips:";
+                baseUrl = "https://yugioh.wikia.com/wiki/Card_Tips:";
                 break;
             case Trivia:
-                baseUrl = "http://yugioh.wikia.com/wiki/Card_Trivia:";
+                baseUrl = "https://yugioh.wikia.com/wiki/Card_Trivia:";
                 break;
             default:
                 throw new Exception("Unknown type of additional info!");
