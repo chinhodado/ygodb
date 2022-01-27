@@ -2,7 +2,6 @@ apply plugin: 'com.android.application'
 
 android {
     compileSdkVersion 29
-    buildToolsVersion '29.0.2'
 
     defaultConfig {
         applicationId "com.chin.ygodb"
@@ -20,13 +19,13 @@ android {
         }
     }
 
-    lintOptions {
-        disable "ResourceType"
-    }
 
     compileOptions {
         sourceCompatibility JavaVersion.VERSION_1_8
         targetCompatibility JavaVersion.VERSION_1_8
+    }
+    lint {
+        disable 'ResourceType'
     }
 }
 
