@@ -337,7 +337,7 @@ public final class CardStore {
         cursor.close();
 
         try {
-            String originalLink = HtmlUtil.getFullImageLink(img);
+            String originalLink = com.chin.ygowikitool.parser.Util.getFullYugipediaImageLink(img);
 
             // calculate the width of the images to be displayed
             Display display = MainActivity.instance.getWindowManager().getDefaultDisplay();
@@ -346,7 +346,7 @@ public final class CardStore {
             int screenWidth = size.x;
             int scaleWidth = (int) (screenWidth * 0.2);
 
-            String finalLink = HtmlUtil.getScaledWikiaImageLink(originalLink, scaleWidth);
+            String finalLink = com.chin.ygowikitool.parser.Util.getScaledYugipediaImageLink(originalLink, scaleWidth);
             return finalLink;
         }
         catch (Exception e) {

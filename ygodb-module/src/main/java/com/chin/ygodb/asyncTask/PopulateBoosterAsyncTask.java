@@ -122,8 +122,8 @@ public class PopulateBoosterAsyncTask extends AsyncTask<String, Void, Void> {
                     if (scaledImgSrc == null) {
                         try {
                             String img = booster.getShortenedImgSrc();
-                            String originalLink = HtmlUtil.getFullImageLink(img);
-                            scaledImgSrc = HtmlUtil.getScaledWikiaImageLink(originalLink, scaleWidth);
+                            String originalLink = com.chin.ygowikitool.parser.Util.getFullYugipediaImageLink(img);
+                            scaledImgSrc = com.chin.ygowikitool.parser.Util.getScaledYugipediaImageLink(originalLink, scaleWidth);
                             booster.setScaledImgSrc(scaledImgSrc);
                         }
                         catch (Exception e) {
@@ -177,7 +177,7 @@ public class PopulateBoosterAsyncTask extends AsyncTask<String, Void, Void> {
                                 imgSrc = parser.getImageLink();
                                 if (imgSrc != null) {
                                     // get the scaled image link
-                                    imgSrc = HtmlUtil.getScaledWikiaImageLink(imgSrc, scaleWidth);
+                                    imgSrc = com.chin.ygowikitool.parser.Util.getScaledYugipediaImageLink(imgSrc, scaleWidth);
                                 }
                                 else {
                                     // use the placeholder image
