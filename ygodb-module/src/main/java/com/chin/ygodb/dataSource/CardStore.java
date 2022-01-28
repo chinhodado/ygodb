@@ -10,6 +10,7 @@ import com.chin.common.Util;
 import com.chin.ygodb.database.DatabaseQuerier;
 import com.chin.ygowikitool.api.YugipediaApi;
 import com.chin.ygowikitool.entity.Card;
+import com.chin.ygowikitool.parser.YugiohWikiUtil;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -269,7 +270,7 @@ public final class CardStore {
 
     public String getImageLinkOnline(String cardName) {
         Card card = cardMap.get(cardName);
-        String imageUrl = com.chin.ygowikitool.parser.Util.getFullYugipediaImageLink(card.getImg());
+        String imageUrl = YugiohWikiUtil.getFullYugipediaImageLink(card.getImg());
         if (card.getFullImgLink().equals("")) {
             card.setFullImgLink(imageUrl);
         }
@@ -295,7 +296,7 @@ public final class CardStore {
         cursor.close();
 
         try {
-            String originalLink = com.chin.ygowikitool.parser.Util.getFullYugipediaImageLink(img);
+            String originalLink = YugiohWikiUtil.getFullYugipediaImageLink(img);
 
             // calculate the width of the images to be displayed
 //            Display display = MainActivity.instance.getWindowManager().getDefaultDisplay();

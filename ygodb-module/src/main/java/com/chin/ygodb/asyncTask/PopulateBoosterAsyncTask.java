@@ -9,12 +9,12 @@ import android.util.DisplayMetrics;
 import android.util.Log;
 import android.widget.Toast;
 
-import com.chin.common.HtmlUtil;
 import com.chin.ygodb.activity.BoosterActivity;
 import com.chin.ygodb.dataSource.BoosterStore;
 import com.chin.ygodb.entity.Booster;
 import com.chin.ygodb.html.BoosterParser;
 import com.chin.ygodb.R;
+import com.chin.ygowikitool.parser.YugiohWikiUtil;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -122,8 +122,8 @@ public class PopulateBoosterAsyncTask extends AsyncTask<String, Void, Void> {
                     if (scaledImgSrc == null) {
                         try {
                             String img = booster.getShortenedImgSrc();
-                            String originalLink = com.chin.ygowikitool.parser.Util.getFullYugipediaImageLink(img);
-                            scaledImgSrc = com.chin.ygowikitool.parser.Util.getScaledYugipediaImageLink(originalLink, scaleWidth);
+                            String originalLink = YugiohWikiUtil.getFullYugipediaImageLink(img);
+                            scaledImgSrc = YugiohWikiUtil.getScaledYugipediaImageLink(originalLink, scaleWidth);
                             booster.setScaledImgSrc(scaledImgSrc);
                         }
                         catch (Exception e) {
@@ -177,7 +177,7 @@ public class PopulateBoosterAsyncTask extends AsyncTask<String, Void, Void> {
                                 imgSrc = parser.getImageLink();
                                 if (imgSrc != null) {
                                     // get the scaled image link
-                                    imgSrc = com.chin.ygowikitool.parser.Util.getScaledYugipediaImageLink(imgSrc, scaleWidth);
+                                    imgSrc = YugiohWikiUtil.getScaledYugipediaImageLink(imgSrc, scaleWidth);
                                 }
                                 else {
                                     // use the placeholder image
