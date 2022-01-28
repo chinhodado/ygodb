@@ -8,6 +8,8 @@ import com.chin.ygodb.dataSource.CardStore;
 import com.chin.ygodb.dataSource.CardStore.Pair;
 import com.chin.ygodb.activity.CardDetailActivity;
 import com.chin.ygodb.R;
+import com.chin.ygowikitool.api.YugipediaApi;
+import com.chin.ygowikitool.entity.Card;
 import com.nostra13.universalimageloader.core.ImageLoader;
 import com.nostra13.universalimageloader.core.assist.FailReason;
 import com.nostra13.universalimageloader.core.listener.SimpleImageLoadingListener;
@@ -31,9 +33,9 @@ import android.widget.TextView;
  */
 public class AddCardInfoTask extends AsyncTask<String, Void, Void> {
 
-    private CardDetailActivity activity;
+    private final CardDetailActivity activity;
     private String cardName;
-    private CardStore cardStore;
+    private final CardStore cardStore;
 
     public AddCardInfoTask(CardDetailActivity activity) {
         this.activity = activity;
@@ -44,7 +46,15 @@ public class AddCardInfoTask extends AsyncTask<String, Void, Void> {
     protected Void doInBackground(String... params) {
         cardName = params[0];
 
-        try { cardStore.getCardDomReady(cardName);     } catch (Exception e) {e.printStackTrace();}
+        try {
+            String pageid = cardStore.getCardPageId(cardName);
+            YugipediaApi api = new YugipediaApi();
+            Card card = api.getCard(cardName, pageid);
+            cardStore.setCard(cardName, card);
+        }
+        catch (Exception e) {
+            e.printStackTrace();
+        }
         return null;
     }
 
@@ -87,9 +97,11 @@ public class AddCardInfoTask extends AsyncTask<String, Void, Void> {
         pgrbarWrapper.requestLayout();
 
         // set the image
-        String originalLink = cardStore.getImageLinkOnline(cardName);
-        String scaledImageLink = com.chin.ygowikitool.parser.Util.getScaledYugipediaImageLink(originalLink, scaleWidth);
-        ImageLoader.getInstance().displayImage(scaledImageLink, imgView, new SimpleImageLoadingListener() {
+        String shortenedLink = cardStore.getCard(cardName).getImg();
+        String originalLink = com.chin.ygowikitool.parser.Util.getFullYugipediaImageLink(shortenedLink);
+        // Yugipedia doesn't seem to support on the fly scaled image generation
+//        String scaledImageLink = com.chin.ygowikitool.parser.Util.getScaledYugipediaImageLink(originalLink, scaleWidth);
+        ImageLoader.getInstance().displayImage(originalLink, imgView, new SimpleImageLoadingListener() {
             @Override
             public void onLoadingComplete(String imageUri, View view, Bitmap loadedImage) {
                 // remove the spinner

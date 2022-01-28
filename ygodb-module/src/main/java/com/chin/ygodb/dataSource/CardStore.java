@@ -4,24 +4,12 @@ import android.annotation.SuppressLint;
 import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
-import android.graphics.Point;
 import android.util.Log;
-import android.view.Display;
 
-import com.chin.common.HtmlUtil;
 import com.chin.common.Util;
-import com.chin.ygodb.activity.MainActivity;
 import com.chin.ygodb.database.DatabaseQuerier;
-import com.chin.ygodb.html.CardParser;
-import com.chin.ygodb.html.YgoWikiaHtmlCleaner;
 import com.chin.ygowikitool.api.YugipediaApi;
 import com.chin.ygowikitool.entity.Card;
-
-import org.json.JSONArray;
-import org.json.JSONObject;
-import org.jsoup.Jsoup;
-import org.jsoup.nodes.Document;
-import org.jsoup.nodes.Element;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -30,6 +18,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * A singleton class that acts as a storage for card information. Support lazy loading information.
@@ -54,7 +43,7 @@ public final class CardStore {
         Ruling, Tips, Trivia
     }
 
-    private static Map<String, String> columnNameMap = new HashMap<>();
+    private static final Map<String, String> columnNameMap = new HashMap<>();
     static {
         // not all columns are in here, just those in the info section
         columnNameMap.put("attribute"      , "Attribute");
@@ -88,16 +77,16 @@ public final class CardStore {
     public static List<Card> cardList = new ArrayList<>(8192);
 
     // Map of a card's name to its wiki page url, initialized in MainActivity's onCreate()
-    private static Map<String, String[]> cardLinkMap = null;
+    private static Map<String, String> cardLinkMap = null;
 
     // Map of a card's name to its Card object
-    private static Map<String, Card> cardMap = new HashMap<>(8192);
+    private static final Map<String, Card> cardMap = new ConcurrentHashMap<>(8192);
 
     // Set of card names in the offline database
-    private static Set<String> offlineCardSet = new HashSet<>(8192);
+    private static final Set<String> offlineCardSet = new HashSet<>(8192);
 
     // Map of real card name to article name
-    private static Map<String, String> realNameMap = new HashMap<>();
+    private static final Map<String, String> realNameMap = new HashMap<>();
 
     // flag: initialized the cardList, but not the cardLinkMap
     private static boolean initializedOffline = false;
@@ -108,7 +97,7 @@ public final class CardStore {
     @SuppressLint("StaticFieldLeak")
     private static volatile CardStore INSTANCE;
 
-    private Context context;
+    private final Context context;
 
     /**
      * Private constructor. For singleton.
@@ -143,17 +132,17 @@ public final class CardStore {
         if (initializedOnline) return;
         if (Util.hasNetworkConnectivity(context)) {
             Log.i("ygodb", "Initializing online...");
-            cardNameList = new ArrayList<String>(8192);
-            cardLinkMap = new HashMap<String, String[]>(8192);
-            initializeCardListOnline(null, true);
-            initializeCardListOnline(null, false);
+            cardNameList = new ArrayList<>(8192);
+            cardLinkMap = new HashMap<>(8192);
+            initializeCardListOnline(true);
+            initializeCardListOnline(false);
 
             if (!initializedOffline) {
                 addOfflineCardsToCardList(false);
             }
 
             // add those that are online but not offline
-            List<String> onlineOfflineDiff = new ArrayList<String>(CardStore.cardNameList);
+            List<String> onlineOfflineDiff = new ArrayList<>(CardStore.cardNameList);
             onlineOfflineDiff.removeAll(offlineCardSet);
             Log.i("ygodb", "Diff between online and offline: " + onlineOfflineDiff.size());
             for (int i = 0; i < onlineOfflineDiff.size(); i++) {
@@ -169,7 +158,7 @@ public final class CardStore {
         }
         else if (!initializedOffline) {
             Log.i("ygodb", "Initializing offline...");
-            CardStore.cardNameList = new ArrayList<String>(8192);
+            CardStore.cardNameList = new ArrayList<>(8192);
             initializeCardListOffline();
             initializedOffline = true;
             Log.i("ygodb", "Done initializing offline.");
@@ -229,48 +218,19 @@ public final class CardStore {
         addOfflineCardsToCardList(true);
     }
 
-    private void initializeCardListOnline(String offset, boolean isTcg) throws Exception {
-        // this will return up to 5000 articles in the TCG_cards/OCG_cards category. Note that this is not always up-to-date,
-        // as newly added articles may take a day or two before showing up in here
-        String url;
-        if (isTcg) {
-            url = "https://yugioh.wikia.com/api/v1/Articles/List?category=TCG_cards&limit=5000&namespaces=0";
-        }
-        else {
-            url = "https://yugioh.wikia.com/api/v1/Articles/List?category=OCG_cards&limit=5000&namespaces=0";
-        }
+    private void initializeCardListOnline(boolean isTcg) throws Exception {
+        YugipediaApi api = new YugipediaApi();
+        Map<String, String> cardMap = api.getCardMap(isTcg);
 
-        if (offset != null) {
-            url = url + "&offset=" + offset;
-        }
-        String jsonString = Jsoup.connect(url).ignoreContentType(true).execute().body();
+        for (Map.Entry<String, String> entry : cardMap.entrySet()) {
+            String cardName = entry.getKey();
+            String articleId = entry.getValue();
 
-        JSONObject myJSON = new JSONObject(jsonString);
-        JSONArray myArray = myJSON.getJSONArray("items");
-        for (int i = 0; i < myArray.length(); i++) {
-            String cardName = myArray.getJSONObject(i).getString("title");
             if (!cardLinkMap.containsKey(cardName)) {
                 cardNameList.add(cardName);
-                String[] tmp = {myArray.getJSONObject(i).getString("url"),
-                                myArray.getJSONObject(i).getString("id")};
-                cardLinkMap.put(cardName, tmp);
+                cardLinkMap.put(cardName, articleId);
             }
         }
-
-        if (myJSON.has("offset")) {
-            initializeCardListOnline((String) myJSON.get("offset"), isTcg);
-        }
-    }
-
-    public CardParser getCardDomReady(String cardName) throws Exception {
-        initializeCardList();
-        if (!Util.hasNetworkConnectivity(context)) {
-            return null; // what else can we do? switch to offline db, meh
-        }
-
-        String cardURL = "https://yugioh.wikia.com" + CardStore.cardLinkMap.get(cardName)[0];
-        CardParser parser = new CardParser(cardName, cardURL);
-        return parser;
     }
 
     public boolean hasCard(String cardName) {
@@ -307,11 +267,9 @@ public final class CardStore {
         return null;
     }
 
-    public String getImageLinkOnline(String cardName) throws Exception {
-        CardParser parser = getCardDomReady(cardName);
-        String imageUrl = parser.getImageLink();
-
-        Card card = CardStore.cardMap.get(cardName);
+    public String getImageLinkOnline(String cardName) {
+        Card card = cardMap.get(cardName);
+        String imageUrl = com.chin.ygowikitool.parser.Util.getFullYugipediaImageLink(card.getImg());
         if (card.getFullImgLink().equals("")) {
             card.setFullImgLink(imageUrl);
         }
@@ -340,14 +298,17 @@ public final class CardStore {
             String originalLink = com.chin.ygowikitool.parser.Util.getFullYugipediaImageLink(img);
 
             // calculate the width of the images to be displayed
-            Display display = MainActivity.instance.getWindowManager().getDefaultDisplay();
-            Point size = new Point();
-            display.getSize(size);
-            int screenWidth = size.x;
-            int scaleWidth = (int) (screenWidth * 0.2);
+//            Display display = MainActivity.instance.getWindowManager().getDefaultDisplay();
+//            Point size = new Point();
+//            display.getSize(size);
+//            int screenWidth = size.x;
+//            int scaleWidth = (int) (screenWidth * 0.2);
 
-            String finalLink = com.chin.ygowikitool.parser.Util.getScaledYugipediaImageLink(originalLink, scaleWidth);
-            return finalLink;
+//            String finalLink = com.chin.ygowikitool.parser.Util.getScaledYugipediaImageLink(originalLink, scaleWidth);
+//            return finalLink;
+
+            // Yugipedia doesn't seem to support on the fly scaled image generation
+            return originalLink;
         }
         catch (Exception e) {
             Log.w("ygodb", "Error parsing image link from offline database: " + cardName);
@@ -360,7 +321,7 @@ public final class CardStore {
     // CARD LORE
     //////////////////////////////////////////////////////////////////////
 
-    public String getCardLore(String cardName) throws Exception {
+    public String getCardLore(String cardName) {
         if (Util.hasNetworkConnectivity(context)) {
             return getCardLoreOnline(cardName);
         }
@@ -382,23 +343,16 @@ public final class CardStore {
         return lore;
     }
 
-    private String getCardLoreOnline(String cardName) throws Exception {
+    private String getCardLoreOnline(String cardName) {
         Card card = CardStore.cardMap.get(cardName);
-        if (!card.getLore().equals("")) {
-            return card.getLore();
-        }
-
-        CardParser parser = getCardDomReady(cardName);
-        String lore = parser.getCardLore();
-        card.setLore(lore);
-        return lore;
+        return card.getLore();
     }
 
     //////////////////////////////////////////////////////////////////////
     // CARD INFO
     //////////////////////////////////////////////////////////////////////
 
-    public List<Pair> getCardInfo(String cardName) throws Exception {
+    public List<Pair> getCardInfo(String cardName) {
         if (Util.hasNetworkConnectivity(context)) {
             return getCardInfoOnline(cardName);
         }
@@ -456,17 +410,41 @@ public final class CardStore {
         return array;
     }
 
-    private List<Pair> getCardInfoOnline(String cardName) throws Exception {
-        CardParser parser = getCardDomReady(cardName);
-        List<Pair> infos = parser.getCardInfo();
-        return infos;
+    private List<Pair> getCardInfoOnline(String cardName) {
+        Card card = cardMap.get(cardName);
+
+        // order of the columns here is important, to make it persistent between online vs offline
+        String[] columns = new String[] {"attribute", "types", "property", "level", "rank", "pendulumScale",
+                "atk", "def", "link", "linkMarkers", "passcode", "limitText", "ritualSpell", "ritualMonster",
+                "fusionMaterials", "synchroMaterial", "materials", "summonedBy", "effectTypes"};
+
+        String[] values = new String[] {
+                card.getAttribute(), card.getTypes(), card.getProperty(), card.getLevel(), card.getRank(), card.getPendulumScale(),
+                card.getAtk(), card.getDef(), card.getLink(), card.getLinkMarkers(), card.getPasscode(), card.getLimitText(), card.getRitualSpell(), card.getRitualMonster(),
+                card.getFusionMaterials(), card.getSynchroMaterial(), card.getMaterials(), card.getSummonedBy(), card.getEffectTypes()
+        };
+
+        List<Pair> array = new ArrayList<>();
+
+        for (int i = 0; i < columns.length; i++) {
+            String column = columns[i];
+            String value = values[i];
+            if (!value.equals("")) {
+                if (column.equals("linkMarkers")) {
+                    value = value.replaceAll("\\|", "");
+                }
+                array.add(new Pair(columnNameMap.get(column), value));
+            }
+        }
+
+        return array;
     }
 
     //////////////////////////////////////////////////////////////////////
     // CARD STATUS
     //////////////////////////////////////////////////////////////////////
 
-    public List<Pair> getCardStatus(String cardName) throws Exception {
+    public List<Pair> getCardStatus(String cardName) {
         if (Util.hasNetworkConnectivity(context)) {
             return getCardStatusOnline(cardName);
         }
@@ -503,10 +481,30 @@ public final class CardStore {
         return array;
     }
 
-    private List<Pair> getCardStatusOnline(String cardName) throws Exception {
-        CardParser parser = getCardDomReady(cardName);
-        List<Pair> statuses = parser.getCardStatus();
-        return statuses;
+    private List<Pair> getCardStatusOnline(String cardName) {
+        Card card = cardMap.get(cardName);
+
+        String[] columns = new String[] {"ocgStatus", "tcgAdvStatus", "tcgTrnStatus"};
+        String[] values = new String[] {
+                card.getOcgStatus(), card.getTcgAdvStatus(), card.getTcgTrnStatus()
+        };
+
+        List<Pair> array = new ArrayList<>();
+        for (int i = 0; i < columns.length; i++) {
+            String column = columns[i];
+            String value = values[i];
+            if (value.equals("")) {
+                continue;
+            }
+
+            if (value.equals("U")) {
+                value = "Unlimited";
+            }
+
+            array.add(new Pair(columnNameMap.get(column), value));
+        }
+
+        return array;
     }
 
     //////////////////////////////////////////////////////////////////////
@@ -548,45 +546,42 @@ public final class CardStore {
 
     private String getCardGenericInfoOnline(CardAdditionalInfoType type, String cardName) throws Exception {
         initializeCardList();
-        String baseUrl;
-        switch (type) {
-            case Ruling:
-                baseUrl = "https://yugioh.wikia.com/wiki/Card_Rulings:";
-                break;
-            case Tips:
-                baseUrl = "https://yugioh.wikia.com/wiki/Card_Tips:";
-                break;
-            case Trivia:
-                baseUrl = "https://yugioh.wikia.com/wiki/Card_Trivia:";
-                break;
-            default:
-                throw new Exception("Unknown type of additional info!");
-        }
-        String url = baseUrl + CardStore.cardLinkMap.get(cardName)[0].substring(6);
 
-        Document dom;
-
-        try {
-            dom = Jsoup.parse(Jsoup.connect(url).ignoreContentType(true).execute().body());
-        } catch (Exception e) {
-            Log.i("ygodb", "Error fetching " + url);
-
-            if (type == CardAdditionalInfoType.Ruling) {
-                YugipediaApi api = new YugipediaApi();
-                String ruling = api.getCardRulingByCardName(cardName);
-                if (ruling != null) {
-                    return ruling;
-                }
-
-                Log.i("ygodb", "Error fetching " + cardName + " Yugipedia ruling");
+        YugipediaApi api = new YugipediaApi();
+        if (type == CardAdditionalInfoType.Ruling) {
+            String content = api.getCardRulingByCardName(cardName);
+            if (content != null) {
+                return content;
             }
 
-            return "Not available.";
+            Log.i("ygodb", "Error fetching " + cardName + " Yugipedia ruling");
+        }
+        else if (type == CardAdditionalInfoType.Tips) {
+            String content = api.getCardTipsByCardName(cardName);
+            if (content != null) {
+                return content;
+            }
+
+            Log.i("ygodb", "Error fetching " + cardName + " Yugipedia tips");
+        }
+        else if (type == CardAdditionalInfoType.Trivia) {
+            String ruling = api.getCardTriviaByCardName(cardName);
+            if (ruling != null) {
+                return ruling;
+            }
+
+            Log.i("ygodb", "Error fetching " + cardName + " Yugipedia trivia");
         }
 
-        Element content = dom.getElementById("mw-content-text");
-        String info = YgoWikiaHtmlCleaner.getCleanedHtml(content, type);
-        return info;
+        return "Not available.";
+    }
+
+    public String getCardPageId(String cardName) {
+        return cardLinkMap.get(cardName);
+    }
+
+    public void setCard(String cardName, Card card) {
+        cardMap.put(cardName, card);
     }
 }
 
