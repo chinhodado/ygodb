@@ -152,7 +152,7 @@ public class CardDetailActivity extends BaseFragmentActivity {
         @Override
         public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
             View view = inflater.inflate(R.layout.fragment_general_linear, container, false);
-            LinearLayout layout = (LinearLayout) view.findViewById(R.id.fragment_layout);
+            LinearLayout layout = view.findViewById(R.id.fragment_layout);
             layout.setGravity(Gravity.RIGHT);
 
             myTask = (PopulateAdditionalInfoAsyncTask) new PopulateAdditionalInfoAsyncTask(layout, (CardDetailActivity) getActivity(), type, cardName).execute();
@@ -203,7 +203,7 @@ public class CardDetailActivity extends BaseFragmentActivity {
 
             if (exceptionOccurred) {
                 // remove the spinner
-                ProgressBar pgrBar = (ProgressBar) activity.findViewById(R.id.progressBar_fragment_general);
+                ProgressBar pgrBar = activity.findViewById(R.id.progressBar_fragment_general);
                 layout.removeView(pgrBar);
                 TextView tv = new TextView(activity);
                 layout.addView(tv);
@@ -216,7 +216,7 @@ public class CardDetailActivity extends BaseFragmentActivity {
             tv.setText(Html.fromHtml(param, null, new MyTagHandler()));
 
             // remove the spinner
-            ProgressBar pgrBar = (ProgressBar) activity.findViewById(R.id.progressBar_fragment_general);
+            ProgressBar pgrBar = activity.findViewById(R.id.progressBar_fragment_general);
             layout.removeView(pgrBar);
         }
     }

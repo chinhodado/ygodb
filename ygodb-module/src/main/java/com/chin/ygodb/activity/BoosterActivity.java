@@ -33,8 +33,8 @@ public abstract class BoosterActivity extends BaseFragmentActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        PagerSlidingTabStrip tabs = (PagerSlidingTabStrip) findViewById(R.id.tabs);
-        ViewPager pager = (ViewPager) findViewById(R.id.pager);
+        PagerSlidingTabStrip tabs = findViewById(R.id.tabs);
+        ViewPager pager = findViewById(R.id.pager);
         MyPagerAdapter adapter = new MyPagerAdapter(getSupportFragmentManager());
 
         pager.setAdapter(adapter);
@@ -75,7 +75,7 @@ public abstract class BoosterActivity extends BaseFragmentActivity {
         @Override
         public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
             View view = inflater.inflate(R.layout.fragment_booster_grid, container, false);
-            RecyclerView recyclerView = (RecyclerView) view.findViewById(R.id.booster_recycler_view);
+            RecyclerView recyclerView = view.findViewById(R.id.booster_recycler_view);
             recyclerView.setHasFixedSize(false);
             StaggeredGridLayoutManager gridLayoutManager = new StaggeredGridLayoutManager(4, StaggeredGridLayoutManager.VERTICAL);
             recyclerView.setLayoutManager(gridLayoutManager);
@@ -99,7 +99,7 @@ public abstract class BoosterActivity extends BaseFragmentActivity {
         }
     }
 
-    private class MyPagerAdapter extends FragmentPagerAdapter {
+    private static class MyPagerAdapter extends FragmentPagerAdapter {
         private final String[] TITLES = { "Boosters" };
 
         private MyPagerAdapter(FragmentManager fm) {

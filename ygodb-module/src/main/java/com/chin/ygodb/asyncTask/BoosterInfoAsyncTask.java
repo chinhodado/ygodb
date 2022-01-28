@@ -17,10 +17,10 @@ import com.nostra13.universalimageloader.core.ImageLoader;
  * Created by Chin on 06-Feb-17.
  */
 public class BoosterInfoAsyncTask extends AsyncTask<String, Void, BoosterParser> {
-    private String boosterName;
-    private String boosterUrl;
-    private View view;
-    private BoosterDetailActivity activity;
+    private final String boosterName;
+    private final String boosterUrl;
+    private final View view;
+    private final BoosterDetailActivity activity;
     private boolean exceptionOccurred = false;
 
     public BoosterInfoAsyncTask(String boosterName, String boosterUrl, View view, BoosterDetailActivity activity) {
@@ -54,19 +54,19 @@ public class BoosterInfoAsyncTask extends AsyncTask<String, Void, BoosterParser>
         if (enReleaseDate == null) {
             enReleaseDate = "N/A";
         }
-        TextView tvQuickInfo = (TextView) view.findViewById(R.id.textView_booster_quickinfo);
+        TextView tvQuickInfo = view.findViewById(R.id.textView_booster_quickinfo);
         tvQuickInfo.setText(boosterName + "\n\n" +
                 "Japanese release date:\n" + jpReleaseDate + "\n\n" +
                 "English release date:\n" + enReleaseDate);
 
-        TextView tv = (TextView) view.findViewById(R.id.textView_booster_longinfo);
+        TextView tv = view.findViewById(R.id.textView_booster_longinfo);
         String featureText = parser.getFeatureText();
         if (featureText == null) {
             featureText = "";
         }
         tv.setText(parser.getIntroText() + "\n\n" + featureText);
 
-        ImageView imgView = (ImageView) view.findViewById(R.id.imageView_detail_booster);
+        ImageView imgView = view.findViewById(R.id.imageView_detail_booster);
         ImageLoader.getInstance().displayImage(parser.getImageLink(), imgView);
     }
 }

@@ -1,28 +1,14 @@
 package com.chin.ygodb.activity;
 
-import java.util.ArrayList;
-import java.util.List;
-
-import com.chin.common.TabListener;
-import com.chin.ygodb.MultiSelectionSpinner;
-import com.chin.ygodb.CardRegexFilterArrayAdapter;
-import com.chin.ygodb.database.DatabaseQuerier;
-import com.chin.ygodb.database.SearchCriterion;
-import com.chin.ygodb.R;
-import com.chin.ygowikitool.entity.Card;
-
 import android.app.ActionBar;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
-import androidx.fragment.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
-import android.view.View.OnClickListener;
 import android.view.ViewGroup;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.AdapterView;
-import android.widget.AdapterView.OnItemClickListener;
 import android.widget.AdapterView.OnItemSelectedListener;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
@@ -31,6 +17,19 @@ import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.Spinner;
 import android.widget.Toast;
+
+import androidx.fragment.app.Fragment;
+
+import com.chin.common.TabListener;
+import com.chin.ygodb.CardRegexFilterArrayAdapter;
+import com.chin.ygodb.MultiSelectionSpinner;
+import com.chin.ygodb.R;
+import com.chin.ygodb.database.DatabaseQuerier;
+import com.chin.ygodb.database.SearchCriterion;
+import com.chin.ygowikitool.entity.Card;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * The activity for advanced search function
@@ -62,7 +61,6 @@ public class AdvancedSearchActivity extends BaseFragmentActivity {
     // store the result set after each search
     static List<Card> resultSet = new ArrayList<>();
 
-    @SuppressWarnings("deprecation")
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -84,12 +82,11 @@ public class AdvancedSearchActivity extends BaseFragmentActivity {
         }
     }
 
-    @SuppressWarnings("deprecation")
     @Override
     protected void onSaveInstanceState(Bundle bundle) {
-      super.onSaveInstanceState(bundle);
-      // Save the index of the currently selected tab
-      bundle.putInt("TAB_INDEX", getActionBar().getSelectedTab().getPosition());
+        super.onSaveInstanceState(bundle);
+        // Save the index of the currently selected tab
+        bundle.putInt("TAB_INDEX", getActionBar().getSelectedTab().getPosition());
     }
 
     /**
@@ -104,240 +101,236 @@ public class AdvancedSearchActivity extends BaseFragmentActivity {
             initializeSkillSearchUI(layout);
 
             Button searchButton = layout.findViewById(R.id.searchButton);
-            searchButton.setOnClickListener(new OnClickListener() {
-                @SuppressWarnings("deprecation")
-                @Override
-                public void onClick(View v) {
-                    // make the list of criteria
-                    List<SearchCriterion> criteriaList = new ArrayList<>();
+            searchButton.setOnClickListener(v -> {
+                // make the list of criteria
+                List<SearchCriterion> criteriaList = new ArrayList<>();
 
-                    // level/rank
-                    EditText levelRankEdit = view.findViewById(R.id.criteriaLevelRank);
-                    String levelRankInput = levelRankEdit.getText().toString().trim();
-                    String levelRankSql = null;
-                    if (!levelRankInput.equals("")) {
-                    	// this has to be done manually since out query is complex...
-                    	String levelRankOperator = ((Spinner) view.findViewById(R.id.spinnerOperatorLevelRank)).getSelectedItem().toString();
-                    	levelRankSql = "((level <> \"\" and level " + levelRankOperator + " " + levelRankInput +
-                    			") or (rank <> \"\" and rank " + levelRankOperator + " " + levelRankInput + "))";
+                // level/rank
+                EditText levelRankEdit = view.findViewById(R.id.criteriaLevelRank);
+                String levelRankInput = levelRankEdit.getText().toString().trim();
+                String levelRankSql = null;
+                if (!levelRankInput.equals("")) {
+                    // this has to be done manually since out query is complex...
+                    String levelRankOperator = ((Spinner) view.findViewById(R.id.spinnerOperatorLevelRank)).getSelectedItem().toString();
+                    levelRankSql = "((level <> \"\" and level " + levelRankOperator + " " + levelRankInput +
+                            ") or (rank <> \"\" and rank " + levelRankOperator + " " + levelRankInput + "))";
+                }
+
+                // pendulum scale
+                EditText pendulumScaleEdit = view.findViewById(R.id.criteriaPendulumScale);
+                String pendulumScaleInput = pendulumScaleEdit.getText().toString().trim();
+                String pendulumScaleOperator = ((Spinner) view.findViewById(R.id.spinnerOperatorPendulumScale)).getSelectedItem().toString();
+                if (!pendulumScaleInput.equals("")) {
+                    criteriaList.add(new SearchCriterion("pendulumScale", pendulumScaleOperator, pendulumScaleInput));
+                    criteriaList.add(new SearchCriterion("pendulumScale", "<>", "\"\""));
+                }
+
+                // atk
+                EditText atkEdit = view.findViewById(R.id.criteriaAtk);
+                String atkInput = atkEdit.getText().toString().trim();
+                String atkOperator = ((Spinner) view.findViewById(R.id.spinnerOperatorAtk)).getSelectedItem().toString();
+                if (!atkInput.equals("")) {
+                    criteriaList.add(new SearchCriterion("atk", atkOperator, atkInput));
+                    // hacky, since we have values like "?", etc.
+                    // TODO: handle "?", "X000", "????"
+                    criteriaList.add(new SearchCriterion("atk", ">=", "0"));
+                    criteriaList.add(new SearchCriterion("atk", "<=", "9999999"));
+                    criteriaList.add(new SearchCriterion("atk", "<>", "\"\""));
+                }
+
+                // def
+                EditText defEdit = view.findViewById(R.id.criteriaDef);
+                String defInput = defEdit.getText().toString().trim();
+                String defOperator = ((Spinner) view.findViewById(R.id.spinnerOperatorDef)).getSelectedItem().toString();
+                if (!defInput.equals("")) {
+                    criteriaList.add(new SearchCriterion("def", defOperator, defInput));
+                    // hacky, since we have values like "?", etc.
+                    // TODO: handle "?", "X000", "????"
+                    criteriaList.add(new SearchCriterion("def", ">=", "0"));
+                    criteriaList.add(new SearchCriterion("def", "<=", "9999999"));
+                    criteriaList.add(new SearchCriterion("def", "<>", "\"\""));
+                }
+
+                // link
+                EditText linkEdit = view.findViewById(R.id.criteriaLink);
+                String linkInput = linkEdit.getText().toString().trim();
+                String linkOperator = ((Spinner) view.findViewById(R.id.spinnerOperatorLink)).getSelectedItem().toString();
+                if (!linkInput.equals("")) {
+                    criteriaList.add(new SearchCriterion("link", linkOperator, linkInput));
+                    criteriaList.add(new SearchCriterion("link", "<>", "\"\""));
+                }
+
+                // link arrow
+                MultiSelectionSpinner linkArrowSpinner = view.findViewById(R.id.spinnerLinkArrow);
+                List<String> arrows = linkArrowSpinner.getSelectedStrings();
+                if (!arrows.isEmpty()) {
+                    for (String arrow : arrows) {
+                        criteriaList.add(new SearchCriterion("linkMarkers", "like", "'%|" + arrow + "|%'"));
                     }
+                }
 
-                    // pendulum scale
-                    EditText pendulumScaleEdit = view.findViewById(R.id.criteriaPendulumScale);
-                    String pendulumScaleInput = pendulumScaleEdit.getText().toString().trim();
-                    String pendulumScaleOperator = ((Spinner) view.findViewById(R.id.spinnerOperatorPendulumScale)).getSelectedItem().toString();
-                    if (!pendulumScaleInput.equals("")) {
-                        criteriaList.add(new SearchCriterion("pendulumScale", pendulumScaleOperator, pendulumScaleInput));
-                        criteriaList.add(new SearchCriterion("pendulumScale", "<>", "\"\""));
+                // main category
+                String mainCategoryInput = ((Spinner) view.findViewById(R.id.spinnerMainCategory)).getSelectedItem().toString();
+                String mainCategorySql = null;
+                if (!mainCategoryInput.equals("(All)")) {
+                    switch (mainCategoryInput) {
+                        case "Monster":
+                            mainCategorySql = "cardType = \"Monster\"";
+                            break;
+                        case "Spell":
+                            mainCategorySql = "cardType = \"Spell\"";
+                            break;
+                        case "Trap":
+                            mainCategorySql = "cardType = \"Trap\"";
+                            break;
                     }
+                }
 
-                    // atk
-                    EditText atkEdit = view.findViewById(R.id.criteriaAtk);
-                    String atkInput = atkEdit.getText().toString().trim();
-                    String atkOperator = ((Spinner) view.findViewById(R.id.spinnerOperatorAtk)).getSelectedItem().toString();
-                    if (!atkInput.equals("")) {
-                    	criteriaList.add(new SearchCriterion("atk", atkOperator, atkInput));
-                    	// hacky, since we have values like "?", etc.
-                    	// TODO: handle "?", "X000", "????"
-                    	criteriaList.add(new SearchCriterion("atk", ">=", "0"));
-                    	criteriaList.add(new SearchCriterion("atk", "<=", "9999999"));
-                    	criteriaList.add(new SearchCriterion("atk", "<>", "\"\""));
-                    }
-
-                    // def
-                    EditText defEdit = view.findViewById(R.id.criteriaDef);
-                    String defInput = defEdit.getText().toString().trim();
-                    String defOperator = ((Spinner) view.findViewById(R.id.spinnerOperatorDef)).getSelectedItem().toString();
-                    if (!defInput.equals("")) {
-                    	criteriaList.add(new SearchCriterion("def", defOperator, defInput));
-                    	// hacky, since we have values like "?", etc.
-                    	// TODO: handle "?", "X000", "????"
-                    	criteriaList.add(new SearchCriterion("def", ">=", "0"));
-                    	criteriaList.add(new SearchCriterion("def", "<=", "9999999"));
-                    	criteriaList.add(new SearchCriterion("def", "<>", "\"\""));
-                    }
-
-                    // link
-                    EditText linkEdit = view.findViewById(R.id.criteriaLink);
-                    String linkInput = linkEdit.getText().toString().trim();
-                    String linkOperator = ((Spinner) view.findViewById(R.id.spinnerOperatorLink)).getSelectedItem().toString();
-                    if (!linkInput.equals("")) {
-                        criteriaList.add(new SearchCriterion("link", linkOperator, linkInput));
-                        criteriaList.add(new SearchCriterion("link", "<>", "\"\""));
-                    }
-
-                    // link arrow
-                    MultiSelectionSpinner linkArrowSpinner = view.findViewById(R.id.spinnerLinkArrow);
-                    List<String> arrows = linkArrowSpinner.getSelectedStrings();
-                    if (!arrows.isEmpty()) {
-                        for (String arrow : arrows) {
-                            criteriaList.add(new SearchCriterion("linkMarkers", "like", "'%|" + arrow + "|%'"));
-                        }
-                    }
-
-                    // main category
-                    String mainCategoryInput = ((Spinner) view.findViewById(R.id.spinnerMainCategory)).getSelectedItem().toString();
-                    String mainCategorySql = null;
-                    if (!mainCategoryInput.equals("(All)")) {
-                        switch (mainCategoryInput) {
-                            case "Monster":
-                                mainCategorySql = "cardType = \"Monster\"";
-                                break;
-                            case "Spell":
-                                mainCategorySql = "cardType = \"Spell\"";
-                                break;
-                            case "Trap":
-                                mainCategorySql = "cardType = \"Trap\"";
-                                break;
-                        }
-                    }
-
-                    // sub category
-                    String subCategoryInput = ((Spinner) view.findViewById(R.id.spinnerSubCategory)).getSelectedItem().toString();
-                    String subCategorySql = null;
-                    if (!subCategoryInput.equals("(All)")) {
-                        if (mainCategoryInput.equals("Monster")) {
-                            if (subCategoryInput.equals("Normal")) {
-                                // hopefully the performance is not too bad...
-                                subCategorySql = "types not like \"%Effect%\" "
-                                           + "and types not like \"%Fusion%\" "
-                                           + "and types not like \"%Ritual%\" "
-                                           + "and types not like \"%Synchro%\" "
-                                           + "and types not like \"%Xyz%\" "
-                                           + "and types not like \"%Token%\" "
-                                           + "and effectTypes = \"\"";
-                            }
-                            else {
-                                subCategorySql = "types like \"%" + subCategoryInput + "%\"";
-                            }
-                        }
-                        else if (mainCategoryInput.equals("Spell") || mainCategoryInput.equals("Trap")) {
-                        	subCategorySql = "property = \"" + subCategoryInput + "\"";
-                        }
-                    }
-
-                    // attribute
-                    String attributeInput = ((Spinner) view.findViewById(R.id.spinnerAttribute)).getSelectedItem().toString();
-                    String attributeSql = null;
-                    if (!attributeInput.equals("(All)")) {
-                    	attributeSql = "attribute = \"" + attributeInput.toUpperCase() + "\"";
-                    }
-
-                    // type
-                    String typeInput = ((Spinner) view.findViewById(R.id.spinnerType)).getSelectedItem().toString();
-                    String typeSql = null;
-                    if (!typeInput.equals("(All)")) {
-                    	typeSql = "types like \"%" + typeInput + "%\"";
-                    }
-
-                    // status tcg adv
-                    String statusTcgAdvInput = ((Spinner) view.findViewById(R.id.spinnerStatusTcgAdv)).getSelectedItem().toString();
-                    String statusTcgAdvSql = null;
-                    if (!statusTcgAdvInput.equals("(All)")) {
-                    	if (statusTcgAdvInput.equals("Unlimited")) {
-                            statusTcgAdvSql = "tcgAdvStatus = \"U\"";
+                // sub category
+                String subCategoryInput = ((Spinner) view.findViewById(R.id.spinnerSubCategory)).getSelectedItem().toString();
+                String subCategorySql = null;
+                if (!subCategoryInput.equals("(All)")) {
+                    if (mainCategoryInput.equals("Monster")) {
+                        if (subCategoryInput.equals("Normal")) {
+                            // hopefully the performance is not too bad...
+                            subCategorySql = "types not like \"%Effect%\" "
+                                       + "and types not like \"%Fusion%\" "
+                                       + "and types not like \"%Ritual%\" "
+                                       + "and types not like \"%Synchro%\" "
+                                       + "and types not like \"%Xyz%\" "
+                                       + "and types not like \"%Token%\" "
+                                       + "and effectTypes = \"\"";
                         }
                         else {
-                            statusTcgAdvSql = "tcgAdvStatus = \"" + statusTcgAdvInput + "\"";
+                            subCategorySql = "types like \"%" + subCategoryInput + "%\"";
                         }
                     }
-
-                    // status ocg
-                    String statusOcgInput = ((Spinner) view.findViewById(R.id.spinnerStatusOcg)).getSelectedItem().toString();
-                    String statusOcgSql = null;
-                    if (!statusOcgInput.equals("(All)")) {
-                        if (statusOcgInput.equals("Unlimited")) {
-                            statusOcgSql = "ocgStatus = \"U\"";
-                        }
-                        else {
-                            statusOcgSql = "ocgStatus = \"" + statusOcgInput + "\"";
-                        }
+                    else if (mainCategoryInput.equals("Spell") || mainCategoryInput.equals("Trap")) {
+                        subCategorySql = "property = \"" + subCategoryInput + "\"";
                     }
+                }
 
-                    // tcg/ocg
-                    String tcgOcgInput = ((Spinner) view.findViewById(R.id.spinnerTcgOcg)).getSelectedItem().toString();
-                    String tcgOcgSql = null;
-                    if (!tcgOcgInput.equals("(All)")) {
-                        switch (tcgOcgInput) {
-                            case "TCG Exclusive":
-                                tcgOcgSql = "tcgOnly = 1";
-                                break;
-                            case "OCG Exclusive":
-                                tcgOcgSql = "ocgOnly = 1";
-                                break;
-                            case "TCG":
-                                tcgOcgSql = "ocgOnly <> 1";
-                                break;
-                            case "OCG":
-                                tcgOcgSql = "tcgOnly <> 1";
-                                break;
-                        }
-                    }
+                // attribute
+                String attributeInput = ((Spinner) view.findViewById(R.id.spinnerAttribute)).getSelectedItem().toString();
+                String attributeSql = null;
+                if (!attributeInput.equals("(All)")) {
+                    attributeSql = "attribute = \"" + attributeInput.toUpperCase() + "\"";
+                }
 
-                    // get the SQL where clause
-                    String criteria = SearchCriterion.getCriteria(criteriaList);
-                    if (levelRankSql != null) {
-                    	if (!criteria.equals("")) criteria += " AND ";
-                    	criteria += levelRankSql;
-                    }
+                // type
+                String typeInput = ((Spinner) view.findViewById(R.id.spinnerType)).getSelectedItem().toString();
+                String typeSql = null;
+                if (!typeInput.equals("(All)")) {
+                    typeSql = "types like \"%" + typeInput + "%\"";
+                }
 
-                    if (mainCategorySql != null) {
-                    	if (!criteria.equals("")) criteria += " AND ";
-                    	criteria += mainCategorySql;
-                    }
-
-                    if (subCategorySql != null) {
-                    	if (!criteria.equals("")) criteria += " AND ";
-                    	criteria += subCategorySql;
-                    }
-
-                    if (attributeSql != null) {
-                    	if (!criteria.equals("")) criteria += " AND ";
-                    	criteria += attributeSql;
-                    }
-
-                    if (typeSql != null) {
-                    	if (!criteria.equals("")) criteria += " AND ";
-                    	criteria += typeSql;
-                    }
-
-                    if (statusTcgAdvSql != null) {
-                    	if (!criteria.equals("")) criteria += " AND ";
-                    	criteria += statusTcgAdvSql;
-                    }
-
-                    if (statusOcgSql != null) {
-                        if (!criteria.equals("")) criteria += " AND ";
-                        criteria += statusOcgSql;
-                    }
-
-                    if (tcgOcgSql != null) {
-                        if (!criteria.equals("")) criteria += " AND ";
-                        criteria += tcgOcgSql;
-                    }
-
-                    // then execute the query and get the result
-                    DatabaseQuerier querier = new DatabaseQuerier(v.getContext());
-                    resultSet = querier.executeQuery(criteria);
-
-                    // now display the results
-                    if (!resultSet.isEmpty()) {
-                        // switch to the result tab (with index 1)
-                        getActivity().getActionBar().setSelectedNavigationItem(1);
-                        Toast toast = Toast.makeText(getActivity(), "Found " + resultSet.size() + " results.", Toast.LENGTH_LONG);
-                        toast.show();
-
-                        // hide keyboard
-                        View view = getActivity().getCurrentFocus();
-                        if (view != null) {
-                            InputMethodManager imm = (InputMethodManager)getActivity().getSystemService(Context.INPUT_METHOD_SERVICE);
-                            imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
-                        }
+                // status tcg adv
+                String statusTcgAdvInput = ((Spinner) view.findViewById(R.id.spinnerStatusTcgAdv)).getSelectedItem().toString();
+                String statusTcgAdvSql = null;
+                if (!statusTcgAdvInput.equals("(All)")) {
+                    if (statusTcgAdvInput.equals("Unlimited")) {
+                        statusTcgAdvSql = "tcgAdvStatus = \"U\"";
                     }
                     else {
-                        Toast toast = Toast.makeText(getActivity(), "No results found.", Toast.LENGTH_SHORT);
-                        toast.show();
+                        statusTcgAdvSql = "tcgAdvStatus = \"" + statusTcgAdvInput + "\"";
                     }
+                }
+
+                // status ocg
+                String statusOcgInput = ((Spinner) view.findViewById(R.id.spinnerStatusOcg)).getSelectedItem().toString();
+                String statusOcgSql = null;
+                if (!statusOcgInput.equals("(All)")) {
+                    if (statusOcgInput.equals("Unlimited")) {
+                        statusOcgSql = "ocgStatus = \"U\"";
+                    }
+                    else {
+                        statusOcgSql = "ocgStatus = \"" + statusOcgInput + "\"";
+                    }
+                }
+
+                // tcg/ocg
+                String tcgOcgInput = ((Spinner) view.findViewById(R.id.spinnerTcgOcg)).getSelectedItem().toString();
+                String tcgOcgSql = null;
+                if (!tcgOcgInput.equals("(All)")) {
+                    switch (tcgOcgInput) {
+                        case "TCG Exclusive":
+                            tcgOcgSql = "tcgOnly = 1";
+                            break;
+                        case "OCG Exclusive":
+                            tcgOcgSql = "ocgOnly = 1";
+                            break;
+                        case "TCG":
+                            tcgOcgSql = "ocgOnly <> 1";
+                            break;
+                        case "OCG":
+                            tcgOcgSql = "tcgOnly <> 1";
+                            break;
+                    }
+                }
+
+                // get the SQL where clause
+                String criteria = SearchCriterion.getCriteria(criteriaList);
+                if (levelRankSql != null) {
+                    if (!criteria.equals("")) criteria += " AND ";
+                    criteria += levelRankSql;
+                }
+
+                if (mainCategorySql != null) {
+                    if (!criteria.equals("")) criteria += " AND ";
+                    criteria += mainCategorySql;
+                }
+
+                if (subCategorySql != null) {
+                    if (!criteria.equals("")) criteria += " AND ";
+                    criteria += subCategorySql;
+                }
+
+                if (attributeSql != null) {
+                    if (!criteria.equals("")) criteria += " AND ";
+                    criteria += attributeSql;
+                }
+
+                if (typeSql != null) {
+                    if (!criteria.equals("")) criteria += " AND ";
+                    criteria += typeSql;
+                }
+
+                if (statusTcgAdvSql != null) {
+                    if (!criteria.equals("")) criteria += " AND ";
+                    criteria += statusTcgAdvSql;
+                }
+
+                if (statusOcgSql != null) {
+                    if (!criteria.equals("")) criteria += " AND ";
+                    criteria += statusOcgSql;
+                }
+
+                if (tcgOcgSql != null) {
+                    if (!criteria.equals("")) criteria += " AND ";
+                    criteria += tcgOcgSql;
+                }
+
+                // then execute the query and get the result
+                DatabaseQuerier querier = new DatabaseQuerier(v.getContext());
+                resultSet = querier.executeQuery(criteria);
+
+                // now display the results
+                if (!resultSet.isEmpty()) {
+                    // switch to the result tab (with index 1)
+                    getActivity().getActionBar().setSelectedNavigationItem(1);
+                    Toast toast = Toast.makeText(getActivity(), "Found " + resultSet.size() + " results.", Toast.LENGTH_LONG);
+                    toast.show();
+
+                    // hide keyboard
+                    View view1 = getActivity().getCurrentFocus();
+                    if (view1 != null) {
+                        InputMethodManager imm = (InputMethodManager)getActivity().getSystemService(Context.INPUT_METHOD_SERVICE);
+                        imm.hideSoftInputFromWindow(view1.getWindowToken(), 0);
+                    }
+                }
+                else {
+                    Toast toast = Toast.makeText(getActivity(), "No results found.", Toast.LENGTH_SHORT);
+                    toast.show();
                 }
             });
 
@@ -507,14 +500,11 @@ public class AdvancedSearchActivity extends BaseFragmentActivity {
             famListView.setAdapter(new CardRegexFilterArrayAdapter(getActivity(), R.layout.list_item_card, R.id.itemRowText, resultSet));
 
             // go to a card's detail page when click on its name on the list
-            famListView.setOnItemClickListener(new OnItemClickListener(){
-                @Override
-                public void onItemClick(AdapterView<?> arg0, View v, int position, long arg3) {
-                        String cardName = ((Card) arg0.getItemAtPosition(position)).getName();
-                        Intent intent = new Intent(v.getContext(), CardDetailActivity.class);
-                        intent.putExtra(MainActivity.CARD_NAME, cardName);
-                        startActivity(intent);
-                }
+            famListView.setOnItemClickListener((arg0, v, position, arg3) -> {
+                    String cardName = ((Card) arg0.getItemAtPosition(position)).getName();
+                    Intent intent = new Intent(v.getContext(), CardDetailActivity.class);
+                    intent.putExtra(MainActivity.CARD_NAME, cardName);
+                    startActivity(intent);
             });
             return view;
         }

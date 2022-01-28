@@ -4,26 +4,25 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
-import androidx.fragment.app.Fragment;
-import androidx.fragment.app.FragmentTransaction;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.AdapterView;
-import android.widget.AdapterView.OnItemClickListener;
 import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
+import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentTransaction;
+
 import com.chin.common.CustomDialogFragment;
 import com.chin.common.Util;
 import com.chin.ygodb.CardRegexFilterArrayAdapter;
-import com.chin.ygodb.dataSource.CardStore;
 import com.chin.ygodb.R;
+import com.chin.ygodb.dataSource.CardStore;
 import com.chin.ygowikitool.entity.Card;
 
 /**
@@ -54,8 +53,8 @@ public class MainActivity extends BaseFragmentActivity {
                     "https://github.com/chinhodado/ygodb/releases", false);
         }
 
-        final ProgressBar initializingSpin = (ProgressBar)findViewById(R.id.progressBarInitializaing);
-        final TextView initializingTv = (TextView)findViewById(R.id.textViewInitializing);
+        final ProgressBar initializingSpin = findViewById(R.id.progressBarInitializaing);
+        final TextView initializingTv = findViewById(R.id.textViewInitializing);
 
         // get the card list and their wiki url
         if (CardStore.cardNameList == null) {
@@ -116,7 +115,7 @@ public class MainActivity extends BaseFragmentActivity {
                     adapter = new CardRegexFilterArrayAdapter(getActivity(), R.layout.list_item_card, R.id.itemRowText, CardStore.cardList);
                 }
 
-                EditText cardEditText = (EditText) view.findViewById(R.id.cardEditText);
+                EditText cardEditText = view.findViewById(R.id.cardEditText);
 
                 cardEditText.addTextChangedListener(new TextWatcher() {
                     @Override
@@ -132,16 +131,13 @@ public class MainActivity extends BaseFragmentActivity {
                     }
                 });
 
-                ListView cardListView = (ListView) view.findViewById(R.id.cardListView);
+                ListView cardListView = view.findViewById(R.id.cardListView);
                 cardListView.setAdapter(adapter);
-                cardListView.setOnItemClickListener(new OnItemClickListener(){
-                    @Override
-                    public void onItemClick(AdapterView<?> arg0, View v, int position, long arg3) {
-                            String cardName = ((Card) arg0.getItemAtPosition(position)).getName();
-                            Intent intent = new Intent(v.getContext(), CardDetailActivity.class);
-                            intent.putExtra(CARD_NAME, cardName);
-                            startActivity(intent);
-                    }
+                cardListView.setOnItemClickListener((arg0, v, position, arg3) -> {
+                    String cardName = ((Card) arg0.getItemAtPosition(position)).getName();
+                    Intent intent = new Intent(v.getContext(), CardDetailActivity.class);
+                    intent.putExtra(CARD_NAME, cardName);
+                    startActivity(intent);
                 });
             }
             catch (Exception e) {

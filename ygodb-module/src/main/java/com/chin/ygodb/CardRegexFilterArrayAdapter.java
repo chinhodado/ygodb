@@ -40,8 +40,8 @@ import android.widget.TextView;
 public class CardRegexFilterArrayAdapter extends RegexFilterArrayAdapter<Card> {
 
     protected CardArrayFilter mFilter;
-    private int imgviewWidth;
-    private int imgviewHeight;
+    private final int imgViewWidth;
+    private final int imgViewHeight;
 
     private static final int CPU_COUNT = Runtime.getRuntime().availableProcessors();
     // We want at least 2 threads and at most 4 threads in the core pool,
@@ -65,7 +65,7 @@ public class CardRegexFilterArrayAdapter extends RegexFilterArrayAdapter<Card> {
     /**
      * An {@link Executor} that can be used to execute tasks in parallel.
      */
-    private Executor imageThreadPoolExecutor;
+    private final Executor imageThreadPoolExecutor;
 
     /**
      * Constructor
@@ -85,8 +85,8 @@ public class CardRegexFilterArrayAdapter extends RegexFilterArrayAdapter<Card> {
         Point size = new Point();
         display.getSize(size);
         int screenWidth = size.x;
-        imgviewWidth = (int) (screenWidth * 0.2);
-        imgviewHeight = (int) (imgviewWidth * 1.4576);
+        imgViewWidth = (int) (screenWidth * 0.2);
+        imgViewHeight = (int) (imgViewWidth * 1.4576);
 
         // initialize our thread pool, with the DiscardOldestPolicy (e.g. so that when we're scrolling
         // fast through the card list only the most recently needed images are shown on the screen and are
@@ -98,9 +98,6 @@ public class CardRegexFilterArrayAdapter extends RegexFilterArrayAdapter<Card> {
         imageThreadPoolExecutor = threadPoolExecutor;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public View getView(int position, View convertView, ViewGroup parent) {
         return createViewFromResource(position, convertView, parent, mResource);
@@ -116,14 +113,14 @@ public class CardRegexFilterArrayAdapter extends RegexFilterArrayAdapter<Card> {
         }
 
         final CardStore cardStore = CardStore.getInstance(mContext);
-        TextView text = (TextView) view.findViewById(mFieldId);
+        TextView text = view.findViewById(mFieldId);
         Card card = getItem(position);
         text.setText(Html.fromHtml(card.toString()));
 
-        final ImageView imgView = (ImageView) view.findViewById(R.id.itemRowImage);
+        final ImageView imgView = view.findViewById(R.id.itemRowImage);
         imgView.setImageResource(android.R.color.transparent);
-        imgView.getLayoutParams().width  = imgviewWidth;
-        imgView.getLayoutParams().height = imgviewHeight;
+        imgView.getLayoutParams().width  = imgViewWidth;
+        imgView.getLayoutParams().height = imgViewHeight;
 
         String imgLink = null;
         try {
@@ -185,14 +182,14 @@ public class CardRegexFilterArrayAdapter extends RegexFilterArrayAdapter<Card> {
 
             if (mOriginalValues == null) {
                 synchronized (mLock) {
-                    mOriginalValues = new ArrayList<Card>(mObjects);
+                    mOriginalValues = new ArrayList<>(mObjects);
                 }
             }
 
             if (prefix == null || prefix.length() == 0) {
                 List<Card> list;
                 synchronized (mLock) {
-                    list = new ArrayList<Card>(mOriginalValues);
+                    list = new ArrayList<>(mOriginalValues);
                 }
                 results.values = list;
                 results.count = list.size();

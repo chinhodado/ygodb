@@ -19,10 +19,10 @@ import java.util.List;
  * Created by Chin on 05-Feb-17.
  */
 public class BoosterCardListAsyncTask extends AsyncTask<String, Void, List<Card>> {
-    private String boosterName;
-    private String boosterUrl;
-    private ListView cardListView;
-    private BoosterDetailActivity activity;
+    private final String boosterName;
+    private final String boosterUrl;
+    private final ListView cardListView;
+    private final BoosterDetailActivity activity;
     private boolean exceptionOccurred = false;
 
     public BoosterCardListAsyncTask(String boosterName, String boosterUrl, ListView cardListView, BoosterDetailActivity activity) {

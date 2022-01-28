@@ -54,42 +54,39 @@ public class BaseFragmentActivity extends FragmentActivity{
 
         // create the navigation drawer
         String[] mListTitles = {"Card", "Advanced search", "TCG Boosters", "OCG Boosters"};
-        final DrawerLayout mDrawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
-        ListView mDrawerList = (ListView) findViewById(R.id.left_drawer);
+        final DrawerLayout mDrawerLayout = findViewById(R.id.drawer_layout);
+        ListView mDrawerList = findViewById(R.id.left_drawer);
 
-        mDrawerList.setAdapter(new ArrayAdapter<String>(this, // set the adapter for the list view
+        mDrawerList.setAdapter(new ArrayAdapter<>(this, // set the adapter for the list view
                 android.R.layout.simple_list_item_1, mListTitles));
 
         // Set the list's click listener
-        mDrawerList.setOnItemClickListener(new OnItemClickListener(){
-            @Override
-            public void onItemClick(AdapterView<?> arg0, View v, int position, long arg3) {
-                Intent intent = null;
+        mDrawerList.setOnItemClickListener((arg0, v, position, arg3) -> {
+            Intent intent;
 
-                // first just close the drawer
-                mDrawerLayout.closeDrawers();
+            // first just close the drawer
+            mDrawerLayout.closeDrawers();
 
-                if (position == 0) { // Card
-                    intent = new Intent(v.getContext(), MainActivity.class);
-                    // note that we don't need the FLAG_ACTIVITY_REORDER_TO_FRONT here
-                    // since this is the "root" activity and it has launchMode="singleTask"
-                    startActivity(intent);
-                }
-                else if (position == 1) { // Advanced search
-                    intent = new Intent(v.getContext(), AdvancedSearchActivity.class);
-                    intent.setFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT);
-                    startActivity(intent);
-                }
-                else if (position == 2) { // booster TCG
-                    intent = new Intent(v.getContext(), TcgBoosterActivity.class);
-                    intent.setFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT);
-                    startActivity(intent);
-                }
-                else if (position == 3) { // booster OCG
-                    intent = new Intent(v.getContext(), OcgBoosterActivity.class);
-                    intent.setFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT);
-                    startActivity(intent);
-                }
+            if (position == 0) { // Card
+                intent = new Intent(v.getContext(), MainActivity.class);
+                // note that we don't need the FLAG_ACTIVITY_REORDER_TO_FRONT here
+                // since this is the "root" activity and it has launchMode="singleTask"
+                startActivity(intent);
+            }
+            else if (position == 1) { // Advanced search
+                intent = new Intent(v.getContext(), AdvancedSearchActivity.class);
+                intent.setFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT);
+                startActivity(intent);
+            }
+            else if (position == 2) { // booster TCG
+                intent = new Intent(v.getContext(), TcgBoosterActivity.class);
+                intent.setFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT);
+                startActivity(intent);
+            }
+            else if (position == 3) { // booster OCG
+                intent = new Intent(v.getContext(), OcgBoosterActivity.class);
+                intent.setFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT);
+                startActivity(intent);
             }
         });
 

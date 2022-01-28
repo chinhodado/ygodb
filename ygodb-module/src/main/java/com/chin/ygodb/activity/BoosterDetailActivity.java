@@ -55,8 +55,8 @@ public class BoosterDetailActivity extends BaseFragmentActivity {
             }
         }
 
-        PagerSlidingTabStrip tabs = (PagerSlidingTabStrip) findViewById(R.id.tabs);
-        ViewPager pager = (ViewPager) findViewById(R.id.pager);
+        PagerSlidingTabStrip tabs = findViewById(R.id.tabs);
+        ViewPager pager = findViewById(R.id.pager);
         MyPagerAdapter adapter = new MyPagerAdapter(getSupportFragmentManager());
 
         pager.setAdapter(adapter);
@@ -99,7 +99,7 @@ public class BoosterDetailActivity extends BaseFragmentActivity {
         @Override
         public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
             View view = inflater.inflate(R.layout.fragment_search_result, container, false);
-            ListView famListView = (ListView) view.findViewById(R.id.resultListView);
+            ListView famListView = view.findViewById(R.id.resultListView);
 
             String boosterName = getArguments().getString(BoosterActivity.BOOSTER_NAME);
             String boosterUrl = getArguments().getString(BoosterActivity.BOOSTER_URL);
@@ -108,20 +108,17 @@ public class BoosterDetailActivity extends BaseFragmentActivity {
                     .executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
 
             // go to a card's detail page when click on its name on the list
-            famListView.setOnItemClickListener(new AdapterView.OnItemClickListener(){
-                @Override
-                public void onItemClick(AdapterView<?> arg0, View v, int position, long arg3) {
-                    String cardName = ((Card) arg0.getItemAtPosition(position)).getName();
-                    // new packs may not have actual card name in the table yet, or the card may not
-                    // have an article yet
-                    if (CardStore.getInstance(getActivity()).hasCard(cardName)) {
-                        Intent intent = new Intent(v.getContext(), CardDetailActivity.class);
-                        intent.putExtra(MainActivity.CARD_NAME, cardName);
-                        startActivity(intent);
-                    }
-                    else {
-                        Toast.makeText(getActivity(), "Unable to get card data", Toast.LENGTH_SHORT).show();
-                    }
+            famListView.setOnItemClickListener((arg0, v, position, arg3) -> {
+                String cardName = ((Card) arg0.getItemAtPosition(position)).getName();
+                // new packs may not have actual card name in the table yet, or the card may not
+                // have an article yet
+                if (CardStore.getInstance(getActivity()).hasCard(cardName)) {
+                    Intent intent = new Intent(v.getContext(), CardDetailActivity.class);
+                    intent.putExtra(MainActivity.CARD_NAME, cardName);
+                    startActivity(intent);
+                }
+                else {
+                    Toast.makeText(getActivity(), "Unable to get card data", Toast.LENGTH_SHORT).show();
                 }
             });
 

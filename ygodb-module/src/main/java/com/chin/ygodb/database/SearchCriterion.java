@@ -9,9 +9,9 @@ import java.util.List;
  *
  */
 public class SearchCriterion {
-    private String subject;
-    private String operator;
-    private String object;
+    private final String subject;
+    private final String operator;
+    private final String object;
 
     public SearchCriterion(String subject, String operator, String object) {
         this.subject = subject;
