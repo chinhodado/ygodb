@@ -2,22 +2,23 @@ package com.chin.ygodb.activity;
 
 import android.annotation.SuppressLint;
 import android.os.Bundle;
-import androidx.fragment.app.Fragment;
-import androidx.fragment.app.FragmentManager;
-import androidx.fragment.app.FragmentPagerAdapter;
-import androidx.viewpager.widget.ViewPager;
-import androidx.recyclerview.widget.RecyclerView;
-import androidx.recyclerview.widget.StaggeredGridLayoutManager;
 import android.util.TypedValue;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentManager;
+import androidx.fragment.app.FragmentPagerAdapter;
+import androidx.recyclerview.widget.RecyclerView;
+import androidx.recyclerview.widget.StaggeredGridLayoutManager;
+import androidx.viewpager.widget.ViewPager;
+
 import com.chin.ygodb.BoosterRecyclerViewAdapter;
 import com.chin.ygodb.PagerSlidingTabStrip;
-import com.chin.ygodb.asyncTask.PopulateBoosterAsyncTask;
-import com.chin.ygodb.entity.Booster;
 import com.chin.ygodb.R;
+import com.chin.ygodb.asyncTask.PopulateBoosterAsyncTask;
+import com.chin.ygowikitool.entity.Booster;
 
 import java.util.ArrayList;
 import java.util.List;

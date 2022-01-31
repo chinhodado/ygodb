@@ -7,12 +7,12 @@ import android.database.sqlite.SQLiteDatabase;
 import android.util.Log;
 
 import com.chin.ygodb.database.DatabaseQuerier;
-import com.chin.ygodb.entity.Booster;
+import com.chin.ygowikitool.entity.Booster;
 
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * Provide access to booster data
@@ -23,14 +23,14 @@ public class BoosterStore {
     // we use the application context so don't worry about this
     @SuppressLint("StaticFieldLeak")
     private static BoosterStore INSTANCE;
-    private Context context;
+    private final Context context;
     private boolean doneInit;
 
     // list of boosters in the offline database
-    private static Set<String> offlineBoosterSet = new HashSet<>(8192);
+    private static final Set<String> offlineBoosterSet = new HashSet<>(8192);
 
     // maps a booster name to its Booster object, for both online and offline
-    private static Map<String, Booster> allBoosterMap = new HashMap<>(8192);
+    private static final Map<String, Booster> allBoosterMap = new ConcurrentHashMap<>(8192);
 
     private BoosterStore(Context context) {
         if (INSTANCE != null) {
@@ -61,12 +61,15 @@ public class BoosterStore {
 
         if (cursor.moveToFirst()) {
             while (!cursor.isAfterLast()) {
-                String name = cursor.getString(cursor.getColumnIndex("name"));
+                String name = cursor.getString(cursor.getColumnIndexOrThrow("name"));
                 Booster booster = new Booster();
-                booster.setName(name);
-                booster.setEnReleaseDate(cursor.getString(cursor.getColumnIndex("enReleaseDate")));
-                booster.setJpReleaseDate(cursor.getString(cursor.getColumnIndex("jpReleaseDate")));
-                booster.setShortenedImgSrc(cursor.getString(cursor.getColumnIndex("imgSrc")));
+                booster.setBoosterName(name);
+                booster.setEnReleaseDate(cursor.getString(cursor.getColumnIndexOrThrow("enReleaseDate")));
+                booster.setJpReleaseDate(cursor.getString(cursor.getColumnIndexOrThrow("jpReleaseDate")));
+                booster.setShortenedImgSrc(cursor.getString(cursor.getColumnIndexOrThrow("imgSrc")));
+
+                booster.parseEnReleaseDate();
+                booster.parseJpReleaseDate();
 
                 offlineBoosterSet.add(name);
                 allBoosterMap.put(name, booster);
