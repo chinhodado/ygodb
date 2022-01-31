@@ -18,7 +18,7 @@ import java.util.List;
  */
 public class DatabaseQuerier {
     private static SQLiteDatabase db;
-    private Context context;
+    private final Context context;
 
     public DatabaseQuerier(Context context) {
         this.context = context;
@@ -47,23 +47,23 @@ public class DatabaseQuerier {
                                       + "from card where " + criteria + " order by name", null);
             if (cursor.moveToFirst()) {
                 while (!cursor.isAfterLast()) {
-                    String name = cursor.getString(cursor.getColumnIndex("name"));
+                    String name = cursor.getString(cursor.getColumnIndexOrThrow("name"));
 
                     // verify that the card really exists in our database
                     if (CardStore.cardNameList.contains(name)) {
                         Card card = new Card();
                         card.setName(name);
                         // note that we don't need all card info here - just those needed for displaying in the ListView
-                        card.setAttribute(cursor.getString(cursor.getColumnIndex("attribute")));
-                        card.setCardType(cursor.getString(cursor.getColumnIndex("cardType")));
-                        card.setTypes(cursor.getString(cursor.getColumnIndex("types")));
-                        card.setLevel(cursor.getString(cursor.getColumnIndex("level")));
-                        card.setAtk(cursor.getString(cursor.getColumnIndex("atk")));
-                        card.setDef(cursor.getString(cursor.getColumnIndex("def")));
-                        card.setLink(cursor.getString(cursor.getColumnIndex("link")));
-                        card.setRank(cursor.getString(cursor.getColumnIndex("rank")));
-                        card.setPendulumScale(cursor.getString(cursor.getColumnIndex("pendulumScale")));
-                        card.setProperty(cursor.getString(cursor.getColumnIndex("property")));
+                        card.setAttribute(cursor.getString(cursor.getColumnIndexOrThrow("attribute")));
+                        card.setCardType(cursor.getString(cursor.getColumnIndexOrThrow("cardType")));
+                        card.setTypes(cursor.getString(cursor.getColumnIndexOrThrow("types")));
+                        card.setLevel(cursor.getString(cursor.getColumnIndexOrThrow("level")));
+                        card.setAtk(cursor.getString(cursor.getColumnIndexOrThrow("atk")));
+                        card.setDef(cursor.getString(cursor.getColumnIndexOrThrow("def")));
+                        card.setLink(cursor.getString(cursor.getColumnIndexOrThrow("link")));
+                        card.setRank(cursor.getString(cursor.getColumnIndexOrThrow("rank")));
+                        card.setPendulumScale(cursor.getString(cursor.getColumnIndexOrThrow("pendulumScale")));
+                        card.setProperty(cursor.getString(cursor.getColumnIndexOrThrow("property")));
                         resultSet.add(card);
                     }
                     else {

@@ -176,21 +176,21 @@ public final class CardStore {
 
         if (cursor.moveToFirst()) {
             while (!cursor.isAfterLast()) {
-                String name = cursor.getString(cursor.getColumnIndex("name"));
+                String name = cursor.getString(cursor.getColumnIndexOrThrow("name"));
                 Card card = new Card();
                 card.setName(name);
                 // note that we don't need all card info here - just those needed for displaying in the ListView
-                card.setRealName(cursor.getString(cursor.getColumnIndex("realName")));
-                card.setAttribute(cursor.getString(cursor.getColumnIndex("attribute")));
-                card.setCardType(cursor.getString(cursor.getColumnIndex("cardType")));
-                card.setTypes(cursor.getString(cursor.getColumnIndex("types")));
-                card.setLevel(cursor.getString(cursor.getColumnIndex("level")));
-                card.setAtk(cursor.getString(cursor.getColumnIndex("atk")));
-                card.setDef(cursor.getString(cursor.getColumnIndex("def")));
-                card.setLink(cursor.getString(cursor.getColumnIndex("link")));
-                card.setRank(cursor.getString(cursor.getColumnIndex("rank")));
-                card.setPendulumScale(cursor.getString(cursor.getColumnIndex("pendulumScale")));
-                card.setProperty(cursor.getString(cursor.getColumnIndex("property")));
+                card.setRealName(cursor.getString(cursor.getColumnIndexOrThrow("realName")));
+                card.setAttribute(cursor.getString(cursor.getColumnIndexOrThrow("attribute")));
+                card.setCardType(cursor.getString(cursor.getColumnIndexOrThrow("cardType")));
+                card.setTypes(cursor.getString(cursor.getColumnIndexOrThrow("types")));
+                card.setLevel(cursor.getString(cursor.getColumnIndexOrThrow("level")));
+                card.setAtk(cursor.getString(cursor.getColumnIndexOrThrow("atk")));
+                card.setDef(cursor.getString(cursor.getColumnIndexOrThrow("def")));
+                card.setLink(cursor.getString(cursor.getColumnIndexOrThrow("link")));
+                card.setRank(cursor.getString(cursor.getColumnIndexOrThrow("rank")));
+                card.setPendulumScale(cursor.getString(cursor.getColumnIndexOrThrow("pendulumScale")));
+                card.setProperty(cursor.getString(cursor.getColumnIndexOrThrow("property")));
 
                 CardStore.cardList.add(card);
                 CardStore.cardMap.put(name, card);
@@ -288,7 +288,7 @@ public final class CardStore {
         }
 
         cursor.moveToFirst();
-        String img = cursor.getString(cursor.getColumnIndex("img"));
+        String img = cursor.getString(cursor.getColumnIndexOrThrow("img"));
         if (img.equals("")) {
             return null;
         }
@@ -339,7 +339,7 @@ public final class CardStore {
         // assuming we always have 1 result...
         cursor.moveToFirst();
 
-        String lore = cursor.getString(cursor.getColumnIndex("lore"));
+        String lore = cursor.getString(cursor.getColumnIndexOrThrow("lore"));
         cursor.close();
         return lore;
     }
@@ -377,7 +377,7 @@ public final class CardStore {
                 "fusionMaterials", "synchroMaterial", "materials", "summonedBy", "effectTypes"};
 
         for (String column : columns) {
-            String value = cursor.getString(cursor.getColumnIndex(column));
+            String value = cursor.getString(cursor.getColumnIndexOrThrow(column));
             if (!value.equals("")) {
                 if (column.equals("linkMarkers")) {
                     value = value.replaceAll("\\|", "");
@@ -395,7 +395,7 @@ public final class CardStore {
         String archetypes = "";
         if (cursor.moveToFirst()) {
             while (!cursor.isAfterLast()) {
-                String name = cursor.getString(cursor.getColumnIndex("name"));
+                String name = cursor.getString(cursor.getColumnIndexOrThrow("name"));
                 if (!archetypes.equals("")) archetypes += ", ";
                 archetypes += name;
 
@@ -467,7 +467,7 @@ public final class CardStore {
         String[] columns = new String[] {"ocgStatus", "tcgAdvStatus", "tcgTrnStatus"};
 
         for (String column : columns) {
-            String value = cursor.getString(cursor.getColumnIndex(column));
+            String value = cursor.getString(cursor.getColumnIndexOrThrow(column));
             if (value.equals("")) {
                 continue;
             }
@@ -537,7 +537,7 @@ public final class CardStore {
         // assuming we always have 1 result...
         cursor.moveToFirst();
 
-        String value = cursor.getString(cursor.getColumnIndex(columnName));
+        String value = cursor.getString(cursor.getColumnIndexOrThrow(columnName));
         if (value.equals("")) {
             value = "Not available.";
         }
