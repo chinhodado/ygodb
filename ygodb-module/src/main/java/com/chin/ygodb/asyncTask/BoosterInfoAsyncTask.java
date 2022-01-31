@@ -1,5 +1,7 @@
 package com.chin.ygodb.asyncTask;
 
+import static com.chin.ygowikitool.parser.YugiohWikiUtil.jsoupGet;
+
 import android.os.AsyncTask;
 import android.util.Log;
 import android.view.View;
@@ -37,8 +39,7 @@ public class BoosterInfoAsyncTask extends AsyncTask<String, Void, Booster> {
     @Override
     protected Booster doInBackground(String... params) {
         try {
-            String html = Jsoup.connect("https://yugipedia.com/?curid=" + boosterUrl)
-                    .ignoreContentType(true).execute().body();
+            String html = jsoupGet("https://yugipedia.com/?curid=" + boosterUrl);
             Document dom = Jsoup.parse(html);
 
             YugipediaBoosterParser parser = new YugipediaBoosterParser(boosterName, dom);
