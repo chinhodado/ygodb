@@ -1,8 +1,8 @@
 package com.chin.ygodb.database;
 
-import com.readystatesoftware.sqliteasset.SQLiteAssetHelper;
-
 import android.content.Context;
+
+import com.readystatesoftware.sqliteasset.SQLiteAssetHelper;
 
 /**
  * Helper class for database provisioning
@@ -11,7 +11,7 @@ import android.content.Context;
  */
 public class YgoSqliteDatabase extends SQLiteAssetHelper {
     private static final String DATABASE_NAME = "ygo.db";
-    public static final int DATABASE_VERSION = 20222701;
+    public static final int DATABASE_VERSION = 20220212;
 
     public YgoSqliteDatabase(Context context) {
         super(context, DATABASE_NAME, null, DATABASE_VERSION);
