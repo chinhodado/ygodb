@@ -8,6 +8,7 @@ import android.util.Log;
 
 import com.chin.ygodb.database.DatabaseQuerier;
 import com.chin.ygowikitool.entity.Booster;
+import com.chin.ygowikitool.parser.YugiohWikiUtil;
 
 import java.util.HashSet;
 import java.util.Map;
@@ -66,7 +67,12 @@ public class BoosterStore {
                 booster.setBoosterName(name);
                 booster.setEnReleaseDate(cursor.getString(cursor.getColumnIndexOrThrow("enReleaseDate")));
                 booster.setJpReleaseDate(cursor.getString(cursor.getColumnIndexOrThrow("jpReleaseDate")));
-                booster.setShortenedImgSrc(cursor.getString(cursor.getColumnIndexOrThrow("imgSrc")));
+
+
+                String shortenedImgSrc = cursor.getString(cursor.getColumnIndexOrThrow("imgSrc"));
+                booster.setShortenedImgSrc(shortenedImgSrc);
+                String fullImgSrc = YugiohWikiUtil.getFullYugipediaImageLink(shortenedImgSrc);
+                booster.setFullImgSrc(fullImgSrc);
 
                 booster.parseEnReleaseDate();
                 booster.parseJpReleaseDate();
