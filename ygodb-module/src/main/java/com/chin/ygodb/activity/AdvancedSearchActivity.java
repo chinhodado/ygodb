@@ -50,7 +50,7 @@ public class AdvancedSearchActivity extends BaseFragmentActivity {
             "Illegal", "Legal", "Not yet released"};
     public static String[] tcgOcgList = {"(All)", "TCG", "TCG Exclusive", "OCG", "OCG Exclusive"};
 
-    public static String[] linkArrows = { "Top", "Top-Right", "Right", "Bottom-Right", "Bottom", "Bottom-Left", "Left", "Top-Left" };
+    public static String[] linkArrows = { "Top-Center", "Top-Right", "Middle-Right", "Bottom-Right", "Bottom-Center", "Bottom-Left", "Middle-Left", "Top-Left" };
 
     static ArrayAdapter<String> subCategoryMonsterAdapter;
     static ArrayAdapter<String> subCategorySpellAdapter;

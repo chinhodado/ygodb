@@ -68,7 +68,6 @@ public class BoosterStore {
                 booster.setEnReleaseDate(cursor.getString(cursor.getColumnIndexOrThrow("enReleaseDate")));
                 booster.setJpReleaseDate(cursor.getString(cursor.getColumnIndexOrThrow("jpReleaseDate")));
 
-
                 String shortenedImgSrc = cursor.getString(cursor.getColumnIndexOrThrow("imgSrc"));
                 booster.setShortenedImgSrc(shortenedImgSrc);
                 String fullImgSrc = YugiohWikiUtil.getFullYugipediaImageLink(shortenedImgSrc);
